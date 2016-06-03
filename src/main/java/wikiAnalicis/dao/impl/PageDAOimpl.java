@@ -14,13 +14,19 @@ import wikiAnalicis.util.HibernateUtil;
 public class PageDAOimpl implements PageDAO {
 	@Autowired
 	private HibernateUtil hibernateUtil;
-	
+
 	public PageDAOimpl() {
 		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public long createPage(Page page) {
 		return (Long) hibernateUtil.create(page);
+	}
+
+	@Override
+	public Page mergePage(Page page) {
+		return hibernateUtil.merge(page);
 	}
 
 	@Override

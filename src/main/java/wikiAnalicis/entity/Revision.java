@@ -28,13 +28,10 @@ public class Revision implements Identificable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	@Id
-	@Basic(optional = false)
-	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
-	@GenericGenerator(name="IdOrGenerated",
-	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
-	)
-	@Column(nullable = false)
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="idOrGenerate")
+    @GenericGenerator(name="idOrGenerate",
+                      strategy="wikiAnalicis.util.UseIdOrGenerate")
 	private Long id;
 	private Long parentid;
 	private Date timestamp = Calendar.getInstance().getTime();

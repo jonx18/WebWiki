@@ -4,10 +4,15 @@ import java.util.List;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import com.google.gson.Gson;
 @Entity
@@ -24,7 +29,9 @@ public class Siteinfo implements Identificable{
 	private String base;
 	private String generator;
 	private String casee;//problema con el nombre solucionar;
-	@OneToMany(cascade = CascadeType.ALL, targetEntity= Namespace.class)
+	@OneToMany(cascade = CascadeType.ALL, targetEntity= Namespace.class, fetch = FetchType.EAGER)
+	@Fetch(FetchMode.SELECT)
+    @BatchSize(size = 10)
 	private List<Namespace> namespaces;//TODO necesitoun converter
 	
 	public Siteinfo() {

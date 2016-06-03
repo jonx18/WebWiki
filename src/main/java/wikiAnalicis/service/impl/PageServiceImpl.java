@@ -15,14 +15,19 @@ import wikiAnalicis.service.PageService;
 public class PageServiceImpl implements PageService {
 	@Autowired
 	private PageDAO pageDAO;
-	
+
 	public PageServiceImpl() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	@Override
 	public long createPage(Page page) {
 		return pageDAO.createPage(page);
+	}
+
+	@Override
+	public Page mergePage(Page page) {
+		return pageDAO.mergePage(page);
 	}
 
 	@Override
@@ -32,7 +37,8 @@ public class PageServiceImpl implements PageService {
 
 	@Override
 	public void deletePage(long id) {
-		pageDAO.deletePage(id);;
+		pageDAO.deletePage(id);
+		;
 	}
 
 	@Override

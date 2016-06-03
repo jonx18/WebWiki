@@ -18,15 +18,14 @@ public class UserContributor implements Identificable{
 	/**
 	 * 
 	 */
+	public static Long anonimusID=new Long(-1);
 	private static final long serialVersionUID = 1L;
-	@Id
-	@Basic(optional = false)
-	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
-	@GenericGenerator(name="IdOrGenerated",
-	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
-	)
+    @Id
+    @GeneratedValue(strategy=GenerationType.AUTO, generator="idOrGenerate")
+    @GenericGenerator(name="idOrGenerate",
+                      strategy="wikiAnalicis.util.UseIdOrGenerate")
 	@Column(nullable = false)
-	private Long id;
+	private Long id=anonimusID;
 	private String username;
 	private String ip;
 	public UserContributor() {
@@ -83,5 +82,9 @@ public class UserContributor implements Identificable{
                 append(ip).
                 toHashCode();
 
+	}
+	public void setAnonimus() {
+		this.id=UserContributor.anonimusID;
+		UserContributor.anonimusID = anonimusID-1;
 	}
 }

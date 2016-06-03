@@ -16,6 +16,8 @@ import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
 
+import wikiAnalicis.converter.MediaWikiConverter;
+import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
@@ -48,6 +50,11 @@ public class DumpToBDController {
 		xStream.aliasAttribute( Namespace.class, "stringCase","case");
 		xStream.alias("mediawiki", Mediawiki.class);
 		xStream.addImplicitCollection(Mediawiki.class, "pages");
+		
+		//converters
+		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
+		xStream.registerConverter(new PageConverter(pageService));
+		
 		//Comienzo prueba con xml de solo page
 		Page page=null;
 		try {
@@ -77,7 +84,7 @@ public class DumpToBDController {
 
 		System.out.println(mediawiki.toString());
 		//test de guardar
-		mediawikiService.mergeMediawiki(mediawiki);
+		//mediawikiService.mergeMediawiki(mediawiki);
 //		mediawiki=null;
 //		
 //		try {
