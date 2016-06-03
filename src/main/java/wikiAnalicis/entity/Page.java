@@ -1,25 +1,31 @@
 package wikiAnalicis.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.google.gson.Gson;
+@Entity
+public class Page implements Identificable{
 
-public class Page {
-
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String title;
 	private Integer ns;//name space
-	@OneToMany(cascade = CascadeType.ALL)
-	private ArrayList<Revision> revisions;
+	
+	@OneToMany(cascade = CascadeType.ALL, targetEntity= Revision.class)
+	private List<Revision> revisions;
+	
 	public Page() {
 		// TODO Auto-generated constructor stub
 	}
@@ -49,11 +55,11 @@ public class Page {
 	}
 
 
-	public ArrayList<Revision> getRevisions() {
+	public List<Revision> getRevisions() {
 		return revisions;
 	}
 
-	public void setRevisions(ArrayList<Revision> revisions) {
+	public void setRevisions(List<Revision> revisions) {
 		this.revisions = revisions;
 	}
 

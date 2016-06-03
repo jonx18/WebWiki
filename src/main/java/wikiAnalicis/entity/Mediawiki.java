@@ -3,19 +3,27 @@ package wikiAnalicis.entity;
 import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
-import com.google.gson.Gson;
 
-public class Mediawiki {
+import com.google.gson.Gson;
+@Entity
+public class Mediawiki implements Identificable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
+	@ManyToOne(cascade = CascadeType.ALL, targetEntity= Siteinfo.class)
 	private Siteinfo siteinfo;
-	@OneToMany(cascade = CascadeType.ALL)
+	@OneToMany(cascade = CascadeType.ALL, targetEntity= Page.class)
 	private List<Page> pages;
 	
 	public Mediawiki() {

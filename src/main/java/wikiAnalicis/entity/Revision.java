@@ -8,20 +8,23 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.PrimaryKeyJoinColumn;
 
 import com.google.gson.Gson;
 
 @Entity
-public class Revision {
+public class Revision implements Identificable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -34,6 +37,7 @@ public class Revision {
 	private	Boolean minor = false;//TODO no carga con xstream
 	private String model;
 	private String format;
+	@Column(columnDefinition="TEXT")
 	private String text;
 	private String sha1;
 	

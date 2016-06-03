@@ -1,16 +1,21 @@
 package wikiAnalicis.entity;
 
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.google.gson.Gson;
-
-public class Namespace {
+@Entity
+public class Namespace implements Identificable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	private Integer key;
+	private Integer keyclave;
 	private String stringCase;
 	private String value;
 	
@@ -27,11 +32,11 @@ public class Namespace {
 	}
 
 	public Integer getKey() {
-		return key;
+		return keyclave;
 	}
 
 	public void setKey(Integer key) {
-		this.key = key;
+		this.keyclave = key;
 	}
 
 	public String getStringCase() {

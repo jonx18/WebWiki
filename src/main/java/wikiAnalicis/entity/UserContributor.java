@@ -5,10 +5,17 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
 import com.google.gson.Gson;
 
 @Entity
-public class UserContributor {
+public class UserContributor implements Identificable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -40,5 +47,33 @@ public class UserContributor {
 	public String toString() {
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
+	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+	       if (!(obj instanceof UserContributor)){
+	            return false;
+	            }
+	        if (obj == this){
+	            return true;
+	        }
+	        UserContributor rhs = (UserContributor) obj;
+	        return new EqualsBuilder().
+	            // if deriving: appendSuper(super.equals(obj)).
+	        		append(id, rhs.getId()).
+	        		append(username, rhs.getUsername()).
+	        		append(ip, rhs.getIp()).
+	            isEquals();
+		
+	}
+	@Override
+	public int hashCode() {
+        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+                // if deriving: appendSuper(super.hashCode()).
+                append(id).
+                append(username).
+                append(ip).
+                toHashCode();
+
 	}
 }

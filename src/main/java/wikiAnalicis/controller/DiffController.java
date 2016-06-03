@@ -19,9 +19,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Revision;
-import wikiAnalicis.entity.diff_match_patch;
-import wikiAnalicis.entity.diff_match_patch.Diff;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.util.diff_match_patch;
+import wikiAnalicis.util.diff_match_patch.Diff;
 
 @Controller
 public class DiffController{

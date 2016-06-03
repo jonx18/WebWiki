@@ -20,6 +20,10 @@ public class HibernateUtil {
 	return sessionFactory.getCurrentSession().save(entity); 
 	}
 
+	public <T> T merge(final T entity) {
+	sessionFactory.getCurrentSession().merge(entity); 
+	return entity;
+	}
 	public <T> T update(final T entity) {
 	sessionFactory.getCurrentSession().update(entity); 
 	return entity;

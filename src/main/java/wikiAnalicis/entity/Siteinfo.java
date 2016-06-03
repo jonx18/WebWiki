@@ -1,17 +1,21 @@
 package wikiAnalicis.entity;
 
-import java.util.ArrayList;
-import java.util.Map;
+import java.util.List;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import com.google.gson.Gson;
-
-public class Siteinfo {
+@Entity
+public class Siteinfo implements Identificable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
@@ -20,8 +24,8 @@ public class Siteinfo {
 	private String base;
 	private String generator;
 	private String casee;//problema con el nombre solucionar;
-	@OneToMany(cascade = CascadeType.ALL)
-	private ArrayList<Namespace> namespaces;//TODO necesitoun converter
+	@OneToMany(cascade = CascadeType.ALL, targetEntity= Namespace.class)
+	private List<Namespace> namespaces;//TODO necesitoun converter
 	
 	public Siteinfo() {
 		// TODO Auto-generated constructor stub
@@ -76,11 +80,11 @@ public class Siteinfo {
 	}
 
 
-	public ArrayList<Namespace> getNamespaces() {
+	public List<Namespace> getNamespaces() {
 		return namespaces;
 	}
 
-	public void setNamespaces(ArrayList<Namespace> namespaces) {
+	public void setNamespaces(List<Namespace> namespaces) {
 		this.namespaces = namespaces;
 	}
 

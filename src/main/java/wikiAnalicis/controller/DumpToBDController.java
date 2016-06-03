@@ -21,16 +21,21 @@ import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
-import wikiAnalicis.entity.diff_match_patch;
-import wikiAnalicis.entity.diff_match_patch.Diff;
+import wikiAnalicis.service.MediawikiService;
+import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.util.diff_match_patch;
+import wikiAnalicis.util.diff_match_patch.Diff;
 @Controller
 public class DumpToBDController {
 	private static final Logger LOGGER = Logger.getLogger(Revision.class);
 	@Autowired
-	private RevisionService revisionService;
+	private MediawikiService mediawikiService;
+	@Autowired
+	private PageService pageService;
 	@RequestMapping("dumptobd")
 	public ModelAndView dumpToBD() {
+		//configuro xstream
 		XStream xStream = new XStream(new DomDriver());
 		xStream.alias("revision", Revision.class);
 		xStream.alias("page", Page.class);
@@ -38,10 +43,12 @@ public class DumpToBDController {
 		xStream.alias("siteinfo", Siteinfo.class);
 		xStream.aliasField("case", Siteinfo.class, "casee");
 		xStream.alias("namespace", Namespace.class);
-		xStream.useAttributeFor(Namespace.class, "key");
-		xStream.aliasField("case", Namespace.class, "stringCase");
+		xStream.aliasAttribute( Namespace.class, "keyclave","key");
+		//xStream.useAttributeFor(Namespace.class, "key");
+		xStream.aliasAttribute( Namespace.class, "stringCase","case");
 		xStream.alias("mediawiki", Mediawiki.class);
 		xStream.addImplicitCollection(Mediawiki.class, "pages");
+		//Comienzo prueba con xml de solo page
 		Page page=null;
 		try {
 			page = (Page)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\page18.xml"));
@@ -50,7 +57,7 @@ public class DumpToBDController {
 			e.printStackTrace();
 		}
 		System.out.println(page.toString());
-	
+		//Comienzo prueba con solo siteinfo xml
 		Siteinfo siteinfo=null;
 		try {
 			siteinfo = (Siteinfo)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\Wiki de prueba\\siteinfo.xml"));
@@ -59,7 +66,7 @@ public class DumpToBDController {
 			e.printStackTrace();
 		}
 		System.out.println(siteinfo.toString());
-		
+		//comienzo prueba con mediawiki de prueba
 		Mediawiki mediawiki=null;
 		try {
 			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\Wiki de prueba\\eswikiversity-20160501-pages-meta-history.xml"));
@@ -67,16 +74,19 @@ public class DumpToBDController {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+
 		System.out.println(mediawiki.toString());
-		mediawiki=null;
-		
-		try {
-			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\eswikiversity-20160501\\xml\\eswikiversity-20160501-pages-meta-history.xml"));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		System.out.println(mediawiki.toString());
+		//test de guardar
+		mediawikiService.mergeMediawiki(mediawiki);
+//		mediawiki=null;
+//		
+//		try {
+//			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\eswikiversity-20160501\\xml\\eswikiversity-20160501-pages-meta-history.xml"));
+//		} catch (FileNotFoundException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//		System.out.println(mediawiki.toString());
 		LinkedList<Diff> diffs = new LinkedList<Diff>();
 		return new ModelAndView("diffList", "diffList", diffs);
 
