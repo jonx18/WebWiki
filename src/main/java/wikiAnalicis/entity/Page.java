@@ -2,12 +2,16 @@ package wikiAnalicis.entity;
 
 import java.util.List;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
 @Entity
@@ -18,7 +22,12 @@ public class Page implements Identificable{
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Basic(optional = false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
+	@GenericGenerator(name="IdOrGenerated",
+	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
+	)
+	@Column(nullable = false)
 	private Long id;
 	private String title;
 	private Integer ns;//name space

@@ -7,6 +7,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,6 +16,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
 
@@ -26,7 +29,12 @@ public class Revision implements Identificable{
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Basic(optional = false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
+	@GenericGenerator(name="IdOrGenerated",
+	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
+	)
+	@Column(nullable = false)
 	private Long id;
 	private Long parentid;
 	private Date timestamp = Calendar.getInstance().getTime();

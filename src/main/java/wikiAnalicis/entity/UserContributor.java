@@ -1,5 +1,7 @@
 package wikiAnalicis.entity;
 
+import javax.persistence.Basic;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
@@ -7,6 +9,7 @@ import javax.persistence.Id;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
+import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
 
@@ -17,7 +20,12 @@ public class UserContributor implements Identificable{
 	 */
 	private static final long serialVersionUID = 1L;
 	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Basic(optional = false)
+	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
+	@GenericGenerator(name="IdOrGenerated",
+	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
+	)
+	@Column(nullable = false)
 	private Long id;
 	private String username;
 	private String ip;
