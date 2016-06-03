@@ -31,6 +31,7 @@ public class Revision {
 	@JoinColumn(name = "contributor_id")
 	private UserContributor contributor;
 	private String comment;
+	private	Boolean minor = false;//TODO no carga con xstream
 	private String model;
 	private String format;
 	private String text;
@@ -105,6 +106,12 @@ public class Revision {
 		this.sha1 = sha1;
 	}
 	
+	public Boolean getMinor() {
+		return minor;
+	}
+	public void setMinor(Boolean minor) {
+		this.minor = minor;
+	}
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub

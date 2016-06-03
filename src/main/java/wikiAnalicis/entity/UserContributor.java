@@ -13,6 +13,7 @@ public class UserContributor {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String username;
+	private String ip;
 	public UserContributor() {
 		// TODO Auto-generated constructor stub
 	}
@@ -27,6 +28,13 @@ public class UserContributor {
 	}
 	public void setUsername(String username) {
 		this.username = username;
+	}
+	
+	public String getIp() {
+		return ip;
+	}
+	public void setIp(String ip) {
+		this.ip = ip;
 	}
 	@Override
 	public String toString() {

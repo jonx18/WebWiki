@@ -24,7 +24,7 @@ import wikiAnalicis.entity.diff_match_patch.Diff;
 import wikiAnalicis.service.RevisionService;
 
 @Controller
-public class DiffController {
+public class DiffController{
 	private static final Logger LOGGER = Logger.getLogger(Revision.class);
 	@Autowired
 	private RevisionService revisionService;
