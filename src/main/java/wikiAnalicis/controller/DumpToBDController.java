@@ -15,6 +15,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
+import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import wikiAnalicis.converter.MediaWikiConverter;
 import wikiAnalicis.converter.PageConverter;
@@ -38,7 +39,7 @@ public class DumpToBDController {
 	@RequestMapping("dumptobd")
 	public ModelAndView dumpToBD() {
 		//configuro xstream
-		XStream xStream = new XStream(new DomDriver());
+		XStream xStream = new XStream(new StaxDriver());
 		xStream.alias("revision", Revision.class);
 		xStream.alias("page", Page.class);
 		xStream.addImplicitCollection(Page.class, "revisions");
@@ -54,7 +55,7 @@ public class DumpToBDController {
 		//converters
 		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
 		xStream.registerConverter(new PageConverter(pageService));
-		
+	/*	
 		//Comienzo prueba con xml de solo page
 		Page page=null;
 		try {
@@ -84,16 +85,20 @@ public class DumpToBDController {
 
 		System.out.println(mediawiki.toString());
 		//test de guardar
-		//mediawikiService.mergeMediawiki(mediawiki);
-//		mediawiki=null;
-//		
-//		try {
-//			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\eswikiversity-20160501\\xml\\eswikiversity-20160501-pages-meta-history.xml"));
-//		} catch (FileNotFoundException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//		System.out.println(mediawiki.toString());
+		mediawikiService.mergeMediawiki(mediawiki);
+		*/
+		
+		Mediawiki mediawiki=null;
+		mediawiki=null;
+		
+		try {
+			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\eswikiversity-20160501\\xml\\eswikiversity-20160501-pages-meta-history.xml"));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		System.out.println(mediawiki.toString());
+		mediawikiService.mergeMediawiki(mediawiki);
 		LinkedList<Diff> diffs = new LinkedList<Diff>();
 		return new ModelAndView("diffList", "diffList", diffs);
 

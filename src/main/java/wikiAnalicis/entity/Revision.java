@@ -42,7 +42,7 @@ public class Revision implements Identificable{
 	private	Boolean minor = false;//TODO no carga con xstream
 	private String model;
 	private String format;
-	@Column(columnDefinition="TEXT")
+	@Column(columnDefinition="LONGBLOB")
 	private String text;
 	private String sha1;
 	
