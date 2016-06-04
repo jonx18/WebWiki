@@ -12,7 +12,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 
 	<!-- Getting Database properties -->
 	<context:property-placeholder location="classpath:hibernate.properties" />
-
 	<mvc:annotation-driven />
 
 	<!-- Specifying the Resource location to load JS, CSS, Images etc -->
