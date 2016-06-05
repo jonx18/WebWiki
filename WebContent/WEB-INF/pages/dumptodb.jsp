@@ -15,23 +15,37 @@
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-						<b>Procesamiento</b>
+					<b>Procesamiento</b>
 				</h3>
 			</div>
-			<div class="panel-body">
-				<c:if test="${empty result}">
-						No hay Tiempos
-				</c:if>
-				<c:forEach var="result" items="${result}">
-  					 Operacion: ${result.key}
-   						Tiempo en milisegundos: ${result.value} 
-				</c:forEach>
-			</div>
+
+			<c:if test="${empty result}">
+				<div class="panel-body">No hay Tiempos</div>
+			</c:if>
+			<c:if test="${not empty result}">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Operacion</th>
+							<th>Tiempo en milisegundos</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="result" items="${result}">
+							<tr>
+								<td>${result.key}</td>
+								<td>${result.value}</td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</c:if>
+
 		</div>
-		</div>
+	</div>
 
 
-		<script src="<c:url value="/resources/js/jquery-2.2.3.js"/>"></script>
-		<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+	<script src="<c:url value="/resources/js/jquery-2.2.3.js"/>"></script>
+	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

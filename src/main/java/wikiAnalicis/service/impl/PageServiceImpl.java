@@ -51,10 +51,19 @@ public class PageServiceImpl implements PageService {
 	public Page getPage(long id) {
 		return pageDAO.getPage(id);
 	}
+
 	@Override
 	public void addRevisionsTo(Page Page, List<Revision> revisions) {
 		// TODO Auto-generated method stub
 		pageDAO.addRevisionsTo(Page, revisions);
+	}
+
+	public List<Page> list(Integer offset, Integer maxResults) {
+		return pageDAO.list(offset, maxResults);
+	}
+
+	public Long count() {
+		return pageDAO.count();
 	}
 
 }

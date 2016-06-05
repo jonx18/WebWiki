@@ -60,4 +60,15 @@ public class JPAUtil implements ORMUtil{
 	public EntityManager getEntityManager() {
 		return entityManager;
 	}
+@Override
+public <T> Long count(Class<T> entityClass) {
+	// TODO Auto-generated method stub
+	return null;
+}
+	
+	@Override
+	public <T> List<T> listPagination(Integer offset, Integer maxResults,  String table) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

@@ -14,4 +14,6 @@ public interface PageService {
 	public List<Page> getAllPages();
 	public Page getPage(long id); 
 	public void addRevisionsTo(Page Page,List<Revision> revisions);
+	public List<Page> list(Integer offset, Integer maxResults);
+	public Long count();
 }

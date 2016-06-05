@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.PageDAO;
 import wikiAnalicis.entity.Page;
@@ -51,6 +52,14 @@ public class PageDAOimpl implements PageDAO {
 	public Page getPage(long id) {
 		return util.fetchById(id, Page.class);
 	}
+	
+	 @Transactional
+	 public List<Page> list(Integer offset, Integer maxResults){
+	  return util.listPagination(offset, maxResults, "Page");
+	 }
+	 public Long count(){
+		  return util.count(Page.class);
+		 }
 
 	@Override
 	public void addRevisionsTo(Page page, List<Revision> revisions) {
