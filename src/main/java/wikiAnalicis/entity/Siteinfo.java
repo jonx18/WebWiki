@@ -34,6 +34,7 @@ public class Siteinfo implements Identificable{
     @BatchSize(size = 10)
 	private List<Namespace> namespaces;//TODO necesitoun converter
 	
+	
 	public Siteinfo() {
 		// TODO Auto-generated constructor stub
 	}

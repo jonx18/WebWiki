@@ -8,12 +8,17 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import com.google.gson.Gson;
 @Entity
@@ -25,12 +30,21 @@ public class Mediawiki implements Identificable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	@ManyToOne(cascade = CascadeType.ALL, targetEntity= Siteinfo.class)
+	@OneToOne(cascade = CascadeType.ALL, targetEntity= Siteinfo.class,orphanRemoval = true)
+	@JoinTable(
+	        name = "mediawiki_siteinfo",
+	        joinColumns = @JoinColumn(
+	            name = "mediawiki_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "siteinfo_id", 
+	            referencedColumnName = "id")
+	    )
 	private Siteinfo siteinfo;
-	@OneToMany(cascade = CascadeType.ALL, targetEntity= Page.class, fetch=FetchType.EAGER)
+	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
 	@Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
-	private List<Page> pages;
+	@BatchSize(size = 10)
+	private List<Page> pages;//no sequiere borrar
 	
 	public Mediawiki() {
 		// TODO Auto-generated constructor stub

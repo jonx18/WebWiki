@@ -1,6 +1,7 @@
 package wikiAnalicis.converter;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,9 +22,6 @@ public class MediaWikiConverter implements Converter {
 
 	private MediawikiService mediawikiService;
 
-	
-
-	
 	public MediaWikiConverter(MediawikiService mediawikiService) {
 		super();
 		this.mediawikiService = mediawikiService;
@@ -43,40 +41,48 @@ public class MediaWikiConverter implements Converter {
 
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
-        Mediawiki mediawiki = new Mediawiki();
-        reader.moveDown();
-        Siteinfo siteinfo = (Siteinfo)context.convertAnother(mediawiki, Siteinfo.class);
-        mediawiki.setSiteinfo(siteinfo);
-        System.out.println("pages");
-        reader.moveUp();
-        System.out.println(reader.getNodeName());
-        mediawiki.setPages(new LinkedList<Page>());
-        mediawikiService.mergeMediawiki(mediawiki);
-        mediawiki= mediawikiService.getAllMediawikis().get(0);
-        while (reader.hasMoreChildren()) {
-            reader.moveDown();
-            System.out.println(reader.getNodeName());
-            if ("page".equals(reader.getNodeName())) {
-                    Page page = (Page)context.convertAnother(mediawiki, Page.class);
-                    mediawiki.getPages().add(page);
-            } 
-            reader.moveUp();
-            mediawikiService.mergeMediawiki(mediawiki);
-            mediawiki= mediawikiService.getAllMediawikis().get(0);
-    }
-        System.out.println("fin");
+		Mediawiki mediawiki = new Mediawiki();
+		reader.moveDown();
+		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
+		mediawiki.setSiteinfo(siteinfo);
+		// System.out.println("pages");
+		reader.moveUp();
+		// System.out.println(reader.getNodeName());
+		mediawiki.setPages(new LinkedList<Page>());
+		mediawikiService.mergeMediawiki(mediawiki);
+		mediawiki = mediawikiService.getAllMediawikis().get(0);
+		Integer pageIndex = 0;
+		List<Page> pages= new LinkedList<Page>();
+		while (reader.hasMoreChildren()) {
+			reader.moveDown();
+			// System.out.println(reader.getNodeName());
+			if ("page".equals(reader.getNodeName())) {
+				pageIndex++;
+				System.out.println("Page "+pageIndex);
+				Page page = (Page) context.convertAnother(mediawiki, Page.class);
+				//pages.add(page);
+				//mediawiki.getPages().add(page);
+			}
+			reader.moveUp();
+			if (pageIndex%100 == 0) {
+				//mediawikiService.addPagesTo(mediawiki, pages);
+				pages= new LinkedList<Page>();
+			}
+		}
+		//mediawikiService.addPagesTo(mediawiki, pages);
+		System.out.println("fin");
 		// TODO Auto-generated method stub
-		//Cargo datos basicos y lista vacia
-		//Guardo
-		//null
-		//Mientras haya revisiones
-			//Recupero el que null
-			//cargo revicion
-			//agrego a la lista
-			//actualizo
-			//null denuevo
-		//fin
-		//retorno con basicos
+		// Cargo datos basicos y lista vacia
+		// Guardo
+		// null
+		// Mientras haya revisiones
+		// Recupero el que null
+		// cargo revicion
+		// agrego a la lista
+		// actualizo
+		// null denuevo
+		// fin
+		// retorno con basicos
 		return mediawiki;
 	}
 

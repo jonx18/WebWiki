@@ -3,6 +3,7 @@ package wikiAnalicis.service;
 import java.util.List;
 
 import wikiAnalicis.entity.Mediawiki;
+import wikiAnalicis.entity.Page;
 
 
 public interface MediawikiService {
@@ -12,5 +13,6 @@ public interface MediawikiService {
 	public void deleteMediawiki(long id);
 	public List<Mediawiki> getAllMediawikis();
 	public Mediawiki getMediawiki(long id); 
+	public void addPagesTo(Mediawiki mediawiki,List<Page> pages);
 	
 }

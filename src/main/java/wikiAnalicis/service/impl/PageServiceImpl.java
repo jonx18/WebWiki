@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.PageDAO;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.entity.Revision;
 import wikiAnalicis.service.PageService;
 
 @Service
@@ -49,6 +50,11 @@ public class PageServiceImpl implements PageService {
 	@Override
 	public Page getPage(long id) {
 		return pageDAO.getPage(id);
+	}
+	@Override
+	public void addRevisionsTo(Page Page, List<Revision> revisions) {
+		// TODO Auto-generated method stub
+		pageDAO.addRevisionsTo(Page, revisions);
 	}
 
 }

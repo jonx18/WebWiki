@@ -3,6 +3,7 @@ package wikiAnalicis.service;
 import java.util.List;
 
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.entity.Revision;
 
 
 public interface PageService {
@@ -12,4 +13,5 @@ public interface PageService {
 	public void deletePage(long id);
 	public List<Page> getAllPages();
 	public Page getPage(long id); 
+	public void addRevisionsTo(Page Page,List<Revision> revisions);
 }

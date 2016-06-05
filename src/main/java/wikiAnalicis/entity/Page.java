@@ -18,8 +18,9 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
+
 @Entity
-public class Page implements Identificable{
+public class Page implements Identificable {
 
 	/**
 	 * 
@@ -27,20 +28,18 @@ public class Page implements Identificable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@Basic(optional = false)
-	@GeneratedValue(strategy=GenerationType.IDENTITY, generator="IdOrGenerated")
-	@GenericGenerator(name="IdOrGenerated",
-	                  strategy="wikiAnalicis.util.UseIdOrGenerate"
-	)
+	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "IdOrGenerated")
+	@GenericGenerator(name = "IdOrGenerated", strategy = "wikiAnalicis.util.UseIdOrGenerate")
 	@Column(nullable = false)
 	private Long id;
 	private String title;
-	private Integer ns;//name space
-	
-	@OneToMany(cascade = CascadeType.ALL, targetEntity= Revision.class, fetch=FetchType.EAGER)
+	private Integer ns;// name space
+	private String redirect;
+	@OneToMany(cascade = CascadeType.ALL, targetEntity = Revision.class)
 	@Fetch(FetchMode.SELECT)
-    @BatchSize(size = 10)
+	@BatchSize(size = 10)
 	private List<Revision> revisions;
-	
+
 	public Page() {
 		// TODO Auto-generated constructor stub
 	}
@@ -69,7 +68,6 @@ public class Page implements Identificable{
 		this.id = id;
 	}
 
-
 	public List<Revision> getRevisions() {
 		return revisions;
 	}
@@ -78,12 +76,19 @@ public class Page implements Identificable{
 		this.revisions = revisions;
 	}
 
+	public String getRedirect() {
+		return redirect;
+	}
+
+	public void setRedirect(String redirect) {
+		this.redirect = redirect;
+	}
+
 	@Override
 	public String toString() {
 		// TODO Auto-generated method stub
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
-	
-	
+
 }

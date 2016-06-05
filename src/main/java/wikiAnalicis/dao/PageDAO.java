@@ -2,7 +2,9 @@ package wikiAnalicis.dao;
 
 import java.util.List;
 
+import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.entity.Revision;
 
 
 public interface PageDAO {
@@ -12,4 +14,5 @@ public interface PageDAO {
 	public void deletePage(long id);
 	public List<Page> getAllPages();
 	public Page getPage(long id); 
+	public void addRevisionsTo(Page Page,List<Revision> revisions);
 }

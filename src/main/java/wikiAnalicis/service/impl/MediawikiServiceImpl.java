@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.MediawikiDAO;
 import wikiAnalicis.entity.Mediawiki;
+import wikiAnalicis.entity.Page;
 import wikiAnalicis.service.MediawikiService;
 
 @Service
@@ -48,4 +49,9 @@ public class MediawikiServiceImpl implements MediawikiService {
 		return mediawikiDAO.getMediawiki(id);
 	}
 
+	@Override
+	public void addPagesTo(Mediawiki mediawiki, List<Page> pages) {
+		// TODO Auto-generated method stub
+		mediawikiDAO.addPagesTo(mediawiki, pages);
+	}
 }
