@@ -8,15 +8,17 @@ import java.util.Date;
 import java.util.Locale;
 
 import javax.persistence.Basic;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
@@ -35,8 +37,9 @@ public class Revision implements Identificable{
 	private Long id;
 	private Long parentid;
 	private Date timestamp = Calendar.getInstance().getTime();
-	@ManyToOne(cascade=CascadeType.ALL)
+	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "contributor_id")
+	@Cascade(CascadeType.ALL)
 	private UserContributor contributor;
 	private String comment;
 	private	Boolean minor = false;//TODO no carga con xstream

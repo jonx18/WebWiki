@@ -2,7 +2,6 @@ package wikiAnalicis.entity;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -15,6 +14,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.OnDelete;
@@ -30,7 +31,7 @@ public class Mediawiki implements Identificable{
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
-	@OneToOne(cascade = CascadeType.ALL, targetEntity= Siteinfo.class,orphanRemoval = true)
+	@OneToOne(targetEntity= Siteinfo.class,orphanRemoval = true)
 	@JoinTable(
 	        name = "mediawiki_siteinfo",
 	        joinColumns = @JoinColumn(
@@ -40,9 +41,11 @@ public class Mediawiki implements Identificable{
 	            name = "siteinfo_id", 
 	            referencedColumnName = "id")
 	    )
+	@Cascade(CascadeType.ALL)
 	private Siteinfo siteinfo;
-	@OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
-	@Fetch(FetchMode.SELECT)
+	@OneToMany(orphanRemoval = true,fetch = FetchType.EAGER)
+	@Cascade(CascadeType.ALL)
+	@Fetch(FetchMode.JOIN)
 	@BatchSize(size = 10)
 	private List<Page> pages;//no sequiere borrar
 	

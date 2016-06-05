@@ -7,12 +7,11 @@ import org.springframework.stereotype.Repository;
 
 import wikiAnalicis.dao.RevisionDAO;
 import wikiAnalicis.entity.Revision;
-import wikiAnalicis.util.HibernateUtil;
-import wikiAnalicis.util.JPAUtil;
+import wikiAnalicis.util.ORMUtil;
 @Repository
 public class RevisionDAOimpl implements RevisionDAO {
 	@Autowired
-	private JPAUtil util;
+	private ORMUtil util;
 	public RevisionDAOimpl() {
 		// TODO Auto-generated constructor stub
 	}

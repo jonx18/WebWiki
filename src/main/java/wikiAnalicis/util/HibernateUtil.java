@@ -3,15 +3,13 @@ package wikiAnalicis.util;
 import java.io.Serializable;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
 
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-//@Repository
-public class HibernateUtil {
+@Repository
+public class HibernateUtil implements ORMUtil{
 
 	@Autowired
 	private SessionFactory sessionFactory;
@@ -28,7 +26,7 @@ public class HibernateUtil {
 	return entity;
 	}
 	public <T> T update(final T entity) {
-	sessionFactory.getCurrentSession().update(entity); 
+	sessionFactory.getCurrentSession().saveOrUpdate(entity); 
 	return entity;
 	}
 

@@ -75,8 +75,8 @@ public class PageConverter implements Converter {
 				indexRevision++;
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
 				//charused+=revision.getText().length();
+				//page.getRevisions().add(revision);
 				revisions.add(revision);
-				// page.getRevisions().add(revision);
 			}else{
 				if ("redirect".equals(reader.getNodeName())) {
 					page.setRedirect(reader.getAttribute("title"));
@@ -86,20 +86,22 @@ public class PageConverter implements Converter {
 			}
 			reader.moveUp();
 			//if ((indexRevision % 100 == 0)||(charused>1500000)) {
-			if (!(indexRevision % 100 == 0)){
+			if ((indexRevision % 100 == 0)){
 				//System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
-				
+				page.getRevisions().addAll(revisions);
+				page=pageService.mergePage(page);
 				//charused=0;
-				pageService.addRevisionsTo(page, revisions);
-				//break;
 				revisions = new LinkedList<Revision>();
-				//page = pageService.getPage(page.getId());
+				page = pageService.getPage(page.getId());
 			}
 //			if (page.getId()==11) {//salteo pag 7 por el tamaño
 //				break;
 //			}
 		}
-		pageService.addRevisionsTo(page, revisions);
+		page.getRevisions().addAll(revisions);
+		page=pageService.mergePage(page);
+		page = pageService.getPage(page.getId());
+		//pageService.addRevisionsTo(page, revisions);
 		return page;
 	}
 

@@ -60,16 +60,20 @@ public class MediaWikiConverter implements Converter {
 				pageIndex++;
 				System.out.println("Page "+pageIndex);
 				Page page = (Page) context.convertAnother(mediawiki, Page.class);
-				//pages.add(page);
+				pages.add(page);
 				//mediawiki.getPages().add(page);
 			}
 			reader.moveUp();
 			if (pageIndex%100 == 0) {
-				//mediawikiService.addPagesTo(mediawiki, pages);
+				mediawiki.getPages().addAll(pages);
+				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+				mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
 				pages= new LinkedList<Page>();
 			}
 		}
-		//mediawikiService.addPagesTo(mediawiki, pages);
+		mediawiki.getPages().addAll(pages);//lo ultimo que agrege
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
 		System.out.println("fin");
 		// TODO Auto-generated method stub
 		// Cargo datos basicos y lista vacia

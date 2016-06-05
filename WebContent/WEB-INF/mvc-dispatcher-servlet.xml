@@ -38,15 +38,16 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="maxIdleTime" value="${connection.maxIdleTime}" />
 		
 	</bean>
-	<!-- Configuracion JPA -->
+	<!--
+	<!- Configuracion JPA ->
     <bean id="entityManagerFactoryBean" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
        <property name="dataSource" ref="dataSource" />
     
-      <!-- Esto hace que no se necesiten poner las clases en el /META-INF/persistence.xml -->
+      <!- Esto hace que no se necesiten poner las clases en el /META-INF/persistence.xml ->
       <property name="packagesToScan" value="wikiAnalicis.entity" />
       
-      <!-- Implementaciones de JpaVendorAdapter para Hibernate EntityManager.
-           Exposes Hibernate's persistence provider and EntityManager extension interface -->
+      <!- Implementaciones de JpaVendorAdapter para Hibernate EntityManager.
+           Exposes Hibernate's persistence provider and EntityManager extension interface ->
       <property name="jpaVendorAdapter">
          <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter" />
       </property>
@@ -61,13 +62,15 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
       </property>
    </bean>
       
-   <!-- Manejador de Transacciones -->
+   <!- Manejador de Transacciones ->
    <bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
       <property name="entityManagerFactory" ref="entityManagerFactoryBean" />
    </bean>
    <tx:annotation-driven transaction-manager="transactionManager"/>
-	<!-- 
-	<!- Hibernate SessionFactory ->
+   
+   -->
+ 
+	<!--  Hibernate SessionFactory -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="dataSource" ref="dataSource"></property>
@@ -83,11 +86,11 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="packagesToScan" value="wikiAnalicis.entity"></property>
 	</bean>
 
-	<!- Transaction ->
+	<!--  Transaction -->
 	<bean id="transactionManager"
 		class="org.springframework.orm.hibernate4.HibernateTransactionManager">
 		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
  	
-	<tx:annotation-driven transaction-manager="transactionManager" />-->
+	<tx:annotation-driven transaction-manager="transactionManager" />
 </beans> 

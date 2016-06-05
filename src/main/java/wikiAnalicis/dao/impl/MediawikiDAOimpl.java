@@ -2,8 +2,6 @@ package wikiAnalicis.dao.impl;
 
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
@@ -11,14 +9,13 @@ import org.springframework.stereotype.Repository;
 import wikiAnalicis.dao.MediawikiDAO;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
-import wikiAnalicis.util.HibernateUtil;
-import wikiAnalicis.util.JPAUtil;
+import wikiAnalicis.util.ORMUtil;
 
 @Repository
 public class MediawikiDAOimpl implements MediawikiDAO {
 
 	@Autowired
-	private JPAUtil util;
+	private ORMUtil util;
 	
 	public MediawikiDAOimpl() {
 		// TODO Auto-generated constructor stub

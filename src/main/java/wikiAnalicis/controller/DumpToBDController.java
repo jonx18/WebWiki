@@ -27,6 +27,7 @@ import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import wikiAnalicis.converter.MediaWikiConverter;
+import wikiAnalicis.converter.NamespaceConverter;
 import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Namespace;
@@ -66,14 +67,14 @@ public class DumpToBDController {
 		System.out.println("Cargando:");
 		System.out.println(env.getProperty("history.path.test"));	
 		XStream xStream = configXStream();
-		String historyPath = env.getProperty("history.path");
+		String historyPath = env.getProperty("history.path.test");
 		historyXMLToDB(xStream, historyPath);
 		System.out.println("Finalizo guardado");
 	    stopTime = System.currentTimeMillis();
 	    elapsedTime = stopTime - startTime;
 	    times.put("cargahistory", elapsedTime);
 		
-		dropDB();
+		//dropDB();
 		//aca van masprocesamintos
 
 		ModelAndView model = new ModelAndView("dumptodb");
@@ -114,7 +115,8 @@ public class DumpToBDController {
 		
 		//converters
 		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
-		xStream.registerConverter(new PageConverter(pageService,revisionService));
+		xStream.registerConverter(new PageConverter(pageService));
+		xStream.registerConverter(new NamespaceConverter());
 		return xStream;
 	}
 }

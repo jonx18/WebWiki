@@ -2,7 +2,6 @@ package wikiAnalicis.entity;
 
 import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -11,6 +10,8 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -29,8 +30,9 @@ public class Siteinfo implements Identificable{
 	private String base;
 	private String generator;
 	private String casee;//problema con el nombre solucionar;
-	@OneToMany(cascade = CascadeType.ALL, targetEntity= Namespace.class, fetch = FetchType.EAGER)
-	@Fetch(FetchMode.SELECT)
+	@OneToMany( targetEntity= Namespace.class, fetch = FetchType.EAGER,orphanRemoval=true)
+	@Cascade(CascadeType.ALL)
+	@Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
 	private List<Namespace> namespaces;//TODO necesitoun converter
 	
