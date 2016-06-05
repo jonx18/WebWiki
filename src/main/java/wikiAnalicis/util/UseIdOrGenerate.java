@@ -17,9 +17,9 @@ public class UseIdOrGenerate extends IdentityGenerator {
             Serializable id = super.generate(session, obj) ;
             return id;
         } else {
-        	if ((obj instanceof UserContributor) && (((UserContributor)obj).getId()==UserContributor.anonimusID)) {
-				((UserContributor)obj).setAnonimus();	
-			} 
+//        	if ((obj instanceof UserContributor) && (((UserContributor)obj).getId()==UserContributor.anonimusID)) {
+//				((UserContributor)obj).setAnonimus();	
+//			} al converter
             return ((Identificable) obj).getId();//id is not null so using assigned id.
 
         }

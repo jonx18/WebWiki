@@ -26,6 +26,7 @@ public class NamespaceConverter implements Converter {
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		Namespace namespace = new Namespace();
+		//namespace.setId(new Long(reader.getAttribute("key"))); //TODO no me lo acepta
 		namespace.setKey(new Integer(reader.getAttribute("key")));
 		namespace.setStringCase(reader.getAttribute("case"));
 		namespace.setValue(reader.getValue());

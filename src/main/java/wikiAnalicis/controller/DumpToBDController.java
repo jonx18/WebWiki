@@ -29,6 +29,8 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 import wikiAnalicis.converter.MediaWikiConverter;
 import wikiAnalicis.converter.NamespaceConverter;
 import wikiAnalicis.converter.PageConverter;
+import wikiAnalicis.converter.RevisionConverter;
+import wikiAnalicis.converter.UserContributorConverter;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
@@ -108,8 +110,6 @@ public class DumpToBDController {
 		xStream.alias("siteinfo", Siteinfo.class);
 		xStream.aliasField("case", Siteinfo.class, "casee");
 		xStream.alias("namespace", Namespace.class);
-		xStream.aliasAttribute( Namespace.class, "keyclave","key");
-		xStream.aliasAttribute( Namespace.class, "stringCase","case");
 		xStream.alias("mediawiki", Mediawiki.class);
 		xStream.addImplicitCollection(Mediawiki.class, "pages");
 		
@@ -117,6 +117,8 @@ public class DumpToBDController {
 		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
 		xStream.registerConverter(new PageConverter(pageService));
 		xStream.registerConverter(new NamespaceConverter());
+		xStream.registerConverter(new RevisionConverter());
+		xStream.registerConverter(new UserContributorConverter());
 		return xStream;
 	}
 }
