@@ -8,8 +8,13 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.UserContributor;
+import wikiAnalicis.service.UserContributorService;
 
 public class UserContributorConverter implements Converter {
+	private UserContributorService userContributorService;
+	public UserContributorConverter(UserContributorService userContributorService) {
+		this.userContributorService=userContributorService;
+	}
 
 	@Override
 	public boolean canConvert(Class arg0) {
@@ -28,20 +33,28 @@ public class UserContributorConverter implements Converter {
 		reader.moveDown();
 		if ("username".equalsIgnoreCase(reader.getNodeName())) {
 			userContributor.setUsername(reader.getValue());
-			userContributor.setIp("0.0.0.0");
+			UserContributor userContributorTemp = userContributorService.getUserContributor(userContributor.getUsername());
+			if (userContributorTemp == null) {
+				userContributor.setId(null);
+				userContributor.setIp("0.0.0.0");
+			} else {
+				userContributor=userContributorTemp;
+			}
 			reader.moveUp();
 			reader.moveDown();
 		}
 		if ("id".equalsIgnoreCase(reader.getNodeName())) {
-			userContributor.setId(new Long(reader.getValue()));
+			userContributor.setRealId(new Long(reader.getValue()));
 			reader.moveUp();
 		}
 		if ("ip".equalsIgnoreCase(reader.getNodeName())) {
 			userContributor.setIp(reader.getValue());
-			userContributor.setUsername("anonimo");
 			userContributor.setAnonimus();
+			userContributor.setUsername("anonimo"+userContributor.getRealId());
 			reader.moveUp();
 		}
+		userContributorService.mergeUserContributor(userContributor);//para que los encuentre 1 a 1
+		userContributor = userContributorService.getUserContributor(userContributor.getUsername());
 		return userContributor;
 	}
 

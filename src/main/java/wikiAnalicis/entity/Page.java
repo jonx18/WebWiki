@@ -36,7 +36,7 @@ public class Page implements Identificable {
 	private String title;
 	private Integer ns;// name space
 	private String redirect;
-	@OneToMany(targetEntity = Revision.class,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "page",targetEntity = Revision.class,fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.JOIN)
 	@BatchSize(size = 10)

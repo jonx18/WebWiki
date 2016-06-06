@@ -7,16 +7,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.RevisionDAO;
+import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.service.RevisionService;
+
 @Service
 @Transactional
 public class RevisionServiceImpl implements RevisionService {
 	@Autowired
 	private RevisionDAO revisionDAO;
+
 	public RevisionServiceImpl() {
 		// TODO Auto-generated constructor stub
 	}
+
 	@Override
 	public long createRevision(Revision revision) {
 		return revisionDAO.createRevision(revision);
@@ -42,4 +46,23 @@ public class RevisionServiceImpl implements RevisionService {
 		return revisionDAO.getRevision(id);
 	}
 
+	@Override
+	public Long count() {
+		return revisionDAO.count();
+	}
+
+	@Override
+	public List<Revision> getAllRevisions(Integer offset, Integer maxResults) {
+		return revisionDAO.getAllRevisions(offset, maxResults);
+	}
+
+	@Override
+	public List<Revision> getAllRevisions(Page page, Integer offset, Integer maxResults) {
+		return revisionDAO.getAllRevisions(page, offset, maxResults);
+	}
+	@Override
+	public Long count(Page page) {
+		
+		return new Long(page.getRevisions().size());
+	}
 }

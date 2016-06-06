@@ -41,6 +41,9 @@ public class Revision implements Identificable{
 	@JoinColumn(name = "contributor_id")
 	@Cascade(CascadeType.ALL)
 	private UserContributor contributor;
+	@ManyToOne(optional = false)
+	@JoinColumn(name = "page_id")
+	private Page page;
 	private String comment;
 	private	Boolean minor = false;//TODO no carga con xstream
 	private String model;
@@ -123,6 +126,12 @@ public class Revision implements Identificable{
 	}
 	public void setMinor(Boolean minor) {
 		this.minor = minor;
+	}
+	public Page getPage() {
+		return page;
+	}
+	public void setPage(Page page) {
+		this.page = page;
 	}
 	@Override
 	public String toString() {

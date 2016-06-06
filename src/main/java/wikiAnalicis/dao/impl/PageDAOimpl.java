@@ -10,12 +10,13 @@ import org.springframework.transaction.annotation.Transactional;
 import wikiAnalicis.dao.PageDAO;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
+import wikiAnalicis.util.HibernateUtil;
 import wikiAnalicis.util.ORMUtil;
 
 @Repository
 public class PageDAOimpl implements PageDAO {
 	@Autowired
-	private ORMUtil util;
+	private HibernateUtil util;
 
 	public PageDAOimpl() {
 		// TODO Auto-generated constructor stub

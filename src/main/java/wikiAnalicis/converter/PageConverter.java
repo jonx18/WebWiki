@@ -76,6 +76,7 @@ public class PageConverter implements Converter {
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
 				//charused+=revision.getText().length();
 				//page.getRevisions().add(revision);
+				revision.setPage(page);
 				revisions.add(revision);
 			}else{
 				if ("redirect".equals(reader.getNodeName())) {

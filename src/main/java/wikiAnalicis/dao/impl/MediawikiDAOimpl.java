@@ -9,13 +9,14 @@ import org.springframework.stereotype.Repository;
 import wikiAnalicis.dao.MediawikiDAO;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.util.HibernateUtil;
 import wikiAnalicis.util.ORMUtil;
 
 @Repository
 public class MediawikiDAOimpl implements MediawikiDAO {
 
 	@Autowired
-	private ORMUtil util;
+	private HibernateUtil util;
 	
 	public MediawikiDAOimpl() {
 		// TODO Auto-generated constructor stub

@@ -10,10 +10,11 @@ public class PaginationTag extends SimpleTagSupport {
 	 private String uri;
 	 private int offset;
 	 private int count;
-	 private int max = 5;
-	 private int steps = 5;
+	 private int max = 10;
+	 private int steps = 10;
 	 private String previous = "Anterior";
 	 private String next = "Sigiente";
+	 private String parentId = null;
 	 
 	 private Writer getWriter() {
 	  JspWriter out = getJspContext().getOut();
@@ -61,10 +62,18 @@ public class PaginationTag extends SimpleTagSupport {
 	   link.append(className);
 	   link.append("\"");
 	  }
-	  if(disabled)
-	   link.append(">").append("<a href=\"#\">"+text+"</a></li>");
-	  else
-	   link.append(">").append("<a href=\""+uri+"?offset="+page + "\">"+text+"</a></li>");
+	  if (parentId==null) {
+		  if(disabled)
+			   link.append(">").append("<a href=\"#\">"+text+"</a></li>");
+			  else
+			   link.append(">").append("<a href=\""+uri+"?offset="+page + "\">"+text+"</a></li>");
+	} else {
+		if(disabled)
+			   link.append(">").append("<a href=\"#\""+"?parentId="+parentId+">"+text+"</a></li>");
+			  else
+			   link.append(">").append("<a href=\""+uri+"?offset="+page +"&parentId="+parentId+ "\">"+text+"</a></li>");
+	}
+
 	  return link.toString();
 	 }
 	 
@@ -123,4 +132,10 @@ public class PaginationTag extends SimpleTagSupport {
 	 public void setSteps(int steps) {
 	  this.steps = steps;
 	 }
+	 public String getParentId() {
+		return parentId;
+	}
+	 public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
 }

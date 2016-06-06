@@ -57,13 +57,17 @@ public class HibernateUtil implements ORMUtil {
 	public <T> T fetchById(Serializable id, Class<T> entityClass) {
 		return (T) sessionFactory.getCurrentSession().get(entityClass, id);
 	}
+	
+	public SessionFactory getSessionFactory() {
+		return sessionFactory;
+	}
 
 	@SuppressWarnings("unchecked")
 	@Override
 	public <T> List<T> listPagination(Integer offset, Integer maxResults, String table) {
 		Session currentSession = sessionFactory.getCurrentSession();
-		Query query = currentSession.createQuery("from "+table);
-	      query.setFirstResult(maxResults!=null?maxResults:10 * (offset!=null?offset:1 - 1));
+		Query query = currentSession.createQuery("from "+table+" as t order by t.id");
+	      query.setFirstResult( (offset!=null?offset:0));
 	      query.setMaxResults(maxResults!=null?maxResults:10);
 		List<T> list = query.list();
 		return list;

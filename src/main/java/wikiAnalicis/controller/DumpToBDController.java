@@ -39,6 +39,7 @@ import wikiAnalicis.entity.Siteinfo;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.service.UserContributorService;
 import wikiAnalicis.util.diff_match_patch;
 import wikiAnalicis.util.diff_match_patch.Diff;
 @Controller
@@ -51,6 +52,8 @@ public class DumpToBDController {
 	private PageService pageService;
 	@Autowired
 	private RevisionService revisionService;
+	@Autowired
+	private UserContributorService userContributorService;
 	@Autowired
 	private Environment env;
 	
@@ -118,7 +121,7 @@ public class DumpToBDController {
 		xStream.registerConverter(new PageConverter(pageService));
 		xStream.registerConverter(new NamespaceConverter());
 		xStream.registerConverter(new RevisionConverter());
-		xStream.registerConverter(new UserContributorConverter());
+		xStream.registerConverter(new UserContributorConverter(userContributorService));
 		return xStream;
 	}
 }

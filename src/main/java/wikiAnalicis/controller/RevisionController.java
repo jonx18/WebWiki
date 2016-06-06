@@ -10,7 +10,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
+import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 
 @Controller
@@ -18,6 +20,8 @@ public class RevisionController {
 	private static final Logger LOGGER = Logger.getLogger(Revision.class);
 	@Autowired
 	private RevisionService revisionService; 
+	@Autowired
+	private PageService pageService; 
 	public RevisionController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -62,5 +66,19 @@ public class RevisionController {
 	List<Revision> revisionList = revisionService.getAllRevisions();
 	return new ModelAndView("revisionList", "revisionList", revisionList);
 	}
-
+	
+	@RequestMapping(value = "getAllRevisionsOf")
+	public ModelAndView list(Integer offset, Integer maxResults,Long parentId) {
+		Page page = pageService.getPage(parentId);
+		List<Revision> revisions = revisionService.getAllRevisions(page, offset, maxResults);
+		ModelAndView model = new ModelAndView("revisionListOf");
+		model.addObject("page",page );
+		model.addObject("revisions",revisions );
+		model.addObject("count", revisionService.count(page));
+		model.addObject("offset", offset);
+//		for (Page page : pages) {
+//			System.out.println(page.getId()+" "+page.getTitle());
+//		}
+		return model;
+	}
 }

@@ -21,11 +21,11 @@ public class UserContributor implements Identificable{
 	public static Long anonimusID=new Long(-1);
 	private static final long serialVersionUID = 1L;
     @Id
-    @GeneratedValue(strategy=GenerationType.AUTO, generator="idOrGenerate")
-    @GenericGenerator(name="idOrGenerate",
-                      strategy="wikiAnalicis.util.UseIdOrGenerate")
-	@Column(nullable = false)
-	private Long id=anonimusID;
+    @GeneratedValue(strategy=GenerationType.AUTO)
+	private Long id;
+    @Column(nullable = false)
+    private Long realId=anonimusID;
+    @Column(nullable = false,unique=true)
 	private String username;
 	private String ip;
 	public UserContributor() {
@@ -49,6 +49,12 @@ public class UserContributor implements Identificable{
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
+	}
+	public Long getRealId() {
+		return realId;
+	}
+	public void setRealId(Long realId) {
+		this.realId = realId;
 	}
 	@Override
 	public String toString() {

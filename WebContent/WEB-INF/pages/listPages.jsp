@@ -40,13 +40,17 @@
 				     <td>${page.getId() }</td>
 					 <td>${page.getTitle() }</td>
 					 <td>${page.getNs() }</td>
-					<td>${page.getRevisions().size() }</td>
+					<td>
+					<a href="getAllRevisionsOf?parentId=${page.getId() }"  class="btn btn-primary" type="button">
+					  Ver <span class="badge">${page.getRevisions().size() }</span>
+					</a>
+					</td>
 				    </tr>
 				   </c:forEach>
 				   </tbody>
 				  </table>
 				  <tag:paginate max="15" offset="${offset}" count="${count}"
-				   uri="/listPages" next="&raquo;" previous="&laquo;" />
+				   uri="listPages" next="&raquo;" previous="&laquo;" />
 			
 			</c:if>
 

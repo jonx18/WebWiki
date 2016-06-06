@@ -34,20 +34,20 @@ public class DiffController{
 	}
 
 	@RequestMapping("diffList")
-	public ModelAndView showDiff() {
-		String revText1 = null;
-		String revText2 = null ;
-		try {
-			revText1 = readFileLines(
-					"C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision2text1text.txt",
-					StandardCharsets.UTF_8);
-			revText2 = readFileLines(
-					"C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision3text1text.txt",
-					StandardCharsets.UTF_8);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	public ModelAndView showDiff(Long id, Long parentId) {
+		String revText1 = revisionService.getRevision(id).getText();
+		String revText2 = revisionService.getRevision(parentId).getText();
+//		try {
+//			revText1 = readFileLines(
+//					"C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision2text1text.txt",
+//					StandardCharsets.UTF_8);
+//			revText2 = readFileLines(
+//					"C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision3text1text.txt",
+//					StandardCharsets.UTF_8);
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
 		
 		diff_match_patch differ = new diff_match_patch();
 		LinkedList<Diff> diffs = differ.diff_main(revText1, revText2);
