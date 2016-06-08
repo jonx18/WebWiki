@@ -36,10 +36,10 @@ public class Page implements Identificable {
 	private String title;
 	private Integer ns;// name space
 	private String redirect;
-	@OneToMany(mappedBy = "page",targetEntity = Revision.class,fetch = FetchType.EAGER)
+	@OneToMany(mappedBy = "page",targetEntity = Revision.class,fetch = FetchType.LAZY)
 	@Cascade(CascadeType.ALL)
-	@Fetch(FetchMode.JOIN)
-	@BatchSize(size = 10)
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size = 5)
 	private List<Revision> revisions;
 
 	public Page() {

@@ -41,12 +41,17 @@
 				    <tr>
 				     <td>${revision.getId() }</td>
 				     <td>${revision.getTimestamp() }</td>
+				     <c:if test="${not revision.getContributor().getDeleted()}">
 			    	 <c:if test="${revision.getContributor().getRealId()>=0}">
 				     	<td>${revision.getContributor().getUsername() }</td>
 				     </c:if>
 				     <c:if test="${revision.getContributor().getRealId()<0}">
 				     	<td>Anonimo - ${revision.getContributor().getIp() }</td>
 				     </c:if>
+				     </c:if>
+					 <c:if test="${revision.getContributor().getDeleted()}">
+					 <td>Deleted</td>
+					 </c:if>
 				     <c:if test="${revision.getMinor()}">
 				     	<td>Si</td>
 				     </c:if>

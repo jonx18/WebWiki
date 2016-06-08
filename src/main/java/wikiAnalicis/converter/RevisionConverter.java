@@ -78,6 +78,9 @@ public class RevisionConverter implements Converter {
 		}
 
 		if ("text".equalsIgnoreCase(reader.getNodeName())) {
+			if (reader.getAttribute("deleted")!=null) {
+				revision.setDeleted(true);
+			}
 			revision.setText(reader.getValue());
 			reader.moveUp();
 			reader.moveDown();

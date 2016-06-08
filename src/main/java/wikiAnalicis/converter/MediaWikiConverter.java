@@ -59,21 +59,26 @@ public class MediaWikiConverter implements Converter {
 			if ("page".equals(reader.getNodeName())) {
 				pageIndex++;
 				System.out.println("Page "+pageIndex);
-				Page page = (Page) context.convertAnother(mediawiki, Page.class);
-				pages.add(page);
+				//Page page = (Page) context.convertAnother(mediawiki, Page.class);
+				context.convertAnother(null, Page.class);
+				//pages.add(page);
 				//mediawiki.getPages().add(page);
 			}
 			reader.moveUp();
 			if (pageIndex%100 == 0) {
-				mediawiki.getPages().addAll(pages);
-				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-				mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
+//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//				mediawiki.getPages().addAll(pages);
+//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//				//mediawikiService.addPagesTo(mediawiki, pages);
+//				mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
 				pages= new LinkedList<Page>();
 			}
 		}
-		mediawiki.getPages().addAll(pages);//lo ultimo que agrege
-		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-		mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
+//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//		mediawiki.getPages().addAll(pages);
+//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//		//mediawikiService.addPagesTo(mediawiki, pages);
+//		mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
 		System.out.println("fin");
 		// TODO Auto-generated method stub
 		// Cargo datos basicos y lista vacia

@@ -43,10 +43,10 @@ public class Mediawiki implements Identificable{
 	    )
 	@Cascade(CascadeType.ALL)
 	private Siteinfo siteinfo;
-	@OneToMany(orphanRemoval = true,fetch = FetchType.EAGER)
+	@OneToMany(orphanRemoval = true,fetch = FetchType.LAZY)
 	@Cascade(CascadeType.ALL)
-	@Fetch(FetchMode.JOIN)
-	@BatchSize(size = 10)
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size = 5)
 	private List<Page> pages;//no sequiere borrar
 	
 	public Mediawiki() {

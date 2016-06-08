@@ -5,6 +5,8 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.MediawikiDAO;
 import wikiAnalicis.entity.Mediawiki;
@@ -26,8 +28,11 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 		return (Long) util.create(mediawiki);
 	}
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
 	public Mediawiki mergeMediawiki(Mediawiki mediawiki) {
-		return util.merge(mediawiki);
+		Mediawiki m = (Mediawiki)util.getSessionFactory().getCurrentSession().merge(mediawiki);
+		m.getPages().size();
+		return m;
 	}
 	
 	@Override

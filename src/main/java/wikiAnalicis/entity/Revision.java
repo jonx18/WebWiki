@@ -17,8 +17,11 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
@@ -40,14 +43,19 @@ public class Revision implements Identificable{
 	@ManyToOne(fetch=FetchType.EAGER)
 	@JoinColumn(name = "contributor_id")
 	@Cascade(CascadeType.ALL)
+	@Fetch(FetchMode.JOIN)
+	@BatchSize(size = 5)
 	private UserContributor contributor;
-	@ManyToOne(optional = false)
+	@ManyToOne(optional = false,fetch=FetchType.LAZY)
 	@JoinColumn(name = "page_id")
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size = 5)
 	private Page page;
 	private String comment;
 	private	Boolean minor = false;//TODO no carga con xstream
 	private String model;
 	private String format;
+	private Boolean deleted=false;
 	@Column(columnDefinition="LONGBLOB")
 	private String text;
 	private String sha1;
@@ -139,6 +147,11 @@ public class Revision implements Identificable{
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
-	
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
+	}
 	
 }

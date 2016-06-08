@@ -76,7 +76,6 @@ public class PageConverter implements Converter {
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
 				//charused+=revision.getText().length();
 				//page.getRevisions().add(revision);
-				revision.setPage(page);
 				revisions.add(revision);
 			}else{
 				if ("redirect".equals(reader.getNodeName())) {
@@ -87,11 +86,16 @@ public class PageConverter implements Converter {
 			}
 			reader.moveUp();
 			//if ((indexRevision % 100 == 0)||(charused>1500000)) {
-			if ((indexRevision % 100 == 0)){
-				//System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
+			if ((indexRevision % 50 == 0)){
+				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
+				for (Revision revision : revisions) {
+					revision.setPage(page);
+				}
+				page=pageService.mergePage(page);
 				page.getRevisions().addAll(revisions);
 				page=pageService.mergePage(page);
 				//charused=0;
+//				pageService.addRevisionsTo(page, revisions);
 				revisions = new LinkedList<Revision>();
 				page = pageService.getPage(page.getId());
 			}
@@ -99,9 +103,15 @@ public class PageConverter implements Converter {
 //				break;
 //			}
 		}
+		for (Revision revision : revisions) {
+			revision.setPage(page);
+		}
+		page=pageService.mergePage(page);
 		page.getRevisions().addAll(revisions);
 		page=pageService.mergePage(page);
+//		pageService.addRevisionsTo(page, revisions);
 		page = pageService.getPage(page.getId());
+		page =null;
 		//pageService.addRevisionsTo(page, revisions);
 		return page;
 	}

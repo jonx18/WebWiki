@@ -28,6 +28,7 @@ public class UserContributor implements Identificable{
     @Column(nullable = false,unique=true)
 	private String username;
 	private String ip;
+	private Boolean deleted=false;
 	public UserContributor() {
 		// TODO Auto-generated constructor stub
 	}
@@ -92,5 +93,11 @@ public class UserContributor implements Identificable{
 	public void setAnonimus() {
 		this.id=UserContributor.anonimusID;
 		UserContributor.anonimusID = anonimusID-1;
+	}
+	public Boolean getDeleted() {
+		return deleted;
+	}
+	public void setDeleted(Boolean deleted) {
+		this.deleted = deleted;
 	}
 }

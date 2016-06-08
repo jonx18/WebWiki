@@ -62,4 +62,10 @@ public class RevisionDAOimpl implements RevisionDAO {
 	 public Long count(){
 		  return util.count(Revision.class);
 		 }
+	@Override
+	 public Long count(Page page){
+		Query query = util.getSessionFactory().getCurrentSession().createQuery("from Revision as r where r.page = :page");
+		query.setParameter("page", page);
+		return new Long(query.list().size());
+		 }
 }

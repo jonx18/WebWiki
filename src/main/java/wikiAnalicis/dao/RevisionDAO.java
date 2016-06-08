@@ -14,5 +14,6 @@ public interface RevisionDAO {
 	public List<Revision> getAllRevisions(Integer offset, Integer maxResults);
 	public List<Revision> getAllRevisions(Page page,Integer offset, Integer maxResults);
 	public Long count();
+	Long count(Page page);
 	
 }

@@ -19,35 +19,36 @@
 				</h3>
 			</div>
 			<div class="panel-body">
-				<c:if test="${empty diffList}">
+				<c:if test="${empty diffResult}">
 						No hay diff
 				</c:if>
 				<ul class="list-group">
 
 
-				<c:if test="${not empty diffList}">
+				<c:if test="${not empty diffResult}">
+				<c:forEach items="${diffResult}" var="diff">
+				<div class="row">
 					<div class="col-md-6">
-					<c:forEach items="${diffList}" var="diff">
-						<c:if test="${diff.operation == 'EQUAL'}">
-							<li class="list-group-item list-group-item-info"><c:out value="${diff.text}" /></li>
+					
+						<c:if test="${diff[0].operation == 'EQUAL'}">
+							<li class="list-group-item list-group-item-info"><c:out value="${diff[0].text}" /></li>
 						</c:if>
 
-						<c:if test="${diff.operation == 'DELETE'}">
-							<li class="list-group-item list-group-item-danger"><c:out value="${diff.text}" /></li>
+						<c:if test="${diff[0].operation == 'DELETE'}">
+							<li class="list-group-item list-group-item-danger"><c:out value="${diff[0].text}" /></li>
 						</c:if>
-					</c:forEach>
 					</div>
 					<div class="col-md-6">
-					<c:forEach items="${diffList}" var="diff">
-						<c:if test="${diff.operation == 'EQUAL'}">
-							<li class="list-group-item list-group-item-info"><c:out value="${diff.text}" /></li>
+						<c:if test="${diff[1].operation == 'EQUAL'}">
+							<li class="list-group-item list-group-item-info"><c:out value="${diff[1].text}" /></li>
 						</c:if>
-						<c:if test="${diff.operation == 'INSERT'}">
-							<li class="list-group-item list-group-item-success"><c:out value="${diff.text}" /></li>
+						<c:if test="${diff[1].operation == 'INSERT'}">
+							<li class="list-group-item list-group-item-success"><c:out value="${diff[1].text}" /></li>
 						</c:if>
-
-					</c:forEach>
 					</div>
+					</div>
+					</c:forEach>
+					
 				</c:if>
 				</ul>
 			</div>

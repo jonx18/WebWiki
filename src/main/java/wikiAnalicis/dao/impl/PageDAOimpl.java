@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.PageDAO;
@@ -28,8 +29,11 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED)
 	public Page mergePage(Page page) {
-		return util.merge(page);
+		Page p = (Page)util.getSessionFactory().getCurrentSession().merge(page);
+		p.getRevisions().size();
+		return p;
 	}
 
 	@Override
@@ -56,7 +60,11 @@ public class PageDAOimpl implements PageDAO {
 	
 	 @Transactional
 	 public List<Page> list(Integer offset, Integer maxResults){
-	  return util.listPagination(offset, maxResults, "Page");
+		 List<Page> list = util.listPagination(offset, maxResults, "Page");
+		 for (Page page : list) {
+			page.getRevisions().size();
+		}
+	  return list;
 	 }
 	 public Long count(){
 		  return util.count(Page.class);

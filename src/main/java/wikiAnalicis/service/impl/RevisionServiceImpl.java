@@ -63,6 +63,6 @@ public class RevisionServiceImpl implements RevisionService {
 	@Override
 	public Long count(Page page) {
 		
-		return new Long(page.getRevisions().size());
+		return revisionDAO.count(page);
 	}
 }
