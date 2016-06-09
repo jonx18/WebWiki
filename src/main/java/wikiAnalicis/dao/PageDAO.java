@@ -1,6 +1,7 @@
 package wikiAnalicis.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
@@ -17,4 +18,6 @@ public interface PageDAO {
 	public void addRevisionsTo(Page Page,List<Revision> revisions);
 	 public List<Page> list(Integer offset, Integer maxResults);
 	 public Long count();
+	 public Double  averageRevisionsInAllPages();
+	Map<Long, Long> countPagesForNumberOfRevisions();
 }

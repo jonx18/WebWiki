@@ -1,6 +1,9 @@
 package wikiAnalicis.controller;
 
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -60,7 +65,7 @@ public class RevisionController {
 	return new ModelAndView("redirect:getAllRevisions");
 	}
 
-	@RequestMapping(value = {"getAllRevisions", "/"})
+	@RequestMapping(value = {"getAllRevisions"})
 	public ModelAndView getAllRevisions() {
 	LOGGER.info("Getting the all Revisions.");
 	List<Revision> revisionList = revisionService.getAllRevisions();
@@ -80,5 +85,22 @@ public class RevisionController {
 //			System.out.println(page.getId()+" "+page.getTitle());
 //		}
 		return model;
+	}
+	@RequestMapping(value = {"statisticsReviews"})
+	public ModelAndView statisticsReviews() {
+	ModelAndView model = new ModelAndView("statisticsReviews");
+	Long totalRevisiones = revisionService.count();
+	model.addObject("totalRevisiones", totalRevisiones);
+	Double promedioPorPagina = pageService.averageRevisionsInAllPages();
+	model.addObject("promedioPorPagina", promedioPorPagina);
+	Map<Long,Long> 	paginasConXRevisiones= pageService.countPagesForNumberOfRevisions();
+	LinkedList<String[]> toJS= new LinkedList<String[]>();
+	toJS.add(new String[]{"Revisiones","Nº de Paginas"});
+	for (Long key : paginasConXRevisiones.keySet()) {
+		toJS.add(new String[]{key.toString(),paginasConXRevisiones.get(key).toString()});
+	}	
+	Gson gson = new Gson();
+	model.addObject("paginasConXRevisiones", gson.toJson(toJS));
+	return model;
 	}
 }

@@ -1,6 +1,7 @@
 package wikiAnalicis.service;
 
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -16,4 +17,6 @@ public interface PageService {
 	public void addRevisionsTo(Page Page,List<Revision> revisions);
 	public List<Page> list(Integer offset, Integer maxResults);
 	public Long count();
+	public Double  averageRevisionsInAllPages();
+	Map<Long, Long> countPagesForNumberOfRevisions();
 }

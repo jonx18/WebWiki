@@ -108,23 +108,35 @@ public class DiffController {
 				if (d.operation == i.operation) {
 					Diff[] par = { d, i };
 					result.add(par);
-					d = deletionIterator.next();
-					i = insertionIterator.next();
+					if (deletionIterator.hasNext()) {
+						d = deletionIterator.next();
+					}
+					if (insertionIterator.hasNext()) {
+						i = insertionIterator.next();
+					}
 				} else {
 					if ((d.operation == Operation.DELETE) && (i.operation == Operation.INSERT)) {
 						Diff[] par = { d, i };
 						result.add(par);
-						d = deletionIterator.next();
-						i = insertionIterator.next();
+						if (deletionIterator.hasNext()) {
+							d = deletionIterator.next();
+						}
+						if (insertionIterator.hasNext()) {
+							i = insertionIterator.next();
+						}
 					} else {
 						if (d.operation == Operation.EQUAL) {
 							Diff[] par = { null, i };
 							result.add(par);
-							i = insertionIterator.next();
+							if (insertionIterator.hasNext()) {
+								i = insertionIterator.next();
+							}
 						} else {
 							Diff[] par = { d, null };
 							result.add(par);
-							d = deletionIterator.next();
+							if (deletionIterator.hasNext()) {
+								d = deletionIterator.next();
+							}
 						}
 					}
 				}

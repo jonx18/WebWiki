@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Lista de Revisiones</title>
+<title>Diff</title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -15,7 +15,7 @@
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-						<b>Diff Test</b>
+						<b>Diff</b>
 				</h3>
 			</div>
 			<div class="panel-body">

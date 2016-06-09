@@ -65,7 +65,7 @@ public class DumpToBDController {
 		dropDB();
 	    long stopTime = System.currentTimeMillis();
 	    long elapsedTime = stopTime - startTime;
-	    times.put("dropdb", elapsedTime);
+	    times.put("1- Vaciado de Base de Datos", elapsedTime);
 	    
 	    
 	    startTime = System.currentTimeMillis();
@@ -77,7 +77,7 @@ public class DumpToBDController {
 		System.out.println("Finalizo guardado");
 	    stopTime = System.currentTimeMillis();
 	    elapsedTime = stopTime - startTime;
-	    times.put("cargahistory", elapsedTime);
+	    times.put("2- Carga de: "+historyPath, elapsedTime);
 		
 		//dropDB();
 		//aca van masprocesamintos
@@ -93,6 +93,7 @@ public class DumpToBDController {
 			System.out.println(mediawiki.getSiteinfo().getSitename());
 			mediawikiService.deleteMediawiki(mediawiki.getId());
 		}
+		mediawikiService.truncateAll();
 	}
 	private void historyXMLToDB(XStream xStream, String historyPath) {
 		Mediawiki mediawiki=null;

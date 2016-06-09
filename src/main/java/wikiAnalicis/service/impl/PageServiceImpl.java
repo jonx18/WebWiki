@@ -1,6 +1,7 @@
 package wikiAnalicis.service.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -65,5 +66,13 @@ public class PageServiceImpl implements PageService {
 	public Long count() {
 		return pageDAO.count();
 	}
-
+@Override
+public Double averageRevisionsInAllPages() {
+	return pageDAO.averageRevisionsInAllPages();
+}
+@Override
+public Map<Long, Long> countPagesForNumberOfRevisions() {
+	// TODO Auto-generated method stub
+	return pageDAO.countPagesForNumberOfRevisions();
+}
 }

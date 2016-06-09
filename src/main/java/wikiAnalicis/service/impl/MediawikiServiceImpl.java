@@ -54,4 +54,8 @@ public class MediawikiServiceImpl implements MediawikiService {
 		// TODO Auto-generated method stub
 		mediawikiDAO.addPagesTo(mediawiki, pages);
 	}
+	@Override
+	public void truncateAll() {
+		mediawikiDAO.truncateAll();
+	}
 }

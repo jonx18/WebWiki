@@ -1,8 +1,11 @@
 package wikiAnalicis.dao.impl;
 
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-
+import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
@@ -90,5 +93,27 @@ public class PageDAOimpl implements PageDAO {
 		page = util.merge(page);
 		page.getRevisions().addAll(revisions);
 		page = util.merge(page);
+	}
+	@Override
+	public Double averageRevisionsInAllPages() {
+		Query query = util.getSessionFactory().getCurrentSession().createQuery("select avg(p.revisions.size), sum(p.revisions.size), max(p.revisions.size), count(p) from Page p");
+		List<Object[]> list = query.list();
+//        for(Object[] arr : list){
+//            System.out.println(Arrays.toString(arr));
+//        }
+		return ((Double)list.get(0)[0]);
+	}
+	@Override
+	//primer Long cantidad de revisiones, segundo cantidad de pag con esa cantidad de revisiones
+	public Map<Long,Long> countPagesForNumberOfRevisions() {
+		String q = "select  p.revisions.size,count(p) from Page p group by p.revisions.size";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<Long,Long> result = new HashMap<Long, Long>();
+        for(Object[] arr : list){
+        	result.put(new Long(arr[0].toString()), new Long(arr[1].toString()));
+            //System.out.println(Arrays.toString(arr));
+        }
+		return result;
 	}
 }
