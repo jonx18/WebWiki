@@ -1,7 +1,9 @@
 package wikiAnalicis.service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -18,5 +20,11 @@ public interface PageService {
 	public List<Page> list(Integer offset, Integer maxResults);
 	public Long count();
 	public Double  averageRevisionsInAllPages();
-	Map<Long, Long> countPagesForNumberOfRevisions();
+	public Map<Long, Long> countPagesForNumberOfRevisions();
+	 public Map<String, Long> countPagesInNamespace();
+	 public Map<Date, Long> newPagesInDays();
+	 public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays();
+	public Map<Date, Long> revisionInDaysOf(Page page);
+	public Map<Date, Long> contentInDaysOf(Page page);
+	public Map<String, Long> countColaboratorRevisionsInPage(Page page);
 }

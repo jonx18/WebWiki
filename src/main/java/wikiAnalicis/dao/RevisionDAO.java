@@ -1,6 +1,8 @@
 package wikiAnalicis.dao;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -14,6 +16,8 @@ public interface RevisionDAO {
 	public List<Revision> getAllRevisions(Integer offset, Integer maxResults);
 	public List<Revision> getAllRevisions(Page page,Integer offset, Integer maxResults);
 	public Long count();
-	Long count(Page page);
+	public Long count(Page page);
+	public Map<Date, Long> revisionInDays();
+	public Map<String, Long> countRevisionsInNamespace();
 	
 }

@@ -32,6 +32,7 @@
 				    <th>Titulo</th>
 				    <th>Namespace</th>
 				    <th>Nº de Reviciones</th>
+				    <th></th>
 				   </tr>
 				   </thead>
 				   <tbody>
@@ -43,6 +44,11 @@
 					<td>
 					<a href="getAllRevisionsOf?parentId=${page.getId() }"  class="btn btn-primary" type="button">
 					  Ver <span class="badge">${page.getRevisions().size() }</span>
+					</a>
+					</td>
+										<td>
+					<a href="statisticsPageOf?parentId=${page.getId() }"  class="btn btn-primary" type="button">
+					  Estadisticas
 					</a>
 					</td>
 				    </tr>
@@ -58,7 +64,7 @@
 	</div>
 
 
-	<script src="<c:url value="/resources/js/jquery-2.2.3.js"/>"></script>
+	<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

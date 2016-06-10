@@ -1,6 +1,8 @@
 package wikiAnalicis.service.impl;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -64,5 +66,14 @@ public class RevisionServiceImpl implements RevisionService {
 	public Long count(Page page) {
 		
 		return revisionDAO.count(page);
+	}
+	@Override
+	public Map<Date, Long> revisionInDays() {
+		return revisionDAO.revisionInDays();
+	}
+	@Override
+	public Map<String, Long> countRevisionsInNamespace() {
+		// TODO Auto-generated method stub
+		return revisionDAO.countRevisionsInNamespace();
 	}
 }

@@ -1,5 +1,6 @@
 package wikiAnalicis.controller;
 
+import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -89,18 +90,37 @@ public class RevisionController {
 	@RequestMapping(value = {"statisticsReviews"})
 	public ModelAndView statisticsReviews() {
 	ModelAndView model = new ModelAndView("statisticsReviews");
+	//---------------------------------------------------------------------------------------
 	Long totalRevisiones = revisionService.count();
 	model.addObject("totalRevisiones", totalRevisiones);
+	//---------------------------------------------------------------------------------------
 	Double promedioPorPagina = pageService.averageRevisionsInAllPages();
 	model.addObject("promedioPorPagina", promedioPorPagina);
-	Map<Long,Long> 	paginasConXRevisiones= pageService.countPagesForNumberOfRevisions();
-	LinkedList<String[]> toJS= new LinkedList<String[]>();
-	toJS.add(new String[]{"Revisiones","Nº de Paginas"});
-	for (Long key : paginasConXRevisiones.keySet()) {
-		toJS.add(new String[]{key.toString(),paginasConXRevisiones.get(key).toString()});
+	//---------------------------------------------------------------------------------------
+	Map<String, Long> revisionesEnNamespace = revisionService.countRevisionsInNamespace();
+	LinkedList<Object[]> toJS= new LinkedList<Object[]>();
+	for (String key : revisionesEnNamespace.keySet()) {
+		toJS.add(new Object[]{key,revisionesEnNamespace.get(key)});
 	}	
 	Gson gson = new Gson();
+	model.addObject("revisionesEnNamespace", gson.toJson(toJS));
+	//---------------------------------------------------------------------------------------
+	Map<Long,Long> 	paginasConXRevisiones= pageService.countPagesForNumberOfRevisions();
+	toJS= new LinkedList<Object[]>();
+	toJS.add(new Object[]{"Revisiones","Nº de Paginas"});
+	for (Long key : paginasConXRevisiones.keySet()) {
+		toJS.add(new Object[]{key,paginasConXRevisiones.get(key)});
+	}	
+	gson = new Gson();
 	model.addObject("paginasConXRevisiones", gson.toJson(toJS));
+	//---------------------------------------------------------------------------------------
+	Map<Date,Long> 	revisionesDia= revisionService.revisionInDays();
+	toJS= new LinkedList<Object[]>();
+//	toJS.add(new Object[]{"Tiempo","Nº de Revisiones"});
+	for (Date key : revisionesDia.keySet()) {
+		toJS.add(new Object[]{key,revisionesDia.get(key)});
+	}	
+	model.addObject("revisionesDia", gson.toJson(toJS));
 	return model;
 	}
 }

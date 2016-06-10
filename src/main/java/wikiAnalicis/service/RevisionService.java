@@ -1,6 +1,8 @@
 package wikiAnalicis.service;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -15,4 +17,6 @@ public interface RevisionService {
 	public List<Revision> getAllRevisions(Page page,Integer offset, Integer maxResults); 
 	public Long count();
 	public Long count(Page page);
+	public Map<Date, Long> revisionInDays();
+	public Map<String, Long> countRevisionsInNamespace();
 }

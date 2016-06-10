@@ -25,6 +25,10 @@
 						<a class="btn btn-primary btn-lg" href="statisticsReviews"
 							role="button">Estadisticas de revisiones </a>
 					</p>
+										<p>
+						<a class="btn btn-primary btn-lg" href="statisticsPages"
+							role="button">Estadisticas de paginas </a>
+					</p>
 				</c:if>
 				<c:if test="${empty mediawiki }">
 					<h1>No hay Wiki Cargada</h1>
@@ -39,7 +43,7 @@
 		</div>
 	</div>
 
-	<script src="<c:url value="/resources/js/jquery-2.2.3.js"/>"></script>
+	<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

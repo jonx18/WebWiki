@@ -1,6 +1,14 @@
 package wikiAnalicis.dao.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -68,4 +76,40 @@ public class RevisionDAOimpl implements RevisionDAO {
 		query.setParameter("page", page);
 		return new Long(query.list().size());
 		 }
+	@Override
+	 public Map<Date,Long> revisionInDays(){
+		String q = "select  r.timestamp,count(r) from Revision r group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<Date,Long> result = new TreeMap<Date, Long>();
+        for(Object[] arr : list){
+    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    		Date date = null;
+    		try {
+    			date = format.parse(arr[0].toString());
+    		} catch (ParseException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        	result.put(date, new Long(arr[1].toString()));
+//            System.out.println(Arrays.toString(arr));
+        }
+		return result;
+		 }
+	@Override
+	// texto del namespace, cantidad de paginas
+	public Map<String, Long> countRevisionsInNamespace() {
+		String q = "select  n.value,sum(p.revisions.size) from Page p,Namespace n where p.ns=n.keyclave group by n.keyclave";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<String, Long> result = new TreeMap<String, Long>();
+		for (Object[] arr : list) {
+			if (arr[0].toString().isEmpty()) {
+				arr[0] = "Articulo";
+			}
+			result.put(arr[0].toString(), new Long(arr[1].toString()));
+			// System.out.println(Arrays.toString(arr));
+		}
+		return result;
+	}
 }

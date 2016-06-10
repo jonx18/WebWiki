@@ -1,7 +1,9 @@
 package wikiAnalicis.service.impl;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -74,5 +76,34 @@ public Double averageRevisionsInAllPages() {
 public Map<Long, Long> countPagesForNumberOfRevisions() {
 	// TODO Auto-generated method stub
 	return pageDAO.countPagesForNumberOfRevisions();
+}
+@Override
+public Map<String, Long> countPagesInNamespace() {
+	// TODO Auto-generated method stub
+	return pageDAO.countPagesInNamespace();
+}
+@Override
+public Map<Date, Long> newPagesInDays() {
+	// TODO Auto-generated method stub
+	return pageDAO.newPagesInDays();
+}
+@Override
+public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays() {
+	// TODO Auto-generated method stub
+	return pageDAO.newPagesForNamespacesInDays();
+}@Override
+public Map<Date, Long> revisionInDaysOf(Page page) {
+	// TODO Auto-generated method stub
+	return pageDAO.revisionInDaysOf(page);
+}
+@Override
+public Map<Date, Long> contentInDaysOf(Page page) {
+	// TODO Auto-generated method stub
+	return pageDAO.contentInDaysOf(page);
+}
+@Override
+public Map<String, Long> countColaboratorRevisionsInPage(Page page) {
+	// TODO Auto-generated method stub
+	return pageDAO.countColaboratorRevisionsInPage(page);
 }
 }

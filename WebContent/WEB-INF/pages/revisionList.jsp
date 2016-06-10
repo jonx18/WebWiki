@@ -71,7 +71,7 @@
 						<a href="showDiff">Agregar Revision</a>
 					</div>
 
-		<script src="<c:url value="/resources/js/jquery-2.2.3.js"/>"></script>
+		<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 		<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 </body>
 </html>

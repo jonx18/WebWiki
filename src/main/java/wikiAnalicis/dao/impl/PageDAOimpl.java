@@ -1,9 +1,15 @@
 package wikiAnalicis.dao.impl;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,9 +38,9 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
-	@Transactional(propagation=Propagation.REQUIRED)
+	@Transactional(propagation = Propagation.REQUIRED)
 	public Page mergePage(Page page) {
-		Page p = (Page)util.getSessionFactory().getCurrentSession().merge(page);
+		Page p = (Page) util.getSessionFactory().getCurrentSession().merge(page);
 		p.getRevisions().size();
 		return p;
 	}
@@ -60,60 +66,191 @@ public class PageDAOimpl implements PageDAO {
 	public Page getPage(long id) {
 		return util.fetchById(id, Page.class);
 	}
-	
-	 @Transactional
-	 public List<Page> list(Integer offset, Integer maxResults){
-		 List<Page> list = util.listPagination(offset, maxResults, "Page");
-		 for (Page page : list) {
+
+	@Transactional
+	public List<Page> list(Integer offset, Integer maxResults) {
+		List<Page> list = util.listPagination(offset, maxResults, "Page");
+		for (Page page : list) {
 			page.getRevisions().size();
 		}
-	  return list;
-	 }
-	 public Long count(){
-		  return util.count(Page.class);
-		 }
+		return list;
+	}
+
+	public Long count() {
+		return util.count(Page.class);
+	}
 
 	@Override
 	public void addRevisionsTo(Page page, List<Revision> revisions) {
-//		EntityManager entityManager = util.getEntityManager();
-//		EntityTransaction t = entityManager.getTransaction();
-//		t.begin();
-//		try {
-//			page = entityManager.merge(page);
-//			page.getRevisions().addAll(revisions);
-//		} catch (Exception e) {
-//			// TODO: handle exception
-//			t.rollback();
-//		}finally {
-//			if (t.isActive()) {
-//				t.commit();
-//			}
-//			
-//		}
+		// EntityManager entityManager = util.getEntityManager();
+		// EntityTransaction t = entityManager.getTransaction();
+		// t.begin();
+		// try {
+		// page = entityManager.merge(page);
+		// page.getRevisions().addAll(revisions);
+		// } catch (Exception e) {
+		// // TODO: handle exception
+		// t.rollback();
+		// }finally {
+		// if (t.isActive()) {
+		// t.commit();
+		// }
+		//
+		// }
 		page = util.merge(page);
 		page.getRevisions().addAll(revisions);
 		page = util.merge(page);
 	}
+
 	@Override
 	public Double averageRevisionsInAllPages() {
-		Query query = util.getSessionFactory().getCurrentSession().createQuery("select avg(p.revisions.size), sum(p.revisions.size), max(p.revisions.size), count(p) from Page p");
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(
+				"select avg(p.revisions.size), sum(p.revisions.size), max(p.revisions.size), count(p) from Page p");
 		List<Object[]> list = query.list();
-//        for(Object[] arr : list){
-//            System.out.println(Arrays.toString(arr));
-//        }
-		return ((Double)list.get(0)[0]);
+		// for(Object[] arr : list){
+		// System.out.println(Arrays.toString(arr));
+		// }
+		return ((Double) list.get(0)[0]);
 	}
+
 	@Override
-	//primer Long cantidad de revisiones, segundo cantidad de pag con esa cantidad de revisiones
-	public Map<Long,Long> countPagesForNumberOfRevisions() {
+	// primer Long cantidad de revisiones, segundo cantidad de pag con esa
+	// cantidad de revisiones
+	public Map<Long, Long> countPagesForNumberOfRevisions() {
 		String q = "select  p.revisions.size,count(p) from Page p group by p.revisions.size";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 		List<Object[]> list = query.list();
-		Map<Long,Long> result = new HashMap<Long, Long>();
+		Map<Long, Long> result = new TreeMap<Long, Long>();
+		for (Object[] arr : list) {
+			result.put(new Long(arr[0].toString()), new Long(arr[1].toString()));
+			// System.out.println(Arrays.toString(arr));
+		}
+		return result;
+	}
+
+	@Override
+	// texto del namespace, cantidad de paginas
+	public Map<String, Long> countPagesInNamespace() {
+		String q = "select  n.value,count(p) from Page p,Namespace n where p.ns=n.keyclave group by n.keyclave";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<String, Long> result = new TreeMap<String, Long>();
+		for (Object[] arr : list) {
+			if (arr[0].toString().isEmpty()) {
+				arr[0] = "Articulo";
+			}
+			result.put(arr[0].toString(), new Long(arr[1].toString()));
+			// System.out.println(Arrays.toString(arr));
+		}
+		return result;
+	}
+
+	@Override
+	// una revision sin padre es la creacion de una pag
+	public Map<Date, Long> newPagesInDays() {
+		String q = "select  r.timestamp,count(r) from Revision r where r.parentid is null group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<Date, Long> result = new TreeMap<Date, Long>();
+		for (Object[] arr : list) {
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+			Date date = null;
+			try {
+				date = format.parse(arr[0].toString());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			result.put(date, new Long(arr[1].toString()));
+			// System.out.println(Arrays.toString(arr));
+		}
+		return result;
+	}
+
+	@Override
+	// una revision sin padre es la creacion de una pag, y tengo un map de
+	// namespace con su map de dias
+	public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays() {
+		String q = "select  n.value,r.timestamp,count(r) from Revision r,Namespace n where r.parentid is null and r.page.ns = n.keyclave group by r.page.ns,year(r.timestamp),month(r.timestamp), day(r.timestamp)";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		List<Object[]> list = query.list();
+		Map<String, TreeMap<Date, Long>> result = new TreeMap<String, TreeMap<Date, Long>>();
+		for (Object[] arr : list) {
+			if (arr[0].toString().isEmpty()) {
+				arr[0] = "Articulo";
+			}
+			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+			Date date = null;
+			try {
+				date = format.parse(arr[1].toString());
+			} catch (ParseException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			if (!result.containsKey(arr[0].toString())) {
+				result.put(arr[0].toString(), new TreeMap<Date, Long>());
+			}
+			result.get(arr[0].toString()).put(date, new Long(arr[2].toString()));
+//          System.out.println(Arrays.toString(arr));
+		}
+		return result;
+	}
+	@Override
+	public Map<Date, Long> revisionInDaysOf(Page page) {
+		String q = "select  r.timestamp,count(r) from Page p join p.revisions r where p = :page group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		query.setParameter("page", page);
+		List<Object[]> list = query.list();
+		Map<Date,Long> result = new TreeMap<Date, Long>();
         for(Object[] arr : list){
-        	result.put(new Long(arr[0].toString()), new Long(arr[1].toString()));
-            //System.out.println(Arrays.toString(arr));
+    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    		Date date = null;
+    		try {
+    			date = format.parse(arr[0].toString());
+    		} catch (ParseException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        	result.put(date, new Long(arr[1].toString()));
+//            System.out.println(Arrays.toString(arr));
         }
+		return result;
+	}
+	@Override
+	public Map<Date, Long> contentInDaysOf(Page page) {
+		String q = "select  r.timestamp,bit_length(r.text) from Page p join p.revisions r where p = :page ";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		query.setParameter("page", page);
+		List<Object[]> list = query.list();
+		Map<Date,Long> result = new TreeMap<Date, Long>();
+        for(Object[] arr : list){
+    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    		Date date = null;
+    		try {
+    			date = format.parse(arr[0].toString());
+    		} catch (ParseException e) {
+    			// TODO Auto-generated catch block
+    			e.printStackTrace();
+    		}
+        	result.put(date, new Long(arr[1].toString()));
+//            System.out.println(Arrays.toString(arr));
+        }
+		return result;
+	}
+	@Override
+	public Map<String, Long> countColaboratorRevisionsInPage(Page page) {
+		String q = "select  c.realId,c.username ,count(r) from Page p join p.revisions r join r.contributor c where p = :page group by c.username";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		query.setParameter("page", page);
+		List<Object[]> list = query.list();
+		Map<String, Long> result = new TreeMap<String, Long>();
+		for (Object[] arr : list) {
+			if ((new Long(arr[0].toString())).compareTo(new Long(0))<0) {
+				arr[1] = "Anonimo";
+			}
+			result.put(arr[1].toString(), new Long(arr[2].toString()));
+			// System.out.println(Arrays.toString(arr));
+		}
 		return result;
 	}
 }

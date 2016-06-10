@@ -21,7 +21,7 @@ import org.hibernate.annotations.GenericGenerator;
 import com.google.gson.Gson;
 
 @Entity
-public class Page implements Identificable {
+public class Page implements Identificable,Categorizable {
 
 	/**
 	 * 
@@ -92,5 +92,9 @@ public class Page implements Identificable {
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
-
+@Override
+public Boolean isCategory() {
+	// TODO Auto-generated method stub
+	return false;
+}
 }

@@ -125,4 +125,7 @@ public class DumpToBDController {
 		xStream.registerConverter(new UserContributorConverter(userContributorService));
 		return xStream;
 	}
+	private void creacionCategorias() {
+		
+	}
 }
