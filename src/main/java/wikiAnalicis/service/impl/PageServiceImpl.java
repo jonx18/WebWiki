@@ -106,4 +106,9 @@ public Map<String, Long> countColaboratorRevisionsInPage(Page page) {
 	// TODO Auto-generated method stub
 	return pageDAO.countColaboratorRevisionsInPage(page);
 }
+@Override
+public List<Page> getAllPagesInNamespace(Integer ns) {
+	// TODO Auto-generated method stub
+	return pageDAO.getAllPagesInNamespace(ns);
+}
 }

@@ -1,5 +1,6 @@
 package wikiAnalicis.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -34,7 +35,7 @@ public class Siteinfo implements Identificable{
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)
-	private List<Namespace> namespaces;//TODO necesitoun converter
+	private List<Namespace> namespaces= new LinkedList<Namespace>();//TODO necesitoun converter
 	
 	
 	public Siteinfo() {

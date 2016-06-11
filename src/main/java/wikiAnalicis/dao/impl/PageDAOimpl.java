@@ -52,8 +52,8 @@ public class PageDAOimpl implements PageDAO {
 
 	@Override
 	public void deletePage(long id) {
-		Page page = new Page();
-		page.setId(id);
+		Page page = getPage(id);
+//		page= mergePage(page);
 		util.delete(page);
 	}
 
@@ -253,4 +253,12 @@ public class PageDAOimpl implements PageDAO {
 		}
 		return result;
 	}
+@Override
+public List<Page> getAllPagesInNamespace(Integer ns) {
+	String q = "from Page p where p.ns = :ns ";
+	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+	query.setParameter("ns", ns);
+	List<Page> list = (List<Page>)query.list();
+	return list;
+}
 }

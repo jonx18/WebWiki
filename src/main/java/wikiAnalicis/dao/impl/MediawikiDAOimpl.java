@@ -17,6 +17,7 @@ import wikiAnalicis.dao.MediawikiDAO;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.entity.UserContributor;
 import wikiAnalicis.util.HibernateUtil;
 import wikiAnalicis.util.ORMUtil;
 
@@ -74,7 +75,7 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 		deletAllFrom(Mediawiki.class);
 		deletAllFrom(Siteinfo.class);
 		deletAllFrom(Page.class);
-//		deletAllFrom(Mediawiki.class);
+		deletAllFrom(UserContributor.class);
 //		deletAllFrom(Mediawiki.class);
 //		deletAllFrom(Mediawiki.class);
 	}

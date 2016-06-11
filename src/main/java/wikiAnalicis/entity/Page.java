@@ -1,5 +1,6 @@
 package wikiAnalicis.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Basic;
@@ -9,6 +10,8 @@ import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Inheritance;
+import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 
 import org.hibernate.annotations.BatchSize;
@@ -21,7 +24,8 @@ import org.hibernate.annotations.GenericGenerator;
 import com.google.gson.Gson;
 
 @Entity
-public class Page implements Identificable,Categorizable {
+@Inheritance(strategy = InheritanceType.JOINED)
+public class Page implements Identificable {
 
 	/**
 	 * 
@@ -40,7 +44,7 @@ public class Page implements Identificable,Categorizable {
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
-	private List<Revision> revisions;
+	private List<Revision> revisions=new LinkedList<Revision>();
 
 	public Page() {
 		// TODO Auto-generated constructor stub
@@ -92,7 +96,7 @@ public class Page implements Identificable,Categorizable {
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
-@Override
+
 public Boolean isCategory() {
 	// TODO Auto-generated method stub
 	return false;

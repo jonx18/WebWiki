@@ -1,5 +1,6 @@
 package wikiAnalicis.converter;
 
+import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,6 +10,8 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+import wikiAnalicis.entity.Category;
+import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
@@ -47,35 +50,35 @@ public class PageConverter implements Converter {
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		Page page = new Page();
 		reader.moveDown();
-		// System.out.println(reader.getNodeName());
-		// System.out.println("titulo"+reader.getValue());
 		page.setTitle(reader.getValue());
 		reader.moveUp();
 		reader.moveDown();
-		// System.out.println(reader.getNodeName());
-		// System.out.println("ns"+reader.getValue());
 		page.setNs(new Integer(reader.getValue()));
 		reader.moveUp();
 		reader.moveDown();
-		// System.out.println(reader.getNodeName());
-		// System.out.println("id"+reader.getValue());
 		page.setId(new Long(reader.getValue()));
 		reader.moveUp();
-		
-		page.setRevisions(new LinkedList<Revision>());
-		pageService.mergePage(page);
-		page = pageService.getPage(page.getId());
+		if (page.getNs().compareTo(14)==0) {
+			page=pageToCategory(page);
+		}
+//		pageService.mergePage(page);
+//		page = pageService.getPage(page.getId());
 		Integer indexRevision = 0;
 		Integer charused = 0;
 		List<Revision> revisions = new LinkedList<Revision>();
 		while (reader.hasMoreChildren()) {
 			reader.moveDown();
-			//System.out.println(reader.getNodeName());
+
 			if ("revision".equals(reader.getNodeName())) {
 				indexRevision++;
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
-				//charused+=revision.getText().length();
-				//page.getRevisions().add(revision);
+				//Limitador de fecha retirar para version completa
+				Calendar calendar= Calendar.getInstance();
+						calendar.set(2010, Calendar.APRIL, 1);
+				if (revision.getTimestamp().after(calendar.getTime())) {
+					reader.moveUp();
+					break;
+					}
 				revisions.add(revision);
 			}else{
 				if ("redirect".equals(reader.getNodeName())) {
@@ -85,7 +88,6 @@ public class PageConverter implements Converter {
 				}
 			}
 			reader.moveUp();
-			//if ((indexRevision % 100 == 0)||(charused>1500000)) {
 			if ((indexRevision % 50 == 0)){
 				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
 				for (Revision revision : revisions) {
@@ -94,14 +96,9 @@ public class PageConverter implements Converter {
 				page=pageService.mergePage(page);
 				page.getRevisions().addAll(revisions);
 				page=pageService.mergePage(page);
-				//charused=0;
-//				pageService.addRevisionsTo(page, revisions);
+
 				revisions = new LinkedList<Revision>();
-				page = pageService.getPage(page.getId());
 			}
-//			if (page.getId()==11) {//salteo pag 7 por el tamaño
-//				break;
-//			}
 		}
 		for (Revision revision : revisions) {
 			revision.setPage(page);
@@ -109,11 +106,20 @@ public class PageConverter implements Converter {
 		page=pageService.mergePage(page);
 		page.getRevisions().addAll(revisions);
 		page=pageService.mergePage(page);
-//		pageService.addRevisionsTo(page, revisions);
-		page = pageService.getPage(page.getId());
-		page =null;
-		//pageService.addRevisionsTo(page, revisions);
+		if (page.getRevisions().isEmpty()) {
+			System.out.println("borrando");
+			pageService.deletePage(page.getId());
+			page=null;
+		}
 		return page;
 	}
-
+	private Category pageToCategory(Page page) {
+		Category category = new Category();
+		category.setId(page.getId());
+		category.setNs(page.getNs());
+		category.setRedirect(page.getRedirect());
+		category.setRevisions(page.getRevisions());
+		category.setTitle(page.getTitle());
+		return category;
+	}
 }

@@ -45,12 +45,7 @@ public class MediaWikiConverter implements Converter {
 		reader.moveDown();
 		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
 		mediawiki.setSiteinfo(siteinfo);
-		// System.out.println("pages");
 		reader.moveUp();
-		// System.out.println(reader.getNodeName());
-		mediawiki.setPages(new LinkedList<Page>());
-		mediawikiService.mergeMediawiki(mediawiki);
-		mediawiki = mediawikiService.getAllMediawikis().get(0);
 		Integer pageIndex = 0;
 		List<Page> pages= new LinkedList<Page>();
 		while (reader.hasMoreChildren()) {
@@ -59,39 +54,21 @@ public class MediaWikiConverter implements Converter {
 			if ("page".equals(reader.getNodeName())) {
 				pageIndex++;
 				System.out.println("Page "+pageIndex);
-				//Page page = (Page) context.convertAnother(mediawiki, Page.class);
-				context.convertAnother(null, Page.class);
-				//pages.add(page);
-				//mediawiki.getPages().add(page);
+				Page page = (Page) context.convertAnother(mediawiki, Page.class);
+				pages.add(page);
 			}
 			reader.moveUp();
 			if (pageIndex%100 == 0) {
-//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//				mediawiki.getPages().addAll(pages);
-//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//				//mediawikiService.addPagesTo(mediawiki, pages);
-//				mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
+				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+				mediawiki.getPages().addAll(pages);
+				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 				pages= new LinkedList<Page>();
 			}
 		}
-//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//		mediawiki.getPages().addAll(pages);
-//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//		//mediawikiService.addPagesTo(mediawiki, pages);
-//		mediawiki=mediawikiService.getMediawiki(mediawiki.getId());
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		mediawiki.getPages().addAll(pages);
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 		System.out.println("fin");
-		// TODO Auto-generated method stub
-		// Cargo datos basicos y lista vacia
-		// Guardo
-		// null
-		// Mientras haya revisiones
-		// Recupero el que null
-		// cargo revicion
-		// agrego a la lista
-		// actualizo
-		// null denuevo
-		// fin
-		// retorno con basicos
 		return mediawiki;
 	}
 

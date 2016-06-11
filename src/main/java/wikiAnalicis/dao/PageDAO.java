@@ -28,4 +28,5 @@ public interface PageDAO {
 	public Map<Date, Long> revisionInDaysOf(Page page);
 	public Map<Date, Long> contentInDaysOf(Page page);
 	public Map<String, Long> countColaboratorRevisionsInPage(Page page);
+	public List<Page> getAllPagesInNamespace(Integer ns);
 }

@@ -1,5 +1,6 @@
 package wikiAnalicis.entity;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -47,7 +48,7 @@ public class Mediawiki implements Identificable{
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
-	private List<Page> pages;//no sequiere borrar
+	private List<Page> pages= new LinkedList<Page>();//no sequiere borrar
 	
 	public Mediawiki() {
 		// TODO Auto-generated constructor stub

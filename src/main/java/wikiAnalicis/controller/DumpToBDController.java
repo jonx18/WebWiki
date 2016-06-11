@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
@@ -31,6 +32,8 @@ import wikiAnalicis.converter.NamespaceConverter;
 import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.converter.RevisionConverter;
 import wikiAnalicis.converter.UserContributorConverter;
+import wikiAnalicis.entity.Category;
+import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
@@ -72,8 +75,9 @@ public class DumpToBDController {
 		System.out.println("Cargando:");
 		System.out.println(env.getProperty("history.path.test"));	
 		XStream xStream = configXStream();
-		String historyPath = env.getProperty("history.path.test");
+		String historyPath = env.getProperty("history.path");
 		historyXMLToDB(xStream, historyPath);
+		//pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 	    stopTime = System.currentTimeMillis();
 	    elapsedTime = stopTime - startTime;
@@ -81,11 +85,28 @@ public class DumpToBDController {
 		
 		//dropDB();
 		//aca van masprocesamintos
-
+	    
+	    startTime = System.currentTimeMillis();
+	    //creacionCategorias();
+	    stopTime = System.currentTimeMillis();
+	    elapsedTime = stopTime - startTime;
+	    times.put("3- Creacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;
 
+	}
+	private void pagesWithoutRevisions() {
+		List<Page> pages = pageService.getAllPages();
+		for (Page page : pages) {
+			page = pageService.mergePage(page);
+			if (page.getRevisions().isEmpty()) {
+				pageService.deletePage(page.getId());
+			}
+			else{
+				System.out.println(page.getRevisions().size());
+			}
+		}
 	}
 	private void dropDB() {
 		System.out.println("Dropeando Mediawiki");
@@ -125,7 +146,6 @@ public class DumpToBDController {
 		xStream.registerConverter(new UserContributorConverter(userContributorService));
 		return xStream;
 	}
-	private void creacionCategorias() {
-		
-	}
+
+
 }

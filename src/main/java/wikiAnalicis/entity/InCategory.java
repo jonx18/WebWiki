@@ -11,50 +11,55 @@ import javax.persistence.ManyToOne;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-//@Entity
+
+@Entity
 public class InCategory {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	@ManyToOne(optional = false,fetch=FetchType.LAZY)
-	@JoinColumn(name = "category_id")
-	@Fetch(FetchMode.SELECT)
-	@BatchSize(size = 5)
-	private Category category;
-	private Categorizable categorizable;
+	 @ManyToOne(optional = false,fetch=FetchType.LAZY)
+	 @JoinColumn(name = "category_id")
+	 @Fetch(FetchMode.SELECT)
+	 @BatchSize(size = 5)
+	 private Category category;
+	private Page page;
 	private Revision revisionStart;
 	private Revision revisionEnd;
-	
+
 	public InCategory() {
 		// TODO Auto-generated constructor stub
 	}
-	
+
 	public Long getId() {
 		return id;
 	}
+
 	public void setId(Long id) {
 		this.id = id;
 	}
-	public Categorizable getCategorizable() {
-		return categorizable;
+
+	public Page getPage() {
+		return page;
 	}
-	public void setCategorizable(Categorizable categorizable) {
-		this.categorizable = categorizable;
+
+	public void setPage(Page page) {
+		this.page = page;
 	}
+
 	public Revision getRevisionStart() {
 		return revisionStart;
 	}
+
 	public void setRevisionStart(Revision revisionStart) {
 		this.revisionStart = revisionStart;
 	}
+
 	public Revision getRevisionEnd() {
 		return revisionEnd;
 	}
+
 	public void setRevisionEnd(Revision revisionEnd) {
 		this.revisionEnd = revisionEnd;
 	}
-	
-	
-	
-	
+
 }

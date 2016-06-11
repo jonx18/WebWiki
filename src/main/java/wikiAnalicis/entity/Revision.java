@@ -16,6 +16,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -40,9 +41,10 @@ public class Revision implements Identificable{
 	private Long id;
 	private Long parentid;
 	private Date timestamp = Calendar.getInstance().getTime();
-	@ManyToOne(fetch=FetchType.EAGER)
+	@OneToOne(fetch=FetchType.EAGER, targetEntity = UserContributor.class)
 	@JoinColumn(name = "contributor_id")
-	@Cascade(CascadeType.ALL)
+	@Cascade({CascadeType.SAVE_UPDATE,CascadeType.MERGE,CascadeType.REFRESH,
+		CascadeType.REPLICATE,CascadeType.DETACH,CascadeType.PERSIST,CascadeType.LOCK,CascadeType.SAVE_UPDATE})
 	@Fetch(FetchMode.JOIN)
 	@BatchSize(size = 5)
 	private UserContributor contributor;
