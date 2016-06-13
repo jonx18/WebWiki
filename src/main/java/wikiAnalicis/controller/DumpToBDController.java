@@ -68,7 +68,7 @@ public class DumpToBDController {
 		Map<String, Long> times = new HashMap<String, Long>();
 		
 		long startTime = System.currentTimeMillis();
-		//dropDB();
+		dropDB();
 	    long stopTime = System.currentTimeMillis();
 	    long elapsedTime = stopTime - startTime;
 	    times.put("1- Vaciado de Base de Datos", elapsedTime);
@@ -76,10 +76,10 @@ public class DumpToBDController {
 	    
 	    startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.test"));	
+		System.out.println(env.getProperty("history.path"));	
 		XStream xStream = configXStream();
 		String historyPath = env.getProperty("history.path");
-		//historyXMLToDB(xStream, historyPath);
+		historyXMLToDB(xStream, historyPath);
 		//pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 	    stopTime = System.currentTimeMillis();
@@ -89,11 +89,11 @@ public class DumpToBDController {
 		//dropDB();
 		//aca van masprocesamintos
 	    
-	    startTime = System.currentTimeMillis();
-	    asignacionCategorias();
-	    stopTime = System.currentTimeMillis();
-	    elapsedTime = stopTime - startTime;
-	    times.put("3- Asignacion de Categorias", elapsedTime);
+//	    startTime = System.currentTimeMillis();
+//	    asignacionCategorias();
+//	    stopTime = System.currentTimeMillis();
+//	    elapsedTime = stopTime - startTime;
+//	    times.put("3- Asignacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;

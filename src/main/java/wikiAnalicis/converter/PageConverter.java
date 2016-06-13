@@ -73,12 +73,12 @@ public class PageConverter implements Converter {
 				indexRevision++;
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
 				//Limitador de fecha retirar para version completa
-				Calendar calendar= Calendar.getInstance();
-						calendar.set(2010, Calendar.APRIL, 1);
-				if (revision.getTimestamp().after(calendar.getTime())) {
-					reader.moveUp();
-					break;
-					}
+//				Calendar calendar= Calendar.getInstance();
+//						calendar.set(2010, Calendar.APRIL, 1);
+//				if (revision.getTimestamp().after(calendar.getTime())) {
+//					reader.moveUp();
+//					break;
+//					}
 				revisions.add(revision);
 			}else{
 				if ("redirect".equals(reader.getNodeName())) {
