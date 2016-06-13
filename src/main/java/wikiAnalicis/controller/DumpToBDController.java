@@ -39,6 +39,7 @@ import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.service.CategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
@@ -54,6 +55,8 @@ public class DumpToBDController {
 	@Autowired
 	private PageService pageService;
 	@Autowired
+	private CategoryService categoryService; 
+	@Autowired
 	private RevisionService revisionService;
 	@Autowired
 	private UserContributorService userContributorService;
@@ -65,7 +68,7 @@ public class DumpToBDController {
 		Map<String, Long> times = new HashMap<String, Long>();
 		
 		long startTime = System.currentTimeMillis();
-		dropDB();
+		//dropDB();
 	    long stopTime = System.currentTimeMillis();
 	    long elapsedTime = stopTime - startTime;
 	    times.put("1- Vaciado de Base de Datos", elapsedTime);
@@ -76,7 +79,7 @@ public class DumpToBDController {
 		System.out.println(env.getProperty("history.path.test"));	
 		XStream xStream = configXStream();
 		String historyPath = env.getProperty("history.path");
-		historyXMLToDB(xStream, historyPath);
+		//historyXMLToDB(xStream, historyPath);
 		//pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 	    stopTime = System.currentTimeMillis();
@@ -87,14 +90,39 @@ public class DumpToBDController {
 		//aca van masprocesamintos
 	    
 	    startTime = System.currentTimeMillis();
-	    //creacionCategorias();
+	    asignacionCategorias();
 	    stopTime = System.currentTimeMillis();
 	    elapsedTime = stopTime - startTime;
-	    times.put("3- Creacion de Categorias", elapsedTime);
+	    times.put("3- Asignacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;
 
+	}
+	private void asignacionCategorias() {
+		// TODO Auto-generated method stub
+		//para cada pagina
+			//Set de categorias viejas vacio
+			//por cada revision
+				//si texto no es nulo
+					//Parseo Texto-obtengo categorias nuevas
+				//Diff categorias viejas vs nuevas map<Categoria,agregada o quitada> 
+				//por cada uno del map
+					//busco categoria
+					//si es agregada 
+						//creo el incategory
+						//Asigno la categoria en el incategory
+						//Asigno in category en la lista segun si es pagina o categoria(si es categoria tambien en la de padres)
+					//Si es Eliminada
+						//Busco el incateogory en la categoria en la lista correspondiente
+						//seteo la revision final
+				//Categorias viejas = nuevas
+		List<Page> pages = pageService.getAllPages();
+		Integer index =0; 
+		for (Page page : pages) {
+			index++;
+			System.out.println(index+" Page: "+page.getId()+" Is Category: "+page.isCategory());
+		}
 	}
 	private void pagesWithoutRevisions() {
 		List<Page> pages = pageService.getAllPages();

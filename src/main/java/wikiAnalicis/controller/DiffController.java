@@ -69,7 +69,14 @@ public class DiffController {
 		return new ModelAndView("diffList", "diffResult", result);
 
 	}
-
+private LinkedList<Diff[]> paragraphComparetor() {
+	
+	
+	
+	
+	return null;
+	
+}
 	private LinkedList<Diff[]> estructureComparision(LinkedList<Diff> diffs) {
 		LinkedList<Diff> deletionsEqualities = new LinkedList<diff_match_patch.Diff>();
 		LinkedList<Diff> insertionsEqualities = new LinkedList<diff_match_patch.Diff>();
