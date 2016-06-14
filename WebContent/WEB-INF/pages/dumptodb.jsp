@@ -14,9 +14,15 @@
 	<div class="container myrow-container">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h3 class="panel-title">
-					<b>Procesamiento</b>
-				</h3>
+				<div class="panel-title">
+					<div align="left">
+						<b>Procesamiento</b>
+					</div>
+
+				</div>
+				<div align="right">
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+				</div>
 			</div>
 
 			<c:if test="${empty result}">

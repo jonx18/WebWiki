@@ -15,49 +15,51 @@
 	<div class="container myrow-container">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h3 class="panel-title">
-					<b>Paginas</b>
-				</h3>
+				<div class="panel-title">
+					<div align="left">
+						<b>Paginas</b>
+					</div>
+
+				</div>
+				<div align="right">
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+				</div>
 			</div>
 
 			<c:if test="${empty pages}">
 				<div class="panel-body">No hay Paginas</div>
 			</c:if>
 			<c:if test="${not empty pages}">
-			
-			  <table class="table table-stripped">
-			  <thead>
-				   <tr>
-				    <th>Id</th>
-				    <th>Titulo</th>
-				    <th>Namespace</th>
-				    <th>Nº de Reviciones</th>
-				    <th></th>
-				   </tr>
-				   </thead>
-				   <tbody>
-				   <c:forEach items="${pages}" var="page" varStatus="itr">
-				    <tr>
-				     <td>${page.getId() }</td>
-					 <td>${page.getTitle() }</td>
-					 <td>${page.getNs() }</td>
-					<td>
-					<a href="getAllRevisionsOf?parentId=${page.getId() }"  class="btn btn-primary" type="button">
-					  Ver <span class="badge">${page.getRevisions().size() }</span>
-					</a>
-					</td>
-										<td>
-					<a href="statisticsPageOf?parentId=${page.getId() }"  class="btn btn-primary" type="button">
-					  Estadisticas
-					</a>
-					</td>
-				    </tr>
-				   </c:forEach>
-				   </tbody>
-				  </table>
-				  <tag:paginate max="15" offset="${offset}" count="${count}"
-				   uri="listPages" next="&raquo;" previous="&laquo;" />
-			
+
+				<table class="table table-stripped">
+					<thead>
+						<tr>
+							<th>Id</th>
+							<th>Titulo</th>
+							<th>Namespace</th>
+							<th>Nº de Reviciones</th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach items="${pages}" var="page" varStatus="itr">
+							<tr>
+								<td>${page.getId() }</td>
+								<td>${page.getTitle() }</td>
+								<td>${page.getNs() }</td>
+								<td><a href="getAllRevisionsOf?parentId=${page.getId() }"
+									class="btn btn-primary" type="button"> Ver <span
+										class="badge">${page.getRevisions().size() }</span>
+								</a></td>
+								<td><a href="statisticsPageOf?parentId=${page.getId() }"
+									class="btn btn-primary" type="button"> Estadisticas </a></td>
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+				<tag:paginate max="15" offset="${offset}" count="${count}"
+					uri="listPages" next="&raquo;" previous="&laquo;" />
+
 			</c:if>
 
 		</div>

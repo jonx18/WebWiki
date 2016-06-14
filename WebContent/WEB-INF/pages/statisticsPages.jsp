@@ -14,9 +14,14 @@
 	<div class="container myrow-container">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h3 class="panel-title">
-					<b>Estadistica de Paginas</b>
-				</h3>
+				<div class="panel-title">
+					<div align="left">
+						<b>Estadistica de Paginas</b>
+					</div>
+				</div>
+				<div align="right">
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+				</div>
 			</div>
 			<div class="panel-body">
 				<ul class="list-group">
@@ -60,7 +65,7 @@
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 	<script type="text/javascript"
 		src="https://www.gstatic.com/charts/loader.js"></script>
-		
+
 	<script type="text/javascript">
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
@@ -154,30 +159,30 @@
 			var json = JSON.parse(' ${nuevasPaginasPorNamespaceDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			var head=true;
+			var head = true;
 			json.forEach(function(entry) {
-				if(head){					
+				if (head) {
 					entry.forEach(function(entry2) {
-						if(head){
-							head=false;
+						if (head) {
+							head = false;
 							data.addColumn('date', 'Tiempo')
-						}else{
+						} else {
 							data.addColumn('number', entry2);
 						}
-						
-						
+
 					});
+				} else {
+					entry[0] = new Date(entry[0]);
+					data.addRow(entry); // Add a row with a string and a date value.
 				}
-				else{
-				entry[0]=new Date(entry[0]);
-				data.addRow(entry); // Add a row with a string and a date value.
-				};
-			}); 
+				;
+			});
 			//data.addRows(json);
 			//var data = google.visualization.arrayToDataTable(json);
 			// Create a dashboard.
 			var dashboard = new google.visualization.Dashboard(
-					document.getElementById('nuevasPaginasPorNamespaceDia_dashboard_div'));
+					document
+							.getElementById('nuevasPaginasPorNamespaceDia_dashboard_div'));
 			var columnsTable = new google.visualization.DataTable();
 			columnsTable.addColumn('number', 'colIndex');
 			columnsTable.addColumn('string', 'colLabel');
@@ -219,7 +224,7 @@
 			var lineChart = new google.visualization.ChartWrapper({
 				'chartType' : 'LineChart',
 				'containerId' : 'nuevasPaginasPorNamespaceDia_chart_div',
-				dataTable: data,
+				dataTable : data,
 				'options' : {
 					'title' : 'Nuevas Paginas en el Tiempo por Namespace',
 					'subtitle' : '',
@@ -265,9 +270,7 @@
 					'statechange', setChartView);
 			//dashboard.bind([linearRangeSlider,columnFilter], lineChart);
 
-			
 			//linearRangeSlider.draw();
-			
 
 			// Draw the dashboard.
 			//dashboard.draw();

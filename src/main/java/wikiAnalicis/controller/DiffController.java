@@ -5,11 +5,13 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Scanner;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -55,28 +57,127 @@ public class DiffController {
 
 		diff_match_patch differ = new diff_match_patch();
 		LinkedList<Diff> diffs = differ.diff_main(revText1, revText2);
-		differ.Diff_Timeout=0;
-//		differ.Diff_EditCost=5;
-//		differ.diff_cleanupEfficiency(diffs);
+		differ.Diff_Timeout = 0;
+		// differ.Diff_EditCost=5;
+		// differ.diff_cleanupEfficiency(diffs);
 		differ.diff_cleanupSemantic(diffs);
-		LinkedList<Diff[]> result = estructureComparision(diffs);	
+
+		LinkedList<Diff[]> result = estructureComparision(diffs);
 		// differ.diff_cleanupEfficiency(diffs);
 		// differ.diff_levenshtein(diffs);
 		// differ.diff_cleanupMerge(diffs);
 		Gson gson = new Gson();
-		String json = gson.toJson(result, result.getClass());
+		LinkedList<ParagraphDiff> listListDiff = paragraphComparetor(revText1, revText2);
+		//String json = gson.toJson(result, result.getClass());
+		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
-		return new ModelAndView("diffList", "diffResult", result);
+		return new ModelAndView("diffList", "listListDiff", listListDiff);
 
 	}
-private LinkedList<Diff[]> paragraphComparetor() {
+
+	private LinkedList<ParagraphDiff> paragraphComparetor(String revText1, String revText2) {
+		List<String> listParagraph1 = new LinkedList<String>();
+		List<String> listParagraph2 = new LinkedList<String>();
+		Scanner scanner = new Scanner(revText1);
+		while (scanner.hasNextLine()) {
+			String paragraph = scanner.nextLine();
+			listParagraph1.add(paragraph);
+		}
+		scanner = new Scanner(revText2);
+		while (scanner.hasNextLine()) {
+			String paragraph = scanner.nextLine();
+			listParagraph2.add(paragraph);
+		}
+		String[] aux = {};
+		int[][] matrix = computeLevenshteinDistance(listParagraph1.toArray(aux), listParagraph2.toArray(aux));
+		LinkedList<String[]> comparables = reverseLevenshteindDistance(listParagraph1.toArray(aux), listParagraph2.toArray(aux), matrix);
+		LinkedList<ParagraphDiff> listListDiff= new LinkedList<ParagraphDiff>();
+		diff_match_patch differ = new diff_match_patch();	
+		for (String[] strings : comparables) {
+			LinkedList<Diff> diffs = differ.diff_main(strings[0], strings[1]);
+			differ.diff_cleanupSemantic(diffs);
+			LinkedList<Diff[]> resultParagraph = estructureComparision(diffs);
+			listListDiff.add(new ParagraphDiff(resultParagraph));
+		}
+		return listListDiff;
+
+	}
+	private LinkedList<String[]> reverseLevenshteindDistance(String[] listParagraph1, String[] listParagraph2,int[][] matrix){
+		int i =listParagraph1.length;
+		int j =listParagraph2.length;
+		LinkedList<String[]> list = new LinkedList<String[]>();
+		while(i!=0 || j!=0){
+			if (i==0) {
+				String[] par={"",listParagraph2[j-1]};
+				list.addFirst(par);
+				j--;
+				continue;
+			}
+			if (j==0) {
+				String[] par={listParagraph1[i-1],""};
+				list.addFirst(par);
+				i--;
+				continue;
+			}
+			String[] par={listParagraph1[i-1],listParagraph2[j-1]};
+			list.addFirst(par);
+			int min = minimum(matrix[i-1][j-1], matrix[i-1][j], matrix[i][j-1]);
+			if (matrix[i-1][j-1]==min) {
+				i--;
+				j--;
+			} else {
+				if (matrix[i-1][j]==min) {
+					i--;
+				} else {
+					j--;
+				}
+			}
+			
+		}
+		return list;
+	}
 	
-	
-	
-	
-	return null;
-	
-}
+	private int minimum(int a, int b, int c) {
+		if (a <= b && a <= c) {
+			return a;
+		}
+		if (b <= a && b <= c) {
+			return b;
+		}
+		return c;
+	}
+
+	private int[][] computeLevenshteinDistance(String[] listParagraph1, String[] listParagraph2) {
+		int[][] distance = new int[listParagraph1.length + 1][listParagraph2.length + 1];
+		diff_match_patch differ = new diff_match_patch();
+		for (int i = 0; i <= listParagraph1.length; i++) {
+			distance[i][0] = i;
+		}
+		for (int j = 0; j <= listParagraph2.length; j++) {
+			distance[0][j] = j;
+		}
+		for (int i = 1; i <= listParagraph1.length; i++) {
+			for (int j = 1; j <= listParagraph2.length; j++) {
+				LinkedList<Diff> diffs = differ.diff_main(listParagraph1[i - 1], listParagraph2[j - 1]);
+				int leven = differ.diff_levenshtein(diffs);
+				distance[i][j] = minimum(distance[i - 1][j] + 1, distance[i][j - 1] + 1,
+								distance[i - 1][j - 1] + ((listParagraph1[i - 1] == listParagraph2[j - 1]) ? 0 : leven));
+			}
+		}
+//		for (int i = 0; i <= listParagraph1.length; i++) {
+//			StringBuilder s = new StringBuilder();
+//			s.append("[ ");
+//			for (int j = 0; j <= listParagraph2.length; j++) {
+//				s.append(distance[i][j]+", ");
+//			}
+//			s.append("]");
+//			System.out.println(s.toString());
+//		}
+		
+//		return distance[listParagraph1.length][listParagraph2.length];
+		return distance;
+	}
+
 	private LinkedList<Diff[]> estructureComparision(LinkedList<Diff> diffs) {
 		LinkedList<Diff> deletionsEqualities = new LinkedList<diff_match_patch.Diff>();
 		LinkedList<Diff> insertionsEqualities = new LinkedList<diff_match_patch.Diff>();
@@ -178,5 +279,36 @@ private LinkedList<Diff[]> paragraphComparetor() {
 		}
 		return result.toString();
 	}
+	public static class ParagraphDiff {
+		Boolean change=false;
+		LinkedList<Diff[]> diffs;
+		public ParagraphDiff(LinkedList<Diff[]> diffs) {
+			this.diffs=diffs;
+			for (Diff[] diffs2 : diffs) {
+				for (Diff diff : diffs2) {
+					if (diff!=null && diff.operation!=Operation.EQUAL) {
+						change=true;
+					}
+				}
+			}
+		}
 
+		public Boolean getChange() {
+			return change;
+		}
+
+		public void setChange(Boolean change) {
+			this.change = change;
+		}
+
+		public LinkedList<Diff[]> getDiffs() {
+			return diffs;
+		}
+		public void setDiffs(LinkedList<Diff[]> diffs) {
+			this.diffs = diffs;
+		}
+		
+		
+		
+	}
 }
