@@ -20,17 +20,17 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 public class Category extends Page {
 
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<InCategory> pages=new LinkedList<InCategory>();
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<InCategory> parents=new LinkedList<InCategory>();
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.LAZY)
+	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
@@ -79,5 +79,65 @@ public class Category extends Page {
 		// TODO Auto-generated method stub
 		return true;
 	}
-
+	public List<InCategory> getActiveChildrens() {
+		LinkedList<InCategory>inCategories = new LinkedList<InCategory>();
+		for (InCategory inCategory : childrens) {
+			if (inCategory.isActive()) {
+				inCategories.add(inCategory);
+			}
+		}
+		
+		return inCategories;
+	}
+	public List<InCategory> getActivePages() {
+		LinkedList<InCategory>inCategories = new LinkedList<InCategory>();
+		for (InCategory inCategory : pages) {
+			if (inCategory.isActive()) {
+				inCategories.add(inCategory);
+			}
+		}
+		
+		return inCategories;
+	}
+	public List<InCategory> getActiveParents() {
+		LinkedList<InCategory>inCategories = new LinkedList<InCategory>();
+		for (InCategory inCategory : parents) {
+			if (inCategory.isActive()) {
+				inCategories.add(inCategory);
+			}
+		}
+		
+		return inCategories;
+	}
+	public InCategory getActiveChildren(Page page) {
+		List<InCategory>inCategories = this.getActiveChildrens();
+		for (InCategory inCategory : inCategories) {
+			if (inCategory.getPage().getId().compareTo(page.getId())==0) {
+				return inCategory;
+			}
+		}
+		
+		return null;
+	}
+	public InCategory getActivePage(Page page) {
+		List<InCategory>inCategories = this.getActivePages();
+		for (InCategory inCategory : inCategories) {
+			if (inCategory.getPage().getId().compareTo(page.getId())==0) {
+				return inCategory;
+			}
+		}
+		
+		return null;
+	}
+	public InCategory getActiveParent(Page page) {
+		List<InCategory>inCategories = this.getActiveParents();
+		for (InCategory inCategory : inCategories) {
+			if (inCategory.getPage().getId().compareTo(page.getId())==0) {
+				return inCategory;
+			}
+		}
+		
+		return null;
+	}
+	
 }
