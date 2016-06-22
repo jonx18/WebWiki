@@ -46,6 +46,7 @@ import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
 import wikiAnalicis.service.CategoryService;
+import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
@@ -63,6 +64,8 @@ public class DumpToBDController {
 	private PageService pageService;
 	@Autowired
 	private CategoryService categoryService;
+	@Autowired
+	private InCategoryService inCategoryService;
 	@Autowired
 	private RevisionService revisionService;
 	@Autowired
@@ -132,6 +135,7 @@ public class DumpToBDController {
 						inCategory.setCategory(category);
 						inCategory.setPage(page);
 						inCategory.setRevisionStart(revision);
+						inCategory = inCategoryService.mergeInCategory(inCategory); 
 						if (page.isCategory()) {// si es categoria
 							System.out.println("agrege page category");
 							category.getChildrens().add(inCategory);
@@ -148,10 +152,7 @@ public class DumpToBDController {
 								System.out.println("removi page category");
 								inCategory.setRevisionEnd(revision);
 								inCategory = category.getActiveChildren(page);
-							}
-							// Category category2 = (Category)page;
-							// inCategory = category2.getActiveParent(page);
-							// inCategory.setRevisionEnd(revision);
+							}			
 						} else {// si es page comun
 							inCategory = category.getActivePage(page);
 							while (inCategory != null) {
@@ -210,18 +211,13 @@ public class DumpToBDController {
 		
 		Map<Category, Boolean> map = new HashMap<Category, Boolean>();
 		for (Category category : allC) {
-			if (oldC.contains(category) && newC.contains(category)) {// si esta
-																		// en
-																		// los
-																		// dos
+			if (oldC.contains(category) && newC.contains(category)) {// si esta en los dos
 				continue;
 			}
-			if (!oldC.contains(category) && newC.contains(category)) {// si es
-																		// nuevo
+			if (!oldC.contains(category) && newC.contains(category)) {// si es nuevo
 				map.put(category, true);
 			}
-			if (oldC.contains(category) && !newC.contains(category)) {// si se
-																		// elimino
+			if (oldC.contains(category) && !newC.contains(category)) {// si se elimino
 				map.put(category, false);
 			}
 		}
