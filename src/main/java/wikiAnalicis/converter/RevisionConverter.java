@@ -1,5 +1,8 @@
 package wikiAnalicis.converter;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
+
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
@@ -81,7 +84,9 @@ public class RevisionConverter implements Converter {
 			if (reader.getAttribute("deleted")!=null) {
 				revision.setDeleted(true);
 			}
-			revision.setText(reader.getValue());
+			String text = reader.getValue();
+			text = removeAccents(text);
+			revision.setText(text);
 			reader.moveUp();
 			reader.moveDown();
 		}
@@ -94,6 +99,11 @@ public class RevisionConverter implements Converter {
 
 
 		return revision;
+	}
+	public static String removeAccents(String text) {
+	    return text == null ? null :
+	        Normalizer.normalize(text, Form.NFD)
+	            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
 }

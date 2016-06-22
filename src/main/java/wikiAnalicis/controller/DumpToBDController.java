@@ -5,6 +5,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -51,6 +52,7 @@ import wikiAnalicis.service.RevisionService;
 import wikiAnalicis.service.UserContributorService;
 import wikiAnalicis.util.diff_match_patch;
 import wikiAnalicis.util.diff_match_patch.Diff;
+
 @Controller
 @PropertySource({ "classpath:historyPath.properties" })
 public class DumpToBDController {
@@ -60,63 +62,69 @@ public class DumpToBDController {
 	@Autowired
 	private PageService pageService;
 	@Autowired
-	private CategoryService categoryService; 
+	private CategoryService categoryService;
 	@Autowired
 	private RevisionService revisionService;
 	@Autowired
 	private UserContributorService userContributorService;
 	@Autowired
 	private Environment env;
-	
+
 	@RequestMapping("dumptobd")
 	public ModelAndView dumpToBD() {
 		Map<String, Long> times = new HashMap<String, Long>();
-		
+
 		long startTime = System.currentTimeMillis();
 		dropDB();
-	    long stopTime = System.currentTimeMillis();
-	    long elapsedTime = stopTime - startTime;
-	    times.put("1- Vaciado de Base de Datos", elapsedTime);
-	    
-	    
-	    startTime = System.currentTimeMillis();
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		times.put("1- Vaciado de Base de Datos", elapsedTime);
+
+		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.test"));	
+		System.out.println(env.getProperty("history.path.test"));
 		XStream xStream = configXStream();
 		String historyPath = env.getProperty("history.path.test");
 		historyXMLToDB(xStream, historyPath);
-		//pagesWithoutRevisions();
+		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
-	    stopTime = System.currentTimeMillis();
-	    elapsedTime = stopTime - startTime;
-	    times.put("2- Carga de: "+historyPath, elapsedTime);
-		
-		//dropDB();
-		//aca van masprocesamintos
-	    
-	    startTime = System.currentTimeMillis();
-	    asignacionCategorias();
-	    stopTime = System.currentTimeMillis();
-	    elapsedTime = stopTime - startTime;
-	    times.put("3- Asignacion de Categorias", elapsedTime);
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("2- Carga de: " + historyPath, elapsedTime);
+
+		// dropDB();
+		// aca van masprocesamintos
+
+		startTime = System.currentTimeMillis();
+		asignacionCategorias();
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("3- Asignacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;
 
 	}
+
 	private void asignacionCategorias() {
 		// TODO Auto-generated method stub
 		List<Page> pages = pageService.getAllPages();
-		Integer index =0; 
+		Integer index = 0;
 		for (Page page : pages) {
 			page = pageService.mergePage(page);// para que levante revisiones
-			List<Revision>revisions= page.getRevisions();
+			List<Revision> revisions = page.getRevisions();
 			List<Category> oldCategories = new LinkedList<Category>();
 			for (Revision revision : revisions) {
 				List<Category> newCategories = categoriesFromText(revision.getText());
-//				System.out.println("news "+newCategories.size());
-				Map<Category, Boolean> cambiosCategories = diffCategories(oldCategories,newCategories);
-//				System.out.println("changes "+cambiosCategories.size());
+				// System.out.println("news "+newCategories.size());
+				Map<Category, Boolean> cambiosCategories = diffCategories(oldCategories, newCategories);
+				// System.out.println("changes "+cambiosCategories.size());
+				if (true) {
+					System.out.println("Revision: " + revision.getId());
+					for (Category category : cambiosCategories.keySet()) {
+						System.out.println(category.getTitle() + " se " + cambiosCategories.get(category));
+					}
+				}
 				for (Category category : cambiosCategories.keySet()) {
 					categoryService.getCategory(category.getId());
 					if (cambiosCategories.get(category)) { // si se agrego
@@ -124,120 +132,156 @@ public class DumpToBDController {
 						inCategory.setCategory(category);
 						inCategory.setPage(page);
 						inCategory.setRevisionStart(revision);
-						if (page.getNs().compareTo(14)==0) {//si es categoria
+						if (page.isCategory()) {// si es categoria
+							System.out.println("agrege page category");
 							category.getChildrens().add(inCategory);
-							((Category)page).getParents().add(inCategory);
-						}
-						else {//si es page comun
+							((Category) page).getParents().add(inCategory);
+						} else {// si es page comun
+							System.out.println("agrege page page");
 							category.getPages().add(inCategory);
 						}
-					} else {//si se elimino
+					} else {// si se elimino
 						InCategory inCategory = new InCategory();
-						if (page.getNs().compareTo(14)==0) {//si es categoria
+						if (page.isCategory()) {// si es categoria
 							inCategory = category.getActiveChildren(page);
-							inCategory.setRevisionEnd(revision);
-							inCategory = ((Category)page).getActiveChildren(page);
-							inCategory.setRevisionEnd(revision);
-						}
-						else {//si es page comun
-							inCategory = category.getActiveChildren(page);
-							inCategory.setRevisionEnd(revision);
+							while (inCategory != null) {
+								System.out.println("removi page category");
+								inCategory.setRevisionEnd(revision);
+								inCategory = category.getActiveChildren(page);
+							}
+							// Category category2 = (Category)page;
+							// inCategory = category2.getActiveParent(page);
+							// inCategory.setRevisionEnd(revision);
+						} else {// si es page comun
+							inCategory = category.getActivePage(page);
+							while (inCategory != null) {
+								System.out.println("removi page page");
+								inCategory.setRevisionEnd(revision);
+								inCategory = category.getActivePage(page);
+							}
 						}
 					}
-//					System.out.println("children "+category.getChildrens().size());
-//					System.out.println("pages "+category.getPages().size());
-//					System.out.println("parents "+category.getParents().size());
+					// System.out.println("children
+					// "+category.getChildrens().size());
+					// System.out.println("pages "+category.getPages().size());
+					// System.out.println("parents
+					// "+category.getParents().size());
 					categoryService.mergeCategory(category);
+					if (page.getNs().compareTo(14) == 0) {
+						categoryService.mergeCategory((Category) page);
+					}
+					oldCategories = newCategories;
 				}
 			}
 			index++;
-			System.out.println(index+" Page: "+page.getId()+" Is Category: "+page.isCategory());
+			System.out.println(index + " Page: " + page.getId() + " Is Category: " + page.isCategory());
 		}
-		//para cada pagina
-			//Set de categorias viejas vacio
-			//por cada revision
-				//si texto no es nulo
-					//Parseo Texto-obtengo categorias nuevas
-				//Diff categorias viejas vs nuevas map<Categoria,agregada o quitada> 
-				//por cada uno del map
-					//busco categoria
-					//si es nula continue
-					//si es agregada 
-						//creo el incategory
-						//Asigno la categoria en el incategory
-						//Asigno in category en la lista segun si es pagina o categoria(si es categoria tambien en la de padres)
-					//Si es Eliminada
-						//Busco el incateogory en la categoria en la lista correspondiente
-						//seteo la revision final
-				//Categorias viejas = nuevas
-//		for (Page page : pages) {
-//			index++;
-//			System.out.println(index+" Page: "+page.getId()+" Is Category: "+page.isCategory());
-//		}
+		// para cada pagina
+		// Set de categorias viejas vacio
+		// por cada revision
+		// si texto no es nulo
+		// Parseo Texto-obtengo categorias nuevas
+		// Diff categorias viejas vs nuevas map<Categoria,agregada o quitada>
+		// por cada uno del map
+		// busco categoria
+		// si es nula continue
+		// si es agregada
+		// creo el incategory
+		// Asigno la categoria en el incategory
+		// Asigno in category en la lista segun si es pagina o categoria(si es
+		// categoria tambien en la de padres)
+		// Si es Eliminada
+		// Busco el incateogory en la categoria en la lista correspondiente
+		// seteo la revision final
+		// Categorias viejas = nuevas
+		// for (Page page : pages) {
+		// index++;
+		// System.out.println(index+" Page: "+page.getId()+" Is Category:
+		// "+page.isCategory());
+		// }
 	}
-	private Map<Category, Boolean> diffCategories(List<Category> oldCategories,
-			List<Category> newCategories) {
+
+	private Map<Category, Boolean> diffCategories(List<Category> oldCategories, List<Category> newCategories) {
 		// TODO Auto-generated method stub
 		Set<Category> oldC = new HashSet<Category>(oldCategories);
 		Set<Category> newC = new HashSet<Category>(newCategories);
 		Set<Category> allC = new HashSet<Category>(newCategories);
 		allC.addAll(oldC);
-		Set<Category> interseC = new HashSet<Category>(newCategories);
-		interseC.retainAll(oldC);
-		allC.removeAll(interseC);
-		Map<Category, Boolean> map= new HashMap<Category, Boolean>();
+		
+		Map<Category, Boolean> map = new HashMap<Category, Boolean>();
 		for (Category category : allC) {
-			if (!oldCategories.contains(category)) {
+			if (oldC.contains(category) && newC.contains(category)) {// si esta
+																		// en
+																		// los
+																		// dos
+				continue;
+			}
+			if (!oldC.contains(category) && newC.contains(category)) {// si es
+																		// nuevo
 				map.put(category, true);
-			} else {
+			}
+			if (oldC.contains(category) && !newC.contains(category)) {// si se
+																		// elimino
 				map.put(category, false);
 			}
 		}
-		
 		return map;
 	}
+
 	private List<Category> categoriesFromText(String text) {
-		// TODO controlar categorias que no existen
-		Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
-	  //  Pattern pattern = Pattern.compile("[[Categoría\\:(.*?)]]");
-	    Matcher matcher = pattern.matcher(text);
-	    while (matcher.find()) {
-	    	String str = matcher.group(1);
-			System.out.println(str);
-	    	System.out.println(str.substring(4, str.length()));
-	        //System.out.println(matcher.group(1));
-	    }
 		List<Category> categories = new LinkedList<Category>();
-		categories.addAll(randomSample4(categoryService.getAllCategorys(), 5));
-		
+		Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
+		// Pattern pattern = Pattern.compile("[[Categoría\\:(.*?)]]");
+		Matcher matcher = pattern.matcher(text);
+		while (matcher.find()) {
+			String str = matcher.group(1);
+			// System.out.println(str);
+			// System.out.println(str.substring(4, str.length()));
+
+			Category category = categoryService.getCategory("Categoria:" + str.substring(4, str.length()));
+			if (category != null) {
+				// System.out.println("categoria recuperada id:
+				// "+category.getId());
+				categories.add(category);
+			} else {
+				// System.out.println("null");
+			}
+			// System.out.println(matcher.group(1));
+		}
+
+		// categories.addAll(randomSample4(categoryService.getAllCategorys(),
+		// 5));
+
 		return categories;
 	}
-	public static <T> Set<T> randomSample4(List<T> items, int m){
-	    HashSet<T> res = new HashSet<T>(m);
-	    int n = items.size();
-	    Random rnd = new Random();
-	    for(int i=n-m;i<n;i++){
-	        int pos = rnd.nextInt(i+1);
-	        T item = items.get(pos);
-	        if (res.contains(item))
-	            res.add(items.get(i));
-	        else
-	            res.add(item);
-	    }
-	    return res;
+
+	public static <T> Set<T> randomSample4(List<T> items, int m) {
+		HashSet<T> res = new HashSet<T>(m);
+		int n = items.size();
+		Random rnd = new Random();
+		for (int i = n - m; i < n; i++) {
+			int pos = rnd.nextInt(i + 1);
+			T item = items.get(pos);
+			if (res.contains(item))
+				res.add(items.get(i));
+			else
+				res.add(item);
+		}
+		return res;
 	}
+
 	private void pagesWithoutRevisions() {
 		List<Page> pages = pageService.getAllPages();
 		for (Page page : pages) {
 			page = pageService.mergePage(page);
 			if (page.getRevisions().isEmpty()) {
 				pageService.deletePage(page.getId());
-			}
-			else{
+			} else {
 				System.out.println(page.getRevisions().size());
 			}
 		}
 	}
+
 	private void dropDB() {
 		System.out.println("Dropeando Mediawiki");
 		for (Mediawiki mediawiki : mediawikiService.getAllMediawikis()) {
@@ -246,18 +290,20 @@ public class DumpToBDController {
 		}
 		mediawikiService.truncateAll();
 	}
+
 	private void historyXMLToDB(XStream xStream, String historyPath) {
-		Mediawiki mediawiki=null;
+		Mediawiki mediawiki = null;
 		try {
-			mediawiki = (Mediawiki)xStream.fromXML(new FileInputStream(historyPath));
+			mediawiki = (Mediawiki) xStream.fromXML(new FileInputStream(historyPath));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		mediawikiService.mergeMediawiki(mediawiki);
 	}
+
 	private XStream configXStream() {
-		//configuro xstream
+		// configuro xstream
 		XStream xStream = new XStream(new StaxDriver());
 		xStream.alias("revision", Revision.class);
 		xStream.alias("page", Page.class);
@@ -267,8 +313,8 @@ public class DumpToBDController {
 		xStream.alias("namespace", Namespace.class);
 		xStream.alias("mediawiki", Mediawiki.class);
 		xStream.addImplicitCollection(Mediawiki.class, "pages");
-		
-		//converters
+
+		// converters
 		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
 		xStream.registerConverter(new PageConverter(pageService));
 		xStream.registerConverter(new NamespaceConverter());
@@ -276,6 +322,5 @@ public class DumpToBDController {
 		xStream.registerConverter(new UserContributorConverter(userContributorService));
 		return xStream;
 	}
-
 
 }

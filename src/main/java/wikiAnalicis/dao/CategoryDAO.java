@@ -19,6 +19,8 @@ public interface CategoryDAO {
 	public List<Category> getAllCategorys();
 
 	public Category getCategory(long id);
+	
+	public Category getCategory(String title);
 
 	public void addRevisionsTo(Category category, List<Revision> revisions);
 

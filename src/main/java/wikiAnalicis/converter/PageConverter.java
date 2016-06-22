@@ -1,5 +1,7 @@
 package wikiAnalicis.converter;
 
+import java.text.Normalizer;
+import java.text.Normalizer.Form;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
@@ -50,7 +52,9 @@ public class PageConverter implements Converter {
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		Page page = new Page();
 		reader.moveDown();
-		page.setTitle(reader.getValue());
+		String text = reader.getValue();
+		text = removeAccents(text);
+		page.setTitle(text);
 		reader.moveUp();
 		reader.moveDown();
 		page.setNs(new Integer(reader.getValue()));
@@ -121,5 +125,10 @@ public class PageConverter implements Converter {
 		category.setRevisions(page.getRevisions());
 		category.setTitle(page.getTitle());
 		return category;
+	}
+	public static String removeAccents(String text) {
+	    return text == null ? null :
+	        Normalizer.normalize(text, Form.NFD)
+	            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 }

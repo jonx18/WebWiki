@@ -36,7 +36,7 @@ public class Page implements Identificable {
 	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "IdOrGenerated")
 	@GenericGenerator(name = "IdOrGenerated", strategy = "wikiAnalicis.util.UseIdOrGenerate")
 	@Column(nullable = false)
-	private Long id;
+	protected Long id;
 	private String title;
 	private Integer ns;// name space
 	private String redirect;

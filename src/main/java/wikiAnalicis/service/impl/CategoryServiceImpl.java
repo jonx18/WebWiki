@@ -41,7 +41,6 @@ public class CategoryServiceImpl implements CategoryService {
 	@Override
 	public void deleteCategory(long id) {
 		categoryDAO.deleteCategory(id);
-		;
 	}
 
 	@Override
@@ -54,6 +53,11 @@ public class CategoryServiceImpl implements CategoryService {
 		return categoryDAO.getCategory(id);
 	}
 
+	@Override
+	public Category getCategory(String title) {
+		return categoryDAO.getCategory(title);
+	}
+	
 	@Override
 	public void addRevisionsTo(Category Category, List<Revision> revisions) {
 		// TODO Auto-generated method stub

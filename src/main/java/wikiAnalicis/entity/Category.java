@@ -12,6 +12,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -138,6 +140,32 @@ public class Category extends Page {
 		}
 		
 		return null;
+	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+	       if (!(obj instanceof Category)){
+	            return false;
+	            }
+	        if (obj == this){
+	            return true;
+	        }
+	        Category rhs = (Category) obj;
+	        return new EqualsBuilder().
+	            // if deriving: appendSuper(super.equals(obj)).
+	        		append(id, rhs.getId()).
+	        		append(this.getTitle(), rhs.getTitle()).
+	            isEquals();
+		
+	}
+	@Override
+	public int hashCode() {
+        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+                // if deriving: appendSuper(super.hashCode()).
+                append(id).
+                append(this.getTitle()).
+                toHashCode();
+
 	}
 	
 }

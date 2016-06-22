@@ -67,6 +67,21 @@ public class CategoryDAOimpl implements CategoryDAO {
 		return util.fetchById(id, Category.class);
 	}
 
+	@Override
+	public Category getCategory(String title) {
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(
+				"from Category p where p.title LIKE ?");
+		query.setString(0, title);
+		List<Category> list = query.list();
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return list.get(0);
+		}
+		// for(Object[] arr : list){
+		// System.out.println(Arrays.toString(arr));
+		// }
+	}
 	@Transactional
 	public List<Category> list(Integer offset, Integer maxResults) {
 		List<Category> list = util.listPagination(offset, maxResults, "Category");

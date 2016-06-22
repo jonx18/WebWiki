@@ -28,22 +28,22 @@ public class InCategory implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	 @ManyToOne(optional = false,fetch=FetchType.LAZY)
+	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
 	 @JoinColumn(name = "category_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
 	 private Category category;
-	 @ManyToOne(optional = false,fetch=FetchType.LAZY)
+	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
 	 @JoinColumn(name = "page_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
 	private Page page;
-	 @ManyToOne(optional = false,fetch=FetchType.LAZY)
+	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionStart_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
 	private Revision revisionStart;
-	 @ManyToOne(fetch=FetchType.LAZY)
+	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionEnd_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
