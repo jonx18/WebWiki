@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class DumpToBDController {
 
 	@RequestMapping("dumptobd")
 	public ModelAndView dumpToBD() {
-		Map<String, Long> times = new HashMap<String, Long>();
+		Map<String, Long> times = new TreeMap<String, Long>();
 
 		long startTime = System.currentTimeMillis();
 		dropDB();
@@ -98,11 +99,11 @@ public class DumpToBDController {
 		// dropDB();
 		// aca van masprocesamintos
 
-//		startTime = System.currentTimeMillis();
-//		asignacionCategorias();
-//		stopTime = System.currentTimeMillis();
-//		elapsedTime = stopTime - startTime;
-//		times.put("3- Asignacion de Categorias", elapsedTime);
+		startTime = System.currentTimeMillis();
+		asignacionCategorias();
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("3- Asignacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;
