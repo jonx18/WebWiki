@@ -9,6 +9,8 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 
@@ -22,17 +24,44 @@ import org.hibernate.annotations.FetchMode;
 @Entity
 public class Category extends Page {
 
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@ManyToMany(targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@JoinTable(
+	        name = "category_page",
+	        joinColumns = @JoinColumn(
+	            name = "category_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "inCategory_id", 
+	            referencedColumnName = "id")
+	    )
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<InCategory> pages=new LinkedList<InCategory>();
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@ManyToMany(targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@JoinTable(
+	        name = "category_parent",
+	        joinColumns = @JoinColumn(
+	            name = "category_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "inCategory_id", 
+	            referencedColumnName = "id")
+	    )
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<InCategory> parents=new LinkedList<InCategory>();
-	@OneToMany(mappedBy = "category",targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@ManyToMany(targetEntity = InCategory.class,fetch = FetchType.EAGER)
+	@JoinTable(
+	        name = "category_child",
+	        joinColumns = @JoinColumn(
+	            name = "category_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "inCategory_id", 
+	            referencedColumnName = "id")
+	    )
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)

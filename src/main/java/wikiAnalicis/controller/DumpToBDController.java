@@ -98,11 +98,11 @@ public class DumpToBDController {
 		// dropDB();
 		// aca van masprocesamintos
 
-		startTime = System.currentTimeMillis();
-		asignacionCategorias();
-		stopTime = System.currentTimeMillis();
-		elapsedTime = stopTime - startTime;
-		times.put("3- Asignacion de Categorias", elapsedTime);
+//		startTime = System.currentTimeMillis();
+//		asignacionCategorias();
+//		stopTime = System.currentTimeMillis();
+//		elapsedTime = stopTime - startTime;
+//		times.put("3- Asignacion de Categorias", elapsedTime);
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", times);
 		return model;
@@ -137,26 +137,27 @@ public class DumpToBDController {
 						inCategory.setRevisionStart(revision);
 						inCategory = inCategoryService.mergeInCategory(inCategory); 
 						if (page.isCategory()) {// si es categoria
-							System.out.println("agrege page category");
+							//System.out.println("agrege page category");
 							category.getChildrens().add(inCategory);
 							((Category) page).getParents().add(inCategory);
 						} else {// si es page comun
-							System.out.println("agrege page page");
+							//System.out.println("agrege page page");
 							category.getPages().add(inCategory);
 						}
+						inCategory = inCategoryService.mergeInCategory(inCategory); 
 					} else {// si se elimino
 						InCategory inCategory = new InCategory();
 						if (page.isCategory()) {// si es categoria
 							inCategory = category.getActiveChildren(page);
 							while (inCategory != null) {
-								System.out.println("removi page category");
+								//System.out.println("removi page category");
 								inCategory.setRevisionEnd(revision);
 								inCategory = category.getActiveChildren(page);
 							}			
 						} else {// si es page comun
 							inCategory = category.getActivePage(page);
 							while (inCategory != null) {
-								System.out.println("removi page page");
+								//System.out.println("removi page page");
 								inCategory.setRevisionEnd(revision);
 								inCategory = category.getActivePage(page);
 							}
@@ -173,10 +174,18 @@ public class DumpToBDController {
 					}
 					oldCategories = newCategories;
 				}
-			}
+			}			
 			index++;
 			System.out.println(index + " Page: " + page.getId() + " Is Category: " + page.isCategory());
 		}
+		List<Category> categories = categoryService.getAllCategorys();
+		for (Category category : categories) {
+			System.out.println("Categoria: "+category.getId()+" "+category.getTitle());
+			System.out.println("Cantidad de padres: "+category.getParents().size());
+			System.out.println("Cantidad de hijos: "+category.getChildrens().size());
+			System.out.println("Cantidad de paginas: "+category.getPages().size());
+		}
+		
 		// para cada pagina
 		// Set de categorias viejas vacio
 		// por cada revision

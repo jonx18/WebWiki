@@ -55,14 +55,14 @@ public class DiffController {
 		// e.printStackTrace();
 		// }
 
-		diff_match_patch differ = new diff_match_patch();
-		LinkedList<Diff> diffs = differ.diff_main(revText1, revText2);
-		differ.Diff_Timeout = 0;
-		// differ.Diff_EditCost=5;
-		// differ.diff_cleanupEfficiency(diffs);
-		differ.diff_cleanupSemantic(diffs);
+//		diff_match_patch differ = new diff_match_patch();
+//		LinkedList<Diff> diffs = differ.diff_main(revText1, revText2);
+//		differ.Diff_Timeout = 0;
+//		// differ.Diff_EditCost=5;
+//		// differ.diff_cleanupEfficiency(diffs);
+//		differ.diff_cleanupSemantic(diffs);
 
-		LinkedList<Diff[]> result = estructureComparision(diffs);
+		//LinkedList<Diff[]> result = estructureComparision(diffs);
 		// differ.diff_cleanupEfficiency(diffs);
 		// differ.diff_levenshtein(diffs);
 		// differ.diff_cleanupMerge(diffs);
@@ -181,18 +181,7 @@ public class DiffController {
 	private LinkedList<Diff[]> estructureComparision(LinkedList<Diff> diffs) {
 		LinkedList<Diff> deletionsEqualities = new LinkedList<diff_match_patch.Diff>();
 		LinkedList<Diff> insertionsEqualities = new LinkedList<diff_match_patch.Diff>();
-		for (Diff diff : diffs) {
-			if (diff.operation == Operation.EQUAL) {
-				deletionsEqualities.addLast(diff);
-				insertionsEqualities.addLast(diff);
-			} else {
-				if (diff.operation == Operation.DELETE) {
-					deletionsEqualities.addLast(diff);
-				} else {
-					insertionsEqualities.addLast(diff);
-				}
-			}
-		}
+		splitDiffs(diffs, deletionsEqualities, insertionsEqualities);
 		Iterator<Diff> deletionIterator = deletionsEqualities.iterator();
 		Iterator<Diff> insertionIterator = insertionsEqualities.iterator();
 		LinkedList<Diff[]> result = new LinkedList<diff_match_patch.Diff[]>();
@@ -212,44 +201,59 @@ public class DiffController {
 			Boolean fin = false;
 			Diff d = deletionIterator.next();
 			Diff i = insertionIterator.next();
+
 			while (!fin) {
+				Boolean deletContinue =false;
+				Boolean insertContinue =false;
 				if (d.operation == i.operation) {
 					Diff[] par = { d, i };
 					result.add(par);
 					if (deletionIterator.hasNext()) {
-						d = deletionIterator.next();
+						//d = deletionIterator.next();
+						deletContinue=true;
 					}
 					if (insertionIterator.hasNext()) {
-						i = insertionIterator.next();
+						//i = insertionIterator.next();
+						insertContinue=true;
 					}
 				} else {
 					if ((d.operation == Operation.DELETE) && (i.operation == Operation.INSERT)) {
 						Diff[] par = { d, i };
 						result.add(par);
 						if (deletionIterator.hasNext()) {
-							d = deletionIterator.next();
+							//d = deletionIterator.next();
+							deletContinue=true;
 						}
 						if (insertionIterator.hasNext()) {
-							i = insertionIterator.next();
+							//i = insertionIterator.next();
+							insertContinue=true;
 						}
 					} else {
 						if (d.operation == Operation.EQUAL) {
 							Diff[] par = { null, i };
 							result.add(par);
 							if (insertionIterator.hasNext()) {
-								i = insertionIterator.next();
+								//i = insertionIterator.next();
+								insertContinue=true;
 							}
 						} else {
 							Diff[] par = { d, null };
 							result.add(par);
 							if (deletionIterator.hasNext()) {
-								d = deletionIterator.next();
+								//d = deletionIterator.next();
+								deletContinue=true;
 							}
 						}
 					}
 				}
 				if (!deletionIterator.hasNext() && !insertionIterator.hasNext()) {
 					fin = true;
+				}
+				if (deletContinue) {
+					d = deletionIterator.next();
+				}
+				if (insertContinue) {
+					i = insertionIterator.next();
 				}
 			}
 			while (insertionIterator.hasNext()) {
@@ -264,6 +268,22 @@ public class DiffController {
 			}
 		}
 		return result;
+	}
+
+	private void splitDiffs(LinkedList<Diff> diffs, LinkedList<Diff> deletionsEqualities,
+			LinkedList<Diff> insertionsEqualities) {
+		for (Diff diff : diffs) {
+			if (diff.operation == Operation.EQUAL) {
+				deletionsEqualities.addLast(diff);
+				insertionsEqualities.addLast(diff);
+			} else {
+				if (diff.operation == Operation.DELETE) {
+					deletionsEqualities.addLast(diff);
+				} else {
+					insertionsEqualities.addLast(diff);
+				}
+			}
+		}
 	}
 
 	static String readFile(String path, Charset encoding) throws IOException {

@@ -28,7 +28,7 @@ public class InCategory implements Serializable{
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
-	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
+	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "category_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
