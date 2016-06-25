@@ -9,6 +9,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.StringUtils;
+
 import wikiAnalicis.util.diff_match_patch.Diff;
 import wikiAnalicis.util.diff_match_patch.Operation;
 
@@ -69,9 +71,12 @@ public class ParagraphDiffer {
 				j--;
 			} else {
 				if (matrix[i-1][j]==min) {
+					par[1]="";
 					i--;
 				} else {
+					par[0]="";
 					j--;
+					
 				}
 			}
 			
@@ -106,15 +111,15 @@ public class ParagraphDiffer {
 								distance[i - 1][j - 1] + ((listParagraph1[i - 1] == listParagraph2[j - 1]) ? 0 : leven));
 			}
 		}
-//		for (int i = 0; i <= listParagraph1.length; i++) {
-//			StringBuilder s = new StringBuilder();
-//			s.append("[ ");
-//			for (int j = 0; j <= listParagraph2.length; j++) {
-//				s.append(distance[i][j]+", ");
-//			}
-//			s.append("]");
-//			System.out.println(s.toString());
-//		}
+		for (int i = 0; i <= listParagraph1.length; i++) {
+			StringBuilder s = new StringBuilder();
+			s.append("[ ");
+			for (int j = 0; j <= listParagraph2.length; j++) {
+				s.append(distance[i][j]+", ");
+			}
+			s.append("]");
+			System.out.println(s.toString());
+		}
 		
 //		return distance[listParagraph1.length][listParagraph2.length];
 		return distance;
@@ -160,6 +165,15 @@ public class ParagraphDiffer {
 					}
 				} else {
 					if ((d.operation == Operation.DELETE) && (i.operation == Operation.INSERT)) {
+
+						if (d.text.replaceAll("\\s+", "").trim().length()==0) {
+							System.out.println("d null");
+							d=null;
+						} 
+						if (i.text.replaceAll("\\s+", "").trim().length()==0) {
+							System.out.println("i null");
+							i=null;
+						} 
 						Diff[] par = { d, i };
 						result.add(par);
 						if (deletionIterator.hasNext()) {
@@ -254,7 +268,25 @@ public class ParagraphDiffer {
 				}
 			}
 		}
+		public String getOldParagraph(){
+			int index=0;
+			return makeParagraph(index);
+		}
+		public String getNewParagraph(){
+			int index=1;
+			return makeParagraph(index);
+		}
+		private String makeParagraph(int index) {
+			StringBuilder builder = new StringBuilder();
+			for (Diff[] diffs2 : diffs) {
+				if (diffs2[index]!=null) {
+					builder.append(diffs2[index].text);
+				}
 
+			}
+			return builder.toString();
+		}
+		
 		public Boolean getChange() {
 			return change;
 		}

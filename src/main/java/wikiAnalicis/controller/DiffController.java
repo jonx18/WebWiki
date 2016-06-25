@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -72,10 +73,40 @@ public class DiffController {
 		ParagraphDiffer differ = new ParagraphDiffer();
 		LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
 		//String json = gson.toJson(result, result.getClass());
+		cambiosContenido(listListDiff);
 		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
 		return new ModelAndView("diffList", "listListDiff", listListDiff);
 
+	}
+
+	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
+		// TODO Auto-generated method stub
+		for (ParagraphDiff paragraphDiff : listListDiff) {
+			String oldParagraph = paragraphDiff.getOldParagraph();
+			String newParagraph = paragraphDiff.getNewParagraph();
+			System.out.println(oldParagraph);
+			System.out.println(newParagraph);
+			Integer countOld = 0;
+			Integer countNew = 0;
+			String[] substringsBetween = StringUtils.substringsBetween(oldParagraph, "==", "==");
+			if (substringsBetween!=null) {
+				countOld = substringsBetween.length;
+			}
+			substringsBetween = StringUtils.substringsBetween(newParagraph, "==", "==");
+			if (substringsBetween!=null) {
+				countNew = substringsBetween.length;
+			}
+
+			System.out.println("Cantida de '==' en Old: "+countOld+" en New: "+countNew);
+			StringUtils.substringsBetween(oldParagraph, "==", "==");
+			for (Diff[] diffs : paragraphDiff.getDiffs()) {
+				
+				
+				
+			}
+		}
+		
 	}
 
 }
