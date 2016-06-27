@@ -1,4 +1,4 @@
-package wikiAnalicis.util;
+package wikiAnalicis.util.diffAndStyles;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;

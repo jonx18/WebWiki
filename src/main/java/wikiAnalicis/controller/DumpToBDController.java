@@ -52,8 +52,8 @@ import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 import wikiAnalicis.service.UserContributorService;
-import wikiAnalicis.util.diff_match_patch;
-import wikiAnalicis.util.diff_match_patch.Diff;
+import wikiAnalicis.util.diffAndStyles.diff_match_patch;
+import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
 
 @Controller
 @PropertySource({ "classpath:historyPath.properties" })

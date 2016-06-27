@@ -13,6 +13,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 
+import javax.jws.soap.SOAPBinding.Style;
+
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,11 +28,12 @@ import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.service.RevisionService;
-import wikiAnalicis.util.ParagraphDiffer;
-import wikiAnalicis.util.ParagraphDiffer.ParagraphDiff;
-import wikiAnalicis.util.diff_match_patch;
-import wikiAnalicis.util.diff_match_patch.Diff;
-import wikiAnalicis.util.diff_match_patch.Operation;
+import wikiAnalicis.util.diffAndStyles.ParagraphDiff;
+import wikiAnalicis.util.diffAndStyles.ParagraphDiffer;
+import wikiAnalicis.util.diffAndStyles.StyleAnalyzer;
+import wikiAnalicis.util.diffAndStyles.diff_match_patch;
+import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
+import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
 
 @Controller
 public class DiffController {
@@ -83,23 +86,30 @@ public class DiffController {
 	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
 		// TODO Auto-generated method stub
 		for (ParagraphDiff paragraphDiff : listListDiff) {
-			String oldParagraph = paragraphDiff.getOldParagraph();
-			String newParagraph = paragraphDiff.getNewParagraph();
-			System.out.println(oldParagraph);
-			System.out.println(newParagraph);
-			Integer countOld = 0;
-			Integer countNew = 0;
-			String[] substringsBetween = StringUtils.substringsBetween(oldParagraph, "==", "==");
-			if (substringsBetween!=null) {
-				countOld = substringsBetween.length;
-			}
-			substringsBetween = StringUtils.substringsBetween(newParagraph, "==", "==");
-			if (substringsBetween!=null) {
-				countNew = substringsBetween.length;
-			}
-
-			System.out.println("Cantida de '==' en Old: "+countOld+" en New: "+countNew);
-			StringUtils.substringsBetween(oldParagraph, "==", "==");
+//			String oldParagraph = paragraphDiff.getOldParagraph();
+//			String newParagraph = paragraphDiff.getNewParagraph();
+//			System.out.println(oldParagraph);
+//			System.out.println(newParagraph);
+//			Integer countOld = 0;
+//			Integer countNew = 0;
+//			String[] substringsBetween = StringUtils.substringsBetween(oldParagraph, "==", "==");
+//			if (substringsBetween!=null) {
+//				for (String string : substringsBetween) {
+//					System.out.println(string);
+//				}
+//				countOld = substringsBetween.length;
+//			}
+//			substringsBetween = StringUtils.substringsBetween(newParagraph, "==", "==");
+//			if (substringsBetween!=null) {
+//				for (String string : substringsBetween) {
+//					System.out.println(string);
+//				}
+//				countNew = substringsBetween.length;
+//			}
+//
+//			System.out.println("Cantida de '==' en Old: "+countOld+" en New: "+countNew);
+//			StringUtils.substringsBetween(oldParagraph, "==", "==");
+			StyleAnalyzer.elementsInParagraph(paragraphDiff);
 			for (Diff[] diffs : paragraphDiff.getDiffs()) {
 				
 				
@@ -108,5 +118,6 @@ public class DiffController {
 		}
 		
 	}
+	
 
 }
