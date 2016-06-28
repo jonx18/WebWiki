@@ -7,11 +7,13 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
+import java.util.Set;
 
 import javax.jws.soap.SOAPBinding.Style;
 
@@ -28,6 +30,10 @@ import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.util.diffAndStyles.Delimiter;
+import wikiAnalicis.util.diffAndStyles.DiffContainer;
+import wikiAnalicis.util.diffAndStyles.NodeContainer;
+import wikiAnalicis.util.diffAndStyles.ParagraphContainer;
 import wikiAnalicis.util.diffAndStyles.ParagraphDiff;
 import wikiAnalicis.util.diffAndStyles.ParagraphDiffer;
 import wikiAnalicis.util.diffAndStyles.StyleAnalyzer;
@@ -85,6 +91,17 @@ public class DiffController {
 
 	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
 		// TODO Auto-generated method stub
+		List<Delimiter> delimiters = new LinkedList<Delimiter>();
+		String[] openIndicator ={"<sub>","<big>","=====","====","===","=="};
+		String[] closeIndicator ={"</sub>","</big>","=====","====","===","=="};
+		for (int i = 0; i < openIndicator.length; i++) {
+			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i]);
+			delimiters.add(d);
+		}
+		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
+		DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
+		System.out.println("------------------------------------");
+		dfsTest(grafo);
 		for (ParagraphDiff paragraphDiff : listListDiff) {
 //			String oldParagraph = paragraphDiff.getOldParagraph();
 //			String newParagraph = paragraphDiff.getNewParagraph();
@@ -109,7 +126,8 @@ public class DiffController {
 //
 //			System.out.println("Cantida de '==' en Old: "+countOld+" en New: "+countNew);
 //			StringUtils.substringsBetween(oldParagraph, "==", "==");
-			StyleAnalyzer.elementsInParagraph(paragraphDiff);
+		
+			//StyleAnalyzer.elementsInParagraph(paragraphDiff);
 			for (Diff[] diffs : paragraphDiff.getDiffs()) {
 				
 				
@@ -118,6 +136,29 @@ public class DiffController {
 		}
 		
 	}
-	
-
+	public void dfsTest(DiffContainer diffContainer) {
+		Set<NodeContainer> oldNodeContainers = new HashSet<NodeContainer>();
+		Set<NodeContainer> newNodeContainers = new HashSet<NodeContainer>();
+		System.out.println("----------OLD-------------------");
+		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
+			for (NodeContainer nodeContainer : paragraphContainer.getOldElements()) {
+				dfsElementsTest(nodeContainer, oldNodeContainers);
+			}
+		}
+		System.out.println("----------NEW-------------------");
+		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
+			for (NodeContainer nodeContainer : paragraphContainer.getNewElements()) {
+				dfsElementsTest(nodeContainer, newNodeContainers);
+			}
+		}
+	}
+	public void dfsElementsTest(NodeContainer nodeContainer,Set<NodeContainer> nodeContainers) {
+		if (!nodeContainers.contains(nodeContainer)) {
+			nodeContainers.add(nodeContainer);
+			System.out.println(nodeContainer.getContent());
+			for (NodeContainer nodeContainer2 : nodeContainer.getChildrens()) {
+				dfsElementsTest(nodeContainer2, nodeContainers);
+			}
+		}
+	}
 }
