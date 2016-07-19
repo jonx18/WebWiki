@@ -17,11 +17,16 @@ import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
 import com.google.gson.Gson;
+/**
+ * Esta clase contiene la informacion referente a una wiki en particular.
+ * Contiene el nombre del sitio, los namespaces.
+ * @see Mediawiki
+ * @author Jonathan Martin
+ *
+ */
 @Entity
-public class Siteinfo implements Identificable{
-	/**
-	 * 
-	 */
+public class Siteinfo {
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -49,7 +54,10 @@ public class Siteinfo implements Identificable{
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+/**
+ * Retorna el nombre de la MediaWiki.
+ * @return String
+ */
 	public String getSitename() {
 		return sitename;
 	}
@@ -90,7 +98,11 @@ public class Siteinfo implements Identificable{
 		this.casee = casee;
 	}
 
-
+/**
+ * Retorna un listado de los namespaces.
+ * @see Namespace
+ * @return List<Namespace>
+ */
 	public List<Namespace> getNamespaces() {
 		return namespaces;
 	}

@@ -7,7 +7,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,18 +26,25 @@ import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
 
+/**
+ * Esta clase representa una revision hecha por un autor en una pagina
+ * @see Page
+ * @see UserContributor
+ * @author Jonathan Martin
+ *
+ */
 @Entity
-public class Revision implements Identificable{
+public class Revision{
 	
-	/**
-	 * 
-	 */
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO, generator="idOrGenerate")
     @GenericGenerator(name="idOrGenerate",
                       strategy="wikiAnalicis.util.UseIdOrGenerate")
+    //representa el id de la revision que se obtiene del XML
 	private Long id;
+    //representa el id de la revision anterior a esta, si es 0 esla primera.
 	private Long parentid;
 	private Date timestamp = Calendar.getInstance().getTime();
 	@OneToOne(fetch=FetchType.EAGER, targetEntity = UserContributor.class)
@@ -65,24 +71,44 @@ public class Revision implements Identificable{
 	public Revision() {
 		// TODO Auto-generated constructor stub
 	}
+	/**
+	 * Retorna el id de la Revision
+	 * @return Long
+	 */
 	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
+	/**
+	 * Retorna el id de la Revision anterior o 0 de no poseer.
+	 * @return Long
+	 */
 	public Long getParentid() {
 		return parentid;
 	}
 	public void setParentid(Long parentid) {
 		this.parentid = parentid;
 	}
+	/**
+	 * Retorna el momento en que la revision se realizo
+	 * @return Date
+	 */
 	public Date getTimestamp() {
 		return timestamp;
 	}
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}
+	/**
+	 * Permite setear a partir de un string bien formado el momento en que se realizo la revision.
+	 * Utiliza de base el siguiente formato: "yyyy-MM-dd'T'HH:mm:ss'Z'"
+	 * Ejemplos:
+	 * "1993-07-05T11:30:00Z"
+	 * "2011-08-02T12:00:00Z"
+	 * @param timestamp
+	 */
 	public void setTimestamp(String timestamp) {
 		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
 		Date date = null;
@@ -94,12 +120,21 @@ public class Revision implements Identificable{
 		}
 		this.timestamp = date;
 	}
+	/**
+	 * Retorna el usuario que realizo la modificacion.
+	 * @see UserContributor
+	 * @return UserContributor
+	 */
 	public UserContributor getContributor() {
 		return contributor;
 	}
 	public void setContributor(UserContributor contributor) {
 		this.contributor = contributor;
 	}
+	/**
+	 * Retorna el comentario que justifica la revision.
+	 * @return String
+	 */
 	public String getComment() {
 		return comment;
 	}
@@ -118,6 +153,10 @@ public class Revision implements Identificable{
 	public void setFormat(String format) {
 		this.format = format;
 	}
+	/**
+	 * Retorna el texto de la revision.
+	 * @return String
+	 */
 	public String getText() {
 		return text;
 	}
@@ -130,13 +169,21 @@ public class Revision implements Identificable{
 	public void setSha1(String sha1) {
 		this.sha1 = sha1;
 	}
-	
+	/**
+	 * Retorna si se trata de un ravision menor.
+	 * @return Boolean
+	 */
 	public Boolean getMinor() {
 		return minor;
 	}
 	public void setMinor(Boolean minor) {
 		this.minor = minor;
 	}
+	/**
+	 * Retorna la Page a la que pertenece.
+	 * @see Page
+	 * @return Page
+	 */
 	public Page getPage() {
 		return page;
 	}
@@ -149,6 +196,10 @@ public class Revision implements Identificable{
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
+	/**
+	 * Retorna si se elimino la revision
+	 * @return Boolean
+	 */
 	public Boolean getDeleted() {
 		return deleted;
 	}

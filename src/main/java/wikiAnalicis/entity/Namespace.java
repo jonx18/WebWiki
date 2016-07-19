@@ -6,11 +6,16 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
 import com.google.gson.Gson;
+/**
+ * Esta clase representa un Namespace de una Mediawiki.
+ * @see Siteinfo
+ * @author Jonathan Martin
+ *
+ */
 @Entity
-public class Namespace implements Identificable{
-	/**
-	 * 
-	 */
+public class Namespace{
+
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
@@ -30,7 +35,11 @@ public class Namespace implements Identificable{
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+/**
+ * Retorna la clave del namespace con el que se identifica en las Pages
+ * @see Page
+ * @return Integer
+ */
 	public Integer getKey() {
 		return keyclave;
 	}
@@ -46,7 +55,10 @@ public class Namespace implements Identificable{
 	public void setStringCase(String stringCase) {
 		this.stringCase = stringCase;
 	}
-
+/**
+ * Retorna el nombre del namespace
+ * @return String
+ */
 	public String getValue() {
 		return value;
 	}
