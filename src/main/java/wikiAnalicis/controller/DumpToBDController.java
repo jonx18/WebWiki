@@ -36,9 +36,9 @@ import com.thoughtworks.xstream.io.xml.StaxDriver;
 
 import wikiAnalicis.converter.MediaWikiConverter;
 import wikiAnalicis.converter.NamespaceConverter;
-import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.converter.RevisionConverter;
-import wikiAnalicis.converter.UserContributorConverter;
+import wikiAnalicis.converter.SQL.PageConverter;
+import wikiAnalicis.converter.SQL.UserContributorConverter;
 import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Mediawiki;
@@ -46,6 +46,7 @@ import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.service.CargaDumpService;
 import wikiAnalicis.service.CategoryService;
 import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
@@ -71,6 +72,8 @@ public class DumpToBDController {
 	private RevisionService revisionService;
 	@Autowired
 	private UserContributorService userContributorService;
+	@Autowired
+	private CargaDumpService cargaDumpService;
 	@Autowired
 	private Environment env;
 
@@ -322,10 +325,10 @@ public class DumpToBDController {
 
 		// converters
 		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
-		xStream.registerConverter(new PageConverter(pageService));
+		xStream.registerConverter(new PageConverter(cargaDumpService));
 		xStream.registerConverter(new NamespaceConverter());
 		xStream.registerConverter(new RevisionConverter());
-		xStream.registerConverter(new UserContributorConverter(userContributorService));
+		xStream.registerConverter(new UserContributorConverter(cargaDumpService));
 		return xStream;
 	}
 

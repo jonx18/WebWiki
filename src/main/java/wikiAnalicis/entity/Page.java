@@ -31,7 +31,7 @@ import com.google.gson.Gson;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
-public class Page {
+public class Page implements Identificable{
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;

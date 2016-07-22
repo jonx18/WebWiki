@@ -34,7 +34,7 @@ import com.google.gson.Gson;
  *
  */
 @Entity
-public class Revision{
+public class Revision implements Identificable{
 	
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
