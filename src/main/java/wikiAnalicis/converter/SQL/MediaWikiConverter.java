@@ -15,16 +15,17 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.service.CargaDumpService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 
 public class MediaWikiConverter implements Converter {
 
-	private MediawikiService mediawikiService;
+	private CargaDumpService cargaDumpService;
 
-	public MediaWikiConverter(MediawikiService mediawikiService) {
+	public MediaWikiConverter(CargaDumpService cargaDumpService) {
 		super();
-		this.mediawikiService = mediawikiService;
+		this.cargaDumpService = cargaDumpService;
 	}
 
 	@Override
@@ -46,6 +47,7 @@ public class MediaWikiConverter implements Converter {
 		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
 		mediawiki.setSiteinfo(siteinfo);
 		reader.moveUp();
+		mediawiki = cargaDumpService.createMediaWiki(mediawiki);
 		Integer pageIndex = 0;
 		List<Page> pages= new LinkedList<Page>();
 		while (reader.hasMoreChildren()) {
@@ -59,17 +61,19 @@ public class MediaWikiConverter implements Converter {
 			}
 			reader.moveUp();
 			if (pageIndex%100 == 0) {
-				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-				mediawiki.getPages().addAll(pages);
-				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+				this.savePagesInWiki(mediawiki,pages);
 				pages= new LinkedList<Page>();
 			}
 		}
-		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-		mediawiki.getPages().addAll(pages);
-		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		this.savePagesInWiki(mediawiki,pages);
 		System.out.println("fin");
 		return mediawiki;
 	}
+
+	private void savePagesInWiki(Mediawiki mediawiki, List<Page> pages) {
+		cargaDumpService.savePagesInWiki(mediawiki,pages);
+		
+	}
+	
 
 }

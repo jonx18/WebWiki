@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import wikiAnalicis.dao.CargaDumpDAO;
+import wikiAnalicis.entity.Mediawiki;
+import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.UserContributor;
@@ -95,5 +97,67 @@ public Page createCategory(Page page) {
 	query.executeUpdate();
 	return page;
 
+}
+@Override
+public Mediawiki createMediaWiki(Mediawiki mediawiki) {
+	Session session = util.getSessionFactory().getCurrentSession();
+	//CREO WIKI
+	SQLQuery query = session.createSQLQuery("INSERT INTO mediawiki (id) VALUES (DEFAULT)");
+	query.executeUpdate();
+	Long lastId = ((BigInteger) session.createSQLQuery("SELECT LAST_INSERT_ID()").uniqueResult()).longValue();
+	query.executeUpdate();
+	mediawiki.setId(lastId);
+	//CREO SITEINFO
+	query = session.createSQLQuery("INSERT INTO siteinfo ( base, casee, dbname, generator, sitename) "
+			+ "VALUES (:base, :casee, :dbname, :generator, :sitename)");
+	query.setParameter("base", mediawiki.getSiteinfo().getBase());
+	query.setParameter("casee", mediawiki.getSiteinfo().getCasee());
+	query.setParameter("dbname", mediawiki.getSiteinfo().getDbname());
+	query.setParameter("generator", mediawiki.getSiteinfo().getGenerator());
+	query.setParameter("sitename", mediawiki.getSiteinfo().getSitename());
+	query.executeUpdate();
+	lastId = ((BigInteger) session.createSQLQuery("SELECT LAST_INSERT_ID()").uniqueResult()).longValue();
+	query.executeUpdate();
+	mediawiki.getSiteinfo().setId(lastId);
+	//UNO WIKI Y SITEINFO
+	query = session.createSQLQuery("INSERT INTO mediawiki_siteinfo ( siteinfo_id, mediawiki_id) "
+			+ "VALUES ( :siteinfo_id, :mediawiki_id)");
+	query.setParameter("mediawiki_id", mediawiki.getId());
+	query.setParameter("siteinfo_id", mediawiki.getSiteinfo().getId());
+	query.executeUpdate();
+	//CREO NAMESPACES
+	for (Namespace namespace : mediawiki.getSiteinfo().getNamespaces()) {
+		//CREO NAMESPACE
+		query = session.createSQLQuery("INSERT INTO namespace ( keyclave, stringCase, value) "
+				+ "VALUES ( :keyclave, :stringCase, :value) ");
+		query.setParameter("keyclave", namespace.getKey());
+		query.setParameter("stringCase",namespace.getStringCase());
+		query.setParameter("value", namespace.getValue());
+		query.executeUpdate();
+		lastId = ((BigInteger) session.createSQLQuery("SELECT LAST_INSERT_ID()").uniqueResult()).longValue();
+		query.executeUpdate();
+		namespace.setId(lastId);
+		//UNO SITEINFO Y NAMESPACE
+		query = session.createSQLQuery("INSERT INTO siteinfo_namespace ( Siteinfo_id, namespaces_id) "
+				+ "VALUES ( :Siteinfo_id, :namespaces_id)");
+		query.setParameter("namespaces_id", namespace.getId());
+		query.setParameter("Siteinfo_id", mediawiki.getSiteinfo().getId());
+		query.executeUpdate();
+	}
+	return mediawiki;
+}
+@Override
+public void savePagesInWiki(Mediawiki mediawiki, List<Page> pages) {
+	Session session = util.getSessionFactory().getCurrentSession();
+	//CREO WIKI
+	SQLQuery query;
+	for (Page page : pages) {
+		query = session.createSQLQuery("INSERT INTO mediawiki_page ( Mediawiki_id, pages_id) "
+				+ "VALUES ( :Mediawiki_id, :pages_id)");
+		query.setParameter("Mediawiki_id", mediawiki.getId());
+		query.setParameter("pages_id", page.getId());
+		query.executeUpdate();
+	}
+	
 }
 }

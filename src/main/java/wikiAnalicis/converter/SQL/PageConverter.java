@@ -52,12 +52,15 @@ public class PageConverter implements Converter {
 		reader.moveDown();
 		page.setId(new Long(reader.getValue()));
 		reader.moveUp();
+		System.out.println("es");
 		if (page.getNs().compareTo(14)==0) {
 			page=pageToCategory(page);
 			page = cargaDumpService.createCategory(page);
+			System.out.println("categoria");
 		}
 		else{
 			page = cargaDumpService.createPage(page);
+			System.out.println("page");
 		}
 		
 //		pageService.mergePage(page);
