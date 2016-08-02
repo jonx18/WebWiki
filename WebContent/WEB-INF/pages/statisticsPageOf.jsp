@@ -55,7 +55,7 @@
 	<script type="text/javascript">
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
-			'packages' : [ 'corechart', 'controls' ],
+			'packages' : [ 'corechart', 'controls', 'bar' ],
 			'language' : 'es'
 		});
 
@@ -108,7 +108,7 @@
 			});
 
 			var lineChart = new google.visualization.ChartWrapper({
-				'chartType' : 'LineChart',
+				'chartType' : 'ColumnChart',
 				'containerId' : 'revisionesDia_chart_div',
 				'options' : {
 					'title' : 'Revisiones en el Tiempo',
@@ -161,7 +161,7 @@
 			});
 
 			var lineChart = new google.visualization.ChartWrapper({
-				'chartType' : 'LineChart',
+				'chartType' : 'ColumnChart',
 				'containerId' : 'contenidoDia_chart_div',
 				'options' : {
 					'title' : 'Contenido en el Tiempo',

@@ -65,9 +65,9 @@ public class MediaWikiConverter implements Converter {
 				pages= new LinkedList<Page>();
 			}
 		}
-//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//		mediawiki.getPages().addAll(pages);
-//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		mediawiki.getPages().addAll(pages);
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 		System.out.println("fin");
 		return mediawiki;
 	}

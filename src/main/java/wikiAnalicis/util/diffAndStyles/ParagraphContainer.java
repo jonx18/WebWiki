@@ -4,12 +4,19 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class ParagraphContainer {
-	ParagraphDiff paragraphDiff;
+	private ParagraphDiff paragraphDiff;
+	private ParagraphRevisionContainer oldParagraph;
+	private ParagraphRevisionContainer newParagraph;
 	List<NodeContainer> oldElements = new LinkedList<NodeContainer>();
 	List<NodeContainer> newElements = new LinkedList<NodeContainer>();
 	public ParagraphContainer(ParagraphDiff paragraphDiff) {
 		super();
 		this.paragraphDiff = paragraphDiff;
+	}
+	public ParagraphContainer(ParagraphDiff paragraphDiff,List<Delimiter> delimiters) {
+		super();
+		this.oldParagraph = new ParagraphRevisionContainer(paragraphDiff.getOldParagraph(),delimiters);
+		this.newParagraph = new ParagraphRevisionContainer(paragraphDiff.getOldParagraph(),delimiters);
 	}
 	public ParagraphDiff getParagraphDiff() {
 		return paragraphDiff;

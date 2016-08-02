@@ -19,6 +19,16 @@ public class StyleAnalyzer {
 		super();
 		this.delimiters = delimiters;
 	}
+	public DiffContainer textDescomsition(LinkedList<ParagraphDiff> paragraphDiffs) {
+		DiffContainer diffContainer = new DiffContainer(paragraphDiffs, delimiters);
+		
+		
+		
+		return diffContainer;
+		
+	}
+	
+	
 	public DiffContainer getStryleGraph(LinkedList<ParagraphDiff> paragraphDiffs) {
 		DiffContainer diffContainer = new DiffContainer();
 		LinkedList<NodeContainer> oldQueue = new LinkedList<NodeContainer>();
