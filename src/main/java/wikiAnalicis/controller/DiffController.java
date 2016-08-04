@@ -92,16 +92,24 @@ public class DiffController {
 	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
 		// TODO Auto-generated method stub
 		List<Delimiter> delimiters = new LinkedList<Delimiter>();
-		String[] openIndicator ={"<sub>","<big>","=====","====","===","=="};
-		String[] closeIndicator ={"</sub>","</big>","=====","====","===","=="};
+		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+				"<ref","==","===","====","=====","''","'''","'''''","#REDIRECCIÓN [[","[http://","[https://","[["};
+		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+				"</ref>","==","===","====","=====","''","'''","'''''","]]","]","]","]]"};
 		for (int i = 0; i < openIndicator.length; i++) {
-			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i]);
+			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],false);
+			delimiters.add(d);
+		}
+		String[] openIndicatorFull ={"#","*","::",":"};
+		for (int i = 0; i < openIndicatorFull.length; i++) {
+			Delimiter d = new Delimiter(openIndicatorFull[i],true);
 			delimiters.add(d);
 		}
 		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
-		DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
+		styleAnalyzer.textDescomsition(listListDiff);
+		//DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
 		System.out.println("------------------------------------");
-		dfsTest(grafo);
+		//dfsTest(grafo);
 		for (ParagraphDiff paragraphDiff : listListDiff) {
 //			String oldParagraph = paragraphDiff.getOldParagraph();
 //			String newParagraph = paragraphDiff.getNewParagraph();

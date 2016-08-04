@@ -16,7 +16,7 @@ public class ParagraphContainer {
 	public ParagraphContainer(ParagraphDiff paragraphDiff,List<Delimiter> delimiters) {
 		super();
 		this.oldParagraph = new ParagraphRevisionContainer(paragraphDiff.getOldParagraph(),delimiters);
-		this.newParagraph = new ParagraphRevisionContainer(paragraphDiff.getOldParagraph(),delimiters);
+		this.newParagraph = new ParagraphRevisionContainer(paragraphDiff.getNewParagraph(),delimiters);
 	}
 	public ParagraphDiff getParagraphDiff() {
 		return paragraphDiff;
