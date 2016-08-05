@@ -92,6 +92,10 @@ public class DiffController {
 	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
 		// TODO Auto-generated method stub
 		List<Delimiter> delimiters = new LinkedList<Delimiter>();
+//		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+//				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
+//		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+//				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
 		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
 				"<ref","==","===","====","=====","''","'''","'''''","#REDIRECCIÓN [[","[http://","[https://","[["};
 		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",

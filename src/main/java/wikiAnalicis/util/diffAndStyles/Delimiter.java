@@ -1,5 +1,6 @@
 package wikiAnalicis.util.diffAndStyles;
 
+import java.util.LinkedList;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
@@ -49,16 +50,16 @@ public class Delimiter {
 		StringBuilder textBuilder = new StringBuilder(text);
 		int o = StringUtils.countMatches(textBuilder, this.getOpenIndicator());
 		int c = StringUtils.countMatches(textBuilder, this.getCloseIndicator());
-		for (int i = 0; i < o; i++) {
-			int index = StringUtils.indexOf(textBuilder, this.getOpenIndicator());
-			//map.put(index, this.getOpenIndicator());
-			for (int j = index; j < index+this.getOpenIndicator().length(); j++) {
-				indexValues[j]=id;
-			}
-			textBuilder.replace(index, index+this.getOpenIndicator().length(),StringUtils.repeat(" ",this.getOpenIndicator().length() ));
-		}	
 		if (!this.getIsFullParagraph()) {
-		
+				
+				for (int i = 0; i < o; i++) {
+					int index = StringUtils.indexOf(textBuilder, this.getOpenIndicator());
+					//map.put(index, this.getOpenIndicator());
+					for (int j = index; j < index+this.getOpenIndicator().length(); j++) {
+						indexValues[j]=id;
+					}
+					textBuilder.replace(index, index+this.getOpenIndicator().length(),StringUtils.repeat(" ",this.getOpenIndicator().length() ));
+				}
 				if (!this.getOpenIndicator().equalsIgnoreCase(this.getCloseIndicator())) {
 					for (int i = 0; i < c; i++) {
 						int index = StringUtils.indexOf(textBuilder, this.getCloseIndicator());
@@ -69,7 +70,51 @@ public class Delimiter {
 						textBuilder.replace(index, index+this.getCloseIndicator().length(),StringUtils.repeat(" ",this.getCloseIndicator().length() ));
 					}
 				}
-		} 
+		} else
+		{
+			if (o>0) {
+				int index = StringUtils.indexOf(textBuilder, this.getOpenIndicator());
+				if (index==0) {
+					for (int j = index; j < index+this.getCloseIndicator().length(); j++) {
+						indexValues[j]=id;
+					}
+				}
+			}
+		}
 		return indexValues;
+	}
+	public Object[] getComponentsFrom(String text, int[] indexValues, int indiceDeAvance,
+			LinkedList<Delimiter> delimiters) {
+		LinkedList<NodeContainer> containers = new LinkedList<NodeContainer>();
+		int myId = indexValues[indiceDeAvance];
+		indiceDeAvance+= this.getOpenIndicator().length();
+		int fin=indexValues.length;
+		if (!this.getIsFullParagraph()) {
+			for (int i = indiceDeAvance; i < indexValues.length; i++) {
+				if (indexValues[i]==myId) {
+					fin=i;
+					break;
+				}
+			}
+		}
+		while(indiceDeAvance<fin){
+			if (indexValues[indiceDeAvance]==0) {
+				int indiceAnterior= indiceDeAvance;
+				while (indiceDeAvance<fin && indexValues[indiceDeAvance]==0){
+					indiceDeAvance++;
+				}
+				System.out.println("****************");
+				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
+			} else {
+				int id = indexValues[indiceDeAvance];
+				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
+				containers.add((StyleContainer)par[0]);
+				indiceDeAvance=(Integer)par[1];
+			}
+		}
+		StyleContainer styleContainer = new StyleContainer(this, containers);
+		indiceDeAvance+= this.getCloseIndicator().length();
+		Object[] result = {styleContainer,indiceDeAvance};
+		return result;
 	}
 }
