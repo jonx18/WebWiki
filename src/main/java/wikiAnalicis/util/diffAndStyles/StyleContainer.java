@@ -20,11 +20,15 @@ public class StyleContainer extends NodeContainer {
 @Override
 public String componentsToString() {
 	StringBuilder text = new StringBuilder();
+	text.append("|stylecomponent start:");
 	text.append(this.getDelimiter().getOpenIndicator());
 	for (NodeContainer nodeContainer : childrens) {
+		text.append("-textcomponent start:");
 		text.append(nodeContainer.componentsToString());
+		text.append("textcomponent end-");
 	}
 	text.append(this.getDelimiter().getCloseIndicator());
+	text.append(":stylecomponent end|");
 	return text.toString();
 }
 	

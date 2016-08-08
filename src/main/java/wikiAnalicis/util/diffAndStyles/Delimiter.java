@@ -73,9 +73,10 @@ public class Delimiter {
 		} else
 		{
 			if (o>0) {
-				int index = StringUtils.indexOf(textBuilder, this.getOpenIndicator());
+				int index = StringUtils.indexOf(StringUtils.trim(textBuilder.toString()), this.getOpenIndicator());
 				if (index==0) {
-					for (int j = index; j < index+this.getCloseIndicator().length(); j++) {
+					index = StringUtils.indexOf(textBuilder, this.getOpenIndicator());
+					for (int j = index; j < index+this.getOpenIndicator().length(); j++) {
 						indexValues[j]=id;
 					}
 				}

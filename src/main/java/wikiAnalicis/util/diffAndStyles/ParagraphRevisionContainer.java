@@ -14,10 +14,10 @@ public class ParagraphRevisionContainer {
 	}
 	private void textToComponents(String text) {
 		int[] indexValues = new int[text.length()];
-//		for (int i = 0; i < delimiters.size(); i++) {
-//			System.out.println("delimiter id: "+i+" open: "+delimiters.get(i).getOpenIndicator());
-//			indexValues = delimiters.get(i).putIdArray(i,indexValues,text);
-//		}
+		for (int i = 0; i < delimiters.size(); i++) {
+			//System.out.println("delimiter id: "+i+" open: "+delimiters.get(i).getOpenIndicator());
+			indexValues = delimiters.get(i).putIdArray(i,indexValues,text);
+		}
 		System.out.println(text);
 		StringBuilder stringBuilder = new StringBuilder();
 		for (int i : indexValues) {
@@ -39,9 +39,6 @@ public class ParagraphRevisionContainer {
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];
 			}
-		}
-		if (text.contains("YO<sub>1</sub>+YO<sub>2</sub>==YO<sup>YO</sup>==")) {
-			System.out.println("ej");
 		}
 		StringBuilder prueba = new StringBuilder();
 		for (NodeContainer nodeContainer : containers) {
