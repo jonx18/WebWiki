@@ -28,7 +28,7 @@ public class StyleAnalyzer {
 		
 	}
 	
-	
+	/**
 	public DiffContainer getStryleGraph(LinkedList<ParagraphDiff> paragraphDiffs) {
 		DiffContainer diffContainer = new DiffContainer();
 		LinkedList<NodeContainer> oldQueue = new LinkedList<NodeContainer>();
@@ -130,6 +130,7 @@ public class StyleAnalyzer {
 		}
 		return diffContainer;
 	}
+**/
 	public static Map<String,List<String>> elementsInParagraph(ParagraphDiff paragraphDiff) {
 		String tags="&lt;"+"&gt;";
 		////System.out.println("Parrafo viejo");

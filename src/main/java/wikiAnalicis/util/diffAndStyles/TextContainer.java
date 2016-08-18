@@ -19,7 +19,14 @@ public class TextContainer extends NodeContainer {
 	@Override
 	public String componentsToString() {
 		// TODO Auto-generated method stub
-		return this.getText();
+		return this.getText()+" Change: "+this.getHasChanges();
 	}
+@Override
+public int setIntoArray(int index, NodeContainer[] arrayOfDiff) {
+	for (int i = index; i < index+this.getText().length(); i++) {
+		arrayOfDiff[i]=this;
+	}
+	return index+this.getText().length();
+}
 	
 }

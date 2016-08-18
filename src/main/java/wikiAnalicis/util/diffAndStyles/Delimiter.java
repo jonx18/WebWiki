@@ -65,7 +65,7 @@ public class Delimiter {
 						int index = StringUtils.indexOf(textBuilder, this.getCloseIndicator());
 						//map.put(index, this.getCloseIndicator());
 						for (int j = index; j < index+this.getCloseIndicator().length(); j++) {
-							indexValues[j]=id;
+							indexValues[j]=id*-1;
 						}
 						textBuilder.replace(index, index+this.getCloseIndicator().length(),StringUtils.repeat(" ",this.getCloseIndicator().length() ));
 					}
@@ -88,9 +88,13 @@ public class Delimiter {
 			LinkedList<Delimiter> delimiters) {
 		LinkedList<NodeContainer> containers = new LinkedList<NodeContainer>();
 		int myId = indexValues[indiceDeAvance];
+
 		indiceDeAvance+= this.getOpenIndicator().length();
 		int fin=indexValues.length;
 		if (!this.getIsFullParagraph()) {
+			if (!this.getOpenIndicator().equalsIgnoreCase(this.getCloseIndicator())) {
+				myId=myId*-1;
+			}
 			for (int i = indiceDeAvance; i < indexValues.length; i++) {
 				if (indexValues[i]==myId) {
 					fin=i;

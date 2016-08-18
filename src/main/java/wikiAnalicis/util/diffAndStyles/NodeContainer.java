@@ -3,10 +3,11 @@ package wikiAnalicis.util.diffAndStyles;
 import java.util.LinkedList;
 import java.util.List;
 
-public class NodeContainer {
+public abstract class NodeContainer {
 	Delimiter delimiter;
 	NodeContainer parent=null;
 	List<NodeContainer> childrens = new LinkedList<NodeContainer>();
+	private Boolean hasChanges=false;
 
 
 
@@ -40,6 +41,8 @@ public class NodeContainer {
 //		}
 		return "";
 	}
+	
+	public abstract int setIntoArray(int index, NodeContainer[] arrayOfDiff);
 	public List<NodeContainer> getChildrens() {
 		return childrens;
 	}
@@ -55,4 +58,11 @@ public class NodeContainer {
 	public void setParent(NodeContainer parent) {
 		this.parent = parent;
 	}
+	public Boolean getHasChanges() {
+		return hasChanges;
+	}
+	public void setHasChanges(Boolean hasChanges) {
+		this.hasChanges = hasChanges;
+	}
+	
 }

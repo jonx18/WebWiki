@@ -40,10 +40,33 @@ public class ParagraphRevisionContainer {
 				indiceDeAvance=(Integer)par[1];
 			}
 		}
+		toDelimitedText();
+	}
+	public void toDelimitedText() {
 		StringBuilder prueba = new StringBuilder();
 		for (NodeContainer nodeContainer : containers) {
 			prueba.append(nodeContainer.componentsToString());
 		}
 		System.out.println("Resultado   "+prueba);
 	}
+	public NodeContainer[] setIntoArray(NodeContainer[] arrayOfDiff) {
+		int index=0;
+		for (NodeContainer nodeContainer : this.getContainers()) {
+			index=nodeContainer.setIntoArray(index,arrayOfDiff);
+		}
+		return arrayOfDiff;
+	}
+	public LinkedList<Delimiter> getDelimiters() {
+		return delimiters;
+	}
+	public void setDelimiters(LinkedList<Delimiter> delimiters) {
+		this.delimiters = delimiters;
+	}
+	public LinkedList<NodeContainer> getContainers() {
+		return containers;
+	}
+	public void setContainers(LinkedList<NodeContainer> containers) {
+		this.containers = containers;
+	}
+	
 }
