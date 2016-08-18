@@ -35,6 +35,8 @@ public class ParagraphRevisionContainer {
 				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
 			} else {
 				int id = indexValues[indiceDeAvance];
+				System.out.println(text);
+				System.out.println(delimiters.get(id).getOpenIndicator());
 				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];

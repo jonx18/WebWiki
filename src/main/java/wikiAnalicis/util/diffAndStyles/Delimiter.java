@@ -108,10 +108,12 @@ public class Delimiter {
 				while (indiceDeAvance<fin && indexValues[indiceDeAvance]==0){
 					indiceDeAvance++;
 				}
-				System.out.println("****************");
 				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
 			} else {
 				int id = indexValues[indiceDeAvance];
+				System.out.println(this.getOpenIndicator());
+				System.out.println(fin);
+				System.out.println(id);
 				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];

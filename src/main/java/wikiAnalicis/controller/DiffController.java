@@ -99,14 +99,14 @@ public class DiffController {
 //		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
 //				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
 		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
-				"<ref","==","===","====","=====","''","'''","'''''","#REDIRECCIÓN [[","[http://","[https://","[["};
+				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
 		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
-				"</ref>","==","===","====","=====","''","'''","'''''","]]","]","]","]]"};
+				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
 		for (int i = 0; i < openIndicator.length; i++) {
 			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],false);
 			delimiters.add(d);
 		}
-		String[] openIndicatorFull ={"#","*","::",":"};
+		String[] openIndicatorFull ={"#","#REDIRECCIÓN","*","::",":"};
 		for (int i = 0; i < openIndicatorFull.length; i++) {
 			Delimiter d = new Delimiter(openIndicatorFull[i],true);
 			delimiters.add(d);
