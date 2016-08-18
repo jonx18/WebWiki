@@ -15,9 +15,16 @@
 	<div class="container myrow-container">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h3 class="panel-title">
-					<b>Revisiones</b>
-				</h3>
+
+				<div class="panel-title">
+					<div align="left">
+						<b>Revisiones</b>
+					</div>
+
+				</div>
+				<div align="right">
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+				</div>
 			</div>
 
 			<c:if test="${empty revisions}">

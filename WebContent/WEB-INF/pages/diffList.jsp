@@ -15,9 +15,15 @@
 	<div class="container myrow-container">
 		<div class="panel panel-success">
 			<div class="panel-heading">
-				<h3 class="panel-title">
-					<b>Diff</b>
-				</h3>
+				<div class="panel-title">
+					<div align="left">
+						<b>Diff</b>
+					</div>
+
+				</div>
+				<div align="right">
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+				</div>
 			</div>
 			<div class="panel-body">
 				<c:if test="${empty listListDiff}">
@@ -79,10 +85,55 @@
 				</ul>
 			</div>
 		</div>
+		<!-- 
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<b>Parrafo</b>
+				</h3>
+			</div>
+			<div class="panel-body">
+			<div id="wordtree_explicit" style="width: 900px; height: 500px;"></div>
+			</div>
+		</div>
+		 -->
 	</div>
 
 
 	<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+	<!--    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script type="text/javascript">
+      google.charts.load('current', {packages:['wordtree']});
+      google.charts.setOnLoadCallback(drawSimpleNodeChart);
+      function drawSimpleNodeChart() {
+        var nodeListData = new google.visualization.arrayToDataTable([
+          ['id', 'childLabel', 'parent', 'size', { role: 'style' }],
+          [0, 'YO<sup>1</sup>+YO<sup>2</sup>==YO<sup>3</sup>==', -1, 1, 'black'],
+          [1, 'YO', 0, 1, 'black'],
+          [2, '<sup> </sup>', 0, 1, 'green'],
+          [3, '+YO', 0, 1, 'black'],
+          [4, '<sup> </sup>', 0, 1, 'green'],
+          [5, '== ==', 0, 1, 'black'],
+          [6, '1', 2, 1, 'black'],
+          [7, '2', 4, 1, 'black'],
+          [8, 'YO', 5, 1, 'black'],
+          [9, '<sup> </sup>', 5, 1, 'black'],
+          [10, '3', 9, 1, 'green']
+
+          ]);
+
+        var options = {
+          colors: ['black', 'black', 'black'],
+          wordtree: {
+            format: 'explicit',
+            type: 'suffix'
+          }
+        };
+
+        var wordtree = new google.visualization.WordTree(document.getElementById('wordtree_explicit'));
+        wordtree.draw(nodeListData, options);
+      }
+    </script>-->
 </body>
 </html>

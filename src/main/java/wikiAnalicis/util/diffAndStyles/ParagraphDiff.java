@@ -1,6 +1,7 @@
 package wikiAnalicis.util.diffAndStyles;
 
 import java.util.LinkedList;
+import java.util.List;
 
 import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
 import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
@@ -36,7 +37,27 @@ public class ParagraphDiff {
 		}
 		return builder.toString();
 	}
-	
+	public List<Diff> getOldDiffs(){
+		int index=0;
+		return makeDiffsList(index);
+	}
+	public List<Diff>  getNewDiffs(){
+		int index=1;
+		return makeDiffsList(index);
+	}
+	private List<Diff>  makeDiffsList(int index) {
+		List<Diff> diffsresult = new LinkedList<Diff>();
+		for (Diff[] diffs2 : diffs) {
+			if (diffs2[index]!=null) {
+				diffsresult.add(diffs2[index]);
+			}
+			else{
+				diffsresult.add(new Diff( (index==0)? Operation.DELETE:Operation.INSERT, ""));
+			}
+
+		}
+		return diffsresult;
+	}
 	public Boolean getChange() {
 		return change;
 	}

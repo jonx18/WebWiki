@@ -1,6 +1,5 @@
 package wikiAnalicis.entity;
 
-import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -9,21 +8,28 @@ import javax.persistence.Id;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
-import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
 
+/**
+ * Representa al autor de una revision.
+ * El mismo puede ser registrado, anonimo, o no existir actualmente.
+ * @see Revision
+ * @author Jonathan Martin
+ *
+ */
 @Entity
-public class UserContributor implements Identificable{
-	/**
-	 * 
-	 */
+public class UserContributor {
+	//Contador de anonimos
 	public static Long anonimusID=new Long(-1);
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    //es un id para desambiguar en caso de repeticion del id real.
 	private Long id;
     @Column(nullable = false)
+    //representa el id del usuario en la wiki o un identificador negativo de ser anonimo
     private Long realId=anonimusID;
     @Column(nullable = false,unique=true)
 	private String username;
@@ -38,19 +44,30 @@ public class UserContributor implements Identificable{
 	public void setId(Long id) {
 		this.id = id;
 	}
+	/**
+	 * Retorna el nombre de usuario si el mismo no es anonimo, en caso contrario retornara null o vacio.
+	 * @return String
+	 */
 	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
+	/**
+	 * Retorna la ip si el mismo es anonimo, en caso contrario retornara null o vacio.
+	 * @return String
+	 */
 	public String getIp() {
 		return ip;
 	}
 	public void setIp(String ip) {
 		this.ip = ip;
 	}
+	/**
+	 * Retorna el id que representa al usuario en la wiki
+	 * @return Long
+	 */
 	public Long getRealId() {
 		return realId;
 	}
@@ -62,6 +79,7 @@ public class UserContributor implements Identificable{
 		Gson gson = new Gson();
 		return gson.toJson(this, getClass());
 	}
+	//Tuve que sobre escribir equals y hashcode
 	@Override
 	public boolean equals(Object obj) {
 		// TODO Auto-generated method stub
@@ -94,6 +112,10 @@ public class UserContributor implements Identificable{
 		this.id=UserContributor.anonimusID;
 		UserContributor.anonimusID = anonimusID-1;
 	}
+	/**
+	 * retorna si el usuario fue eliminado.
+	 * @return Boolean
+	 */
 	public Boolean getDeleted() {
 		return deleted;
 	}

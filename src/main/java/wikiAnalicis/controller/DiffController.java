@@ -82,26 +82,41 @@ public class DiffController {
 		ParagraphDiffer differ = new ParagraphDiffer();
 		LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
 		//String json = gson.toJson(result, result.getClass());
-		cambiosContenido(listListDiff);
+		DiffContainer diffContainer = cambiosContenido(listListDiff);
 		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
-		return new ModelAndView("diffList", "listListDiff", listListDiff);
+		ModelAndView model = new ModelAndView("diffList");
+		model.addObject("listListDiff", listListDiff);
+		return model;
 
 	}
 
-	private void cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
+	private DiffContainer cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
 		// TODO Auto-generated method stub
 		List<Delimiter> delimiters = new LinkedList<Delimiter>();
-		String[] openIndicator ={"<sub>","<big>","=====","====","===","=="};
-		String[] closeIndicator ={"</sub>","</big>","=====","====","===","=="};
+//		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+//				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
+//		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+//				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
+		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
+		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
 		for (int i = 0; i < openIndicator.length; i++) {
-			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i]);
+			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],false);
+			delimiters.add(d);
+		}
+		String[] openIndicatorFull ={"#","#REDIRECCIÓN","*","::",":"};
+		for (int i = 0; i < openIndicatorFull.length; i++) {
+			Delimiter d = new Delimiter(openIndicatorFull[i],true);
 			delimiters.add(d);
 		}
 		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
-		DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
+		DiffContainer diffContainer = styleAnalyzer.textDescomsition(listListDiff);
+		diffContainer.calculateDifferenes();
+		//DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
 		System.out.println("------------------------------------");
-		dfsTest(grafo);
+		//dfsTest(grafo);
 		for (ParagraphDiff paragraphDiff : listListDiff) {
 //			String oldParagraph = paragraphDiff.getOldParagraph();
 //			String newParagraph = paragraphDiff.getNewParagraph();
@@ -134,31 +149,31 @@ public class DiffController {
 				
 			}
 		}
-		
+		return diffContainer;
 	}
-	public void dfsTest(DiffContainer diffContainer) {
-		Set<NodeContainer> oldNodeContainers = new HashSet<NodeContainer>();
-		Set<NodeContainer> newNodeContainers = new HashSet<NodeContainer>();
-		System.out.println("----------OLD-------------------");
-		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
-			for (NodeContainer nodeContainer : paragraphContainer.getOldElements()) {
-				dfsElementsTest(nodeContainer, oldNodeContainers);
-			}
-		}
-		System.out.println("----------NEW-------------------");
-		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
-			for (NodeContainer nodeContainer : paragraphContainer.getNewElements()) {
-				dfsElementsTest(nodeContainer, newNodeContainers);
-			}
-		}
-	}
-	public void dfsElementsTest(NodeContainer nodeContainer,Set<NodeContainer> nodeContainers) {
-		if (!nodeContainers.contains(nodeContainer)) {
-			nodeContainers.add(nodeContainer);
-			System.out.println(nodeContainer.getContent());
-			for (NodeContainer nodeContainer2 : nodeContainer.getChildrens()) {
-				dfsElementsTest(nodeContainer2, nodeContainers);
-			}
-		}
-	}
+//	public void dfsTest(DiffContainer diffContainer) {
+//		Set<NodeContainer> oldNodeContainers = new HashSet<NodeContainer>();
+//		Set<NodeContainer> newNodeContainers = new HashSet<NodeContainer>();
+//		System.out.println("----------OLD-------------------");
+//		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
+//			for (NodeContainer nodeContainer : paragraphContainer.getOldElements()) {
+//				dfsElementsTest(nodeContainer, oldNodeContainers);
+//			}
+//		}
+//		System.out.println("----------NEW-------------------");
+//		for (ParagraphContainer paragraphContainer : diffContainer.getParagraphs()) {
+//			for (NodeContainer nodeContainer : paragraphContainer.getNewElements()) {
+//				dfsElementsTest(nodeContainer, newNodeContainers);
+//			}
+//		}
+//	}
+//	public void dfsElementsTest(NodeContainer nodeContainer,Set<NodeContainer> nodeContainers) {
+//		if (!nodeContainers.contains(nodeContainer)) {
+//			nodeContainers.add(nodeContainer);
+//			System.out.println(nodeContainer.getContent());
+//			for (NodeContainer nodeContainer2 : nodeContainer.getChildrens()) {
+//				dfsElementsTest(nodeContainer2, nodeContainers);
+//			}
+//		}
+//	}
 }

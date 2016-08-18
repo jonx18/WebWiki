@@ -2,16 +2,11 @@ package wikiAnalicis.controller;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.text.Normalizer;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
@@ -22,22 +17,17 @@ import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.support.PropertiesLoaderUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.Gson;
 import com.thoughtworks.xstream.XStream;
-import com.thoughtworks.xstream.io.xml.DomDriver;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
-import wikiAnalicis.converter.MediaWikiConverter;
 import wikiAnalicis.converter.NamespaceConverter;
-import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.converter.RevisionConverter;
+import wikiAnalicis.converter.MediaWikiConverter;
+import wikiAnalicis.converter.PageConverter;
 import wikiAnalicis.converter.UserContributorConverter;
 import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
@@ -46,14 +36,13 @@ import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.service.CargaDumpService;
 import wikiAnalicis.service.CategoryService;
 import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 import wikiAnalicis.service.UserContributorService;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
 
 @Controller
 @PropertySource({ "classpath:historyPath.properties" })
@@ -72,6 +61,8 @@ public class DumpToBDController {
 	@Autowired
 	private UserContributorService userContributorService;
 	@Autowired
+	private CargaDumpService cargaDumpService;
+	@Autowired
 	private Environment env;
 
 	@RequestMapping("dumptobd")
@@ -86,9 +77,9 @@ public class DumpToBDController {
 
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.test"));
+		System.out.println(env.getProperty("history.path"));
 		XStream xStream = configXStream();
-		String historyPath = env.getProperty("history.path.test");
+		String historyPath = env.getProperty("history.path");
 		historyXMLToDB(xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
@@ -321,11 +312,14 @@ public class DumpToBDController {
 		xStream.addImplicitCollection(Mediawiki.class, "pages");
 
 		// converters
-		xStream.registerConverter(new MediaWikiConverter(mediawikiService));
-		xStream.registerConverter(new PageConverter(pageService));
+//		xStream.registerConverter(new MediaWikiConverter(cargaDumpService));
+//		xStream.registerConverter(new PageConverter(cargaDumpService));
+		xStream.registerConverter(new MediaWikiConverter( mediawikiService));
+		xStream.registerConverter(new PageConverter(pageService,revisionService));
 		xStream.registerConverter(new NamespaceConverter());
 		xStream.registerConverter(new RevisionConverter());
 		xStream.registerConverter(new UserContributorConverter(userContributorService));
+//		xStream.registerConverter(new UserContributorConverter(cargaDumpService));
 		return xStream;
 	}
 

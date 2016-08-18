@@ -8,16 +8,21 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 
 import org.hibernate.annotations.BatchSize;
-import org.hibernate.annotations.Cascade;
-import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
+/**
+ * Esta clase representa el lapso de tiempo en el que una Page o Category fue contenida en una Category.
+ * Limitando con la revision de entrada y de salida a dicha Category.
+ * @see Page
+ * @see Category
+ * @see Revision
+ * @author Jonathan Martin
+ *
+ */
 @Entity
 public class InCategory implements Serializable{
 	
@@ -32,21 +37,25 @@ public class InCategory implements Serializable{
 	 @JoinColumn(name = "category_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 //categoria que la contiene
 	 private Category category;
 	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
 	 @JoinColumn(name = "page_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 //page o categoria contenida
 	private Page page;
 	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionStart_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 //revision de entrada a la categoria
 	private Revision revisionStart;
 	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionEnd_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 //revision de salida de la categoria
 	private Revision revisionEnd;
 
 	public InCategory() {
@@ -60,7 +69,11 @@ public class InCategory implements Serializable{
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+/**
+ * Se obtiene la Page o Category contenida 
+ * @see Page
+ * @return Page
+ */
 	public Page getPage() {
 		return page;
 	}
@@ -68,7 +81,11 @@ public class InCategory implements Serializable{
 	public void setPage(Page page) {
 		this.page = page;
 	}
-
+/**
+ * Se obtiene la revision con la que se ingresa a la Category.
+ * @see Revision
+ * @return Revision
+ */
 	public Revision getRevisionStart() {
 		return revisionStart;
 	}
@@ -77,6 +94,11 @@ public class InCategory implements Serializable{
 		this.revisionStart = revisionStart;
 	}
 
+	/**
+	 * Se obtiene la revision con la que se deja la Category.
+	 * @see Revision
+	 * @return Revision
+	 */
 	public Revision getRevisionEnd() {
 		return revisionEnd;
 	}
@@ -84,7 +106,10 @@ public class InCategory implements Serializable{
 	public void setRevisionEnd(Revision revisionEnd) {
 		this.revisionEnd = revisionEnd;
 	}
-
+/**
+ * Retorna la Category que contiene o contuvo a laPage o Category
+ * @return
+ */
 	public Category getCategory() {
 		return category;
 	}
@@ -92,7 +117,10 @@ public class InCategory implements Serializable{
 	public void setCategory(Category category) {
 		this.category = category;
 	}
-
+/**
+ * Retorna si la Category aun contiene a la Page o Category.
+ * @return Boolean
+ */
 	public Boolean isActive(){
 		return (this.revisionEnd == null);
 	}  

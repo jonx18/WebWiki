@@ -69,7 +69,7 @@
 	<script type="text/javascript">
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
-			'packages' : [ 'corechart', 'controls' ],
+			'packages' : [ 'corechart', 'controls', 'bar' ],
 			'language' : 'es'
 		});
 
@@ -77,7 +77,8 @@
 		google.charts.setOnLoadCallback(paginasEnNamespace_drawChart);
 		google.charts.setOnLoadCallback(nuevasPaginasDia_drawChart);
 		google.charts.setOnLoadCallback(nuevasPaginasPorNamespaceDia_drawChart);
-
+		//google.charts.setOnLoadCallback(paginasConXRevisiones_drawChart);
+		
 		function paginasEnNamespace_drawChart() {
 
 			var json = JSON.parse(' ${paginasEnNamespace} ');
@@ -123,7 +124,7 @@
 			});
 
 			var lineChart = new google.visualization.ChartWrapper({
-				'chartType' : 'LineChart',
+				'chartType' : 'ColumnChart',
 				'containerId' : 'nuevasPaginasDia_chart_div',
 				'options' : {
 					'title' : 'Nuevas Paginas en el Tiempo',
@@ -222,7 +223,7 @@
 			});
 
 			var lineChart = new google.visualization.ChartWrapper({
-				'chartType' : 'LineChart',
+				'chartType' : 'ColumnChart',
 				'containerId' : 'nuevasPaginasPorNamespaceDia_chart_div',
 				dataTable : data,
 				'options' : {

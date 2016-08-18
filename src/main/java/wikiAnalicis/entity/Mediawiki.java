@@ -1,6 +1,7 @@
 package wikiAnalicis.entity;
 
 import java.util.LinkedList;
+
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -10,7 +11,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
-import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
@@ -19,15 +19,18 @@ import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
 
 import com.google.gson.Gson;
+
+/**
+ * Esta clase representa a la Wiki
+ * @author Jonathan Martin
+ *
+ */
 @Entity
-public class Mediawiki implements Identificable{
-	/**
-	 * 
-	 */
+public class Mediawiki {
+
+	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
@@ -61,7 +64,11 @@ public class Mediawiki implements Identificable{
 	public void setId(Long id) {
 		this.id = id;
 	}
-
+	/**
+	 * Retorna el siteinfo de la wiki el cual contiene informacion como el nombre o los namespaces
+	 * @see Siteinfo
+	 * @return Siteinfo
+	 */
 	public Siteinfo getSiteinfo() {
 		return siteinfo;
 	}
@@ -69,7 +76,11 @@ public class Mediawiki implements Identificable{
 	public void setSiteinfo(Siteinfo siteinfo) {
 		this.siteinfo = siteinfo;
 	}
-
+	/**
+	 * Retorna el listado de paginas contenidas en la wiki
+	 * @see Page
+	 * @return List<Page>
+	 */
 	public List<Page> getPages() {
 		return pages;
 	}
