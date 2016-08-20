@@ -2,6 +2,7 @@ package wikiAnalicis.util.diffAndStyles;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
 import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
@@ -22,36 +23,12 @@ public class ParagraphContainer {
 		this.newParagraph = new ParagraphRevisionContainer(paragraphDiff.getNewParagraph(),delimiters);
 	}
 	public void calculateDifferenes() {
-		System.out.println("parrafo viejo: '"+this.getParagraphDiff().getOldParagraph());
-		this.getOldParagraph().toDelimitedText();
 		int[] arrayOfDiff = createArrayOfDiff(this.getParagraphDiff().getOldDiffs(), this.getParagraphDiff().getOldParagraph().length());
 		NodeContainer[] arrayOfNodes = createArrayOfNodes(this.getOldParagraph(), this.getParagraphDiff().getOldParagraph().length());
-		
-		System.out.println("arrayOfNodes:[");
-		for (int i = 0; i < arrayOfNodes.length; i++) {
-			if (arrayOfNodes[i]==null) {
-				System.out.print("null, ");
-			}else{
-			System.out.print("Esta, ");}
-		}
-		System.out.println("]");
 		matchNodesDiff(arrayOfDiff, arrayOfNodes);
-		this.getOldParagraph().toDelimitedText();
-		System.out.println("parrafo nuevo: '"+this.getParagraphDiff().getNewParagraph());
-		this.getNewParagraph().toDelimitedText();
 		arrayOfDiff = createArrayOfDiff(this.getParagraphDiff().getNewDiffs(), this.getParagraphDiff().getNewParagraph().length());
 		arrayOfNodes = createArrayOfNodes(this.getNewParagraph(), this.getParagraphDiff().getNewParagraph().length());
-
-		System.out.println("arrayOfNodes:[");
-		for (int i = 0; i < arrayOfNodes.length; i++) {
-			if (arrayOfNodes[i]==null) {
-				System.out.print("null, ");
-			}else{
-			System.out.print("Esta, ");}
-		}
-		System.out.println("]");
 		matchNodesDiff(arrayOfDiff, arrayOfNodes);
-		this.getNewParagraph().toDelimitedText();
 	}
 	private void matchNodesDiff(int[] arrayOfDiff, NodeContainer[] arrayOfNodes) {
 		for (int i = 0; i < arrayOfNodes.length; i++) {
@@ -109,5 +86,22 @@ public class ParagraphContainer {
 	public void setNewParagraph(ParagraphRevisionContainer newParagraph) {
 		this.newParagraph = newParagraph;
 	} 
-	
+	public Map<Delimiter, List<NodeContainer>> countOldStyles() {
+		Map<Delimiter, List<NodeContainer>> map = this.getOldParagraph().countStyles();
+//		System.out.println(this.getParagraphDiff().getOldParagraph());
+//		for (Delimiter delimiter : map.keySet()) {
+//			System.out.println("Delimiter: "+delimiter.getOpenIndicator()+" Count:"+map.get(delimiter).size());
+//		}
+		return map;
+		
+	}
+	public Map<Delimiter, List<NodeContainer>> countNewStyles() {
+		Map<Delimiter, List<NodeContainer>> map = this.getNewParagraph().countStyles();
+//		System.out.println(this.getParagraphDiff().getNewParagraph());
+//		for (Delimiter delimiter : map.keySet()) {
+//			System.out.println("Delimiter: "+delimiter.getOpenIndicator()+" Count:"+map.get(delimiter).size());
+//		}
+		return map;
+		
+	}
 }

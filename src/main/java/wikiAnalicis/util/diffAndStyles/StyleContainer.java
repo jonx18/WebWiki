@@ -3,12 +3,14 @@ package wikiAnalicis.util.diffAndStyles;
 import java.util.LinkedList;
 
 public class StyleContainer extends NodeContainer {
-	private Delimiter delimiter;
 	
 	public StyleContainer(Delimiter delimiter, LinkedList<NodeContainer> containers) {
 		super();
 		this.delimiter = delimiter;
 		this.childrens = containers;
+		for (NodeContainer nodeContainer : this.childrens) {
+			nodeContainer.setParent(this);
+		}
 	}
 	public Delimiter getDelimiter() {
 		return delimiter;
@@ -33,23 +35,18 @@ public String componentsToString() {
 }
 @Override
 public int setIntoArray(int index, NodeContainer[] arrayOfDiff) {
-	System.out.println(index+" padreInicio");
 	for (int i = index; i < index+this.getDelimiter().getOpenIndicator().length(); i++) {
 		arrayOfDiff[i]=this;
 	}
 	index+=this.getDelimiter().getOpenIndicator().length();
 
 	for (NodeContainer nodeContainer : childrens) {
-		System.out.println(index+" HijoInicio");
 		index = nodeContainer.setIntoArray(index, arrayOfDiff);
-		System.out.println(nodeContainer.componentsToString());
-		System.out.println(index+" HijoFin");
 	}
 	for (int i = index; i < index+this.getDelimiter().getCloseIndicator().length(); i++) {
 		arrayOfDiff[i]=this;
 	}
 	index+=this.getDelimiter().getCloseIndicator().length();
-		System.out.println(index+" padreFin");
 	return index;
 }
 }

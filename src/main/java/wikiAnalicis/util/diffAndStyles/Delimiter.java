@@ -8,18 +8,21 @@ import org.apache.commons.lang3.StringUtils;
 public class Delimiter {
 	private String openIndicator;
 	private String closeIndicator;
+	private String name;
 	private Boolean isFullParagraph;
 
-	public Delimiter(String openIndicator, String closeIndicator, Boolean isFullParagraph) {
+	public Delimiter(String openIndicator, String closeIndicator,String name, Boolean isFullParagraph) {
 		super();
 		this.openIndicator = openIndicator;
 		this.closeIndicator = closeIndicator;
+		this.name = name;
 		this.isFullParagraph = isFullParagraph;
 	}
-	public Delimiter(String openIndicator, Boolean isFullParagraph) {
+	public Delimiter(String openIndicator,String name, Boolean isFullParagraph) {
 		super();
 		this.openIndicator = openIndicator;
 		this.closeIndicator = "";
+		this.name = name;
 		this.isFullParagraph = isFullParagraph;
 	}
 	public Boolean getIsFullParagraph() {
@@ -29,7 +32,13 @@ public class Delimiter {
 	public void setIsFullParagraph(Boolean isFullParagraph) {
 		this.isFullParagraph = isFullParagraph;
 	}
-
+	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	public String getOpenIndicator() {
 		return openIndicator;
 	}
@@ -111,9 +120,6 @@ public class Delimiter {
 				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
 			} else {
 				int id = indexValues[indiceDeAvance];
-				System.out.println(this.getOpenIndicator());
-				System.out.println(fin);
-				System.out.println(id);
 				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];

@@ -83,39 +83,47 @@ public class DiffController {
 		LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
 		//String json = gson.toJson(result, result.getClass());
 		DiffContainer diffContainer = cambiosContenido(listListDiff);
+		Map<Delimiter, Integer[]> mapStyleChanges = diffContainer.getStyleChanges();
 		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
 		ModelAndView model = new ModelAndView("diffList");
 		model.addObject("listListDiff", listListDiff);
+		model.addObject("mapStyleChanges", mapStyleChanges);
+		for (Delimiter delimiter : mapStyleChanges.keySet()) {
+			System.out.println(delimiter.getName()+" "+mapStyleChanges.get(delimiter)[0]+" "+mapStyleChanges.get(delimiter)[1]+" "+mapStyleChanges.get(delimiter)[2]);
+		}
 		return model;
 
 	}
 
 	private DiffContainer cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
-		// TODO Auto-generated method stub
 		List<Delimiter> delimiters = new LinkedList<Delimiter>();
 //		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
 //				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
 //		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
 //				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
-		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+		String[] openIndicator ={"","<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
 				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
-		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+		String[] closeIndicator ={"","</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
 				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
+		String[] name ={"","Nowiki","Grande","Pequeño","Super indice","Sub-indice","Tachado","Bloque de Cita","includeonly",
+				"referencia","Encabezado de 2.º nivel","Encabezado de 3.º nivel","Encabezado de 4.º nivel","Encabezado de 5.º nivel",
+				"Cursiva","Negrita","Negrita & cursiva","Enlace Externo","Enlace Interno"};
 		for (int i = 0; i < openIndicator.length; i++) {
-			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],false);
+			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],name[i],false);
 			delimiters.add(d);
 		}
 		String[] openIndicatorFull ={"#","#REDIRECCIÓN","*","::",":"};
+		String[] nameFull ={"Elemento Enumerado","REDIRECCIÓN","Elemento Listado","Sangria 2","Sangria 1"};
 		for (int i = 0; i < openIndicatorFull.length; i++) {
-			Delimiter d = new Delimiter(openIndicatorFull[i],true);
+			Delimiter d = new Delimiter(openIndicatorFull[i],nameFull[i],true);
 			delimiters.add(d);
 		}
 		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
 		DiffContainer diffContainer = styleAnalyzer.textDescomsition(listListDiff);
-		diffContainer.calculateDifferenes();
+		//diffContainer.calculateDifferenes(); lo hago al crearlo
 		//DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
-		System.out.println("------------------------------------");
+		//System.out.println("------------------------------------");
 		//dfsTest(grafo);
 		for (ParagraphDiff paragraphDiff : listListDiff) {
 //			String oldParagraph = paragraphDiff.getOldParagraph();

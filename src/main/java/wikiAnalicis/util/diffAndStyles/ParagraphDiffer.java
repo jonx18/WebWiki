@@ -111,15 +111,15 @@ public class ParagraphDiffer {
 								distance[i - 1][j - 1] + ((listParagraph1[i - 1] == listParagraph2[j - 1]) ? 0 : leven));
 			}
 		}
-		for (int i = 0; i <= listParagraph1.length; i++) {
-			StringBuilder s = new StringBuilder();
-			s.append("[ ");
-			for (int j = 0; j <= listParagraph2.length; j++) {
-				s.append(distance[i][j]+", ");
-			}
-			s.append("]");
-			System.out.println(s.toString());
-		}
+//		for (int i = 0; i <= listParagraph1.length; i++) {
+//			StringBuilder s = new StringBuilder();
+//			s.append("[ ");
+//			for (int j = 0; j <= listParagraph2.length; j++) {
+//				s.append(distance[i][j]+", ");
+//			}
+//			s.append("]");
+//			System.out.println(s.toString());
+//		}
 		
 //		return distance[listParagraph1.length][listParagraph2.length];
 		return distance;
@@ -167,11 +167,11 @@ public class ParagraphDiffer {
 					if ((d.operation == Operation.DELETE) && (i.operation == Operation.INSERT)) {
 
 						if (d.text.replaceAll("\\s+", "").trim().length()==0) {
-							System.out.println("d null");
+//							System.out.println("d null");
 							d=null;
 						} 
 						if (i.text.replaceAll("\\s+", "").trim().length()==0) {
-							System.out.println("i null");
+//							System.out.println("i null");
 							i=null;
 						} 
 						Diff[] par = { d, i };

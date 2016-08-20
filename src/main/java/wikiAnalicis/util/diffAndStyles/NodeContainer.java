@@ -1,10 +1,12 @@
 package wikiAnalicis.util.diffAndStyles;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public abstract class NodeContainer {
-	Delimiter delimiter;
+	Delimiter delimiter=null;
 	NodeContainer parent=null;
 	List<NodeContainer> childrens = new LinkedList<NodeContainer>();
 	private Boolean hasChanges=false;
@@ -64,5 +66,26 @@ public abstract class NodeContainer {
 	public void setHasChanges(Boolean hasChanges) {
 		this.hasChanges = hasChanges;
 	}
+	public Boolean hasDelimiter() {
+		return this.delimiter!=null;
+	}
+	public Boolean hasParent() {
+		return this.parent!=null;
+	}
 	
+	public Delimiter getDelimiter() {
+		return delimiter;
+	}
+	public void setDelimiter(Delimiter delimiter) {
+		this.delimiter = delimiter;
+	}
+	public Map<Delimiter, List<NodeContainer>> countStyles(Map<Delimiter, List<NodeContainer>> map) {
+		if (this.hasDelimiter()) {
+			map.get(delimiter).add(this);
+		}
+		for (NodeContainer nodeContainer : childrens) {
+			nodeContainer.countStyles(map);
+		}
+		return map;
+	}
 }

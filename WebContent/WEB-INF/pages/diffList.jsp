@@ -85,6 +85,47 @@
 				</ul>
 			</div>
 		</div>
+		<div class="panel panel-success">
+			<div class="panel-heading">
+				<h3 class="panel-title">
+					<b>Cambios de estilo</b>
+				</h3>
+			</div>
+			<c:if test="${empty mapStyleChanges}">
+				<div class="panel-body">No hay Cambios</div>
+			</c:if>
+			<c:if test="${not empty mapStyleChanges}">
+				<table class="table table-striped">
+					<thead>
+						<tr>
+							<th>Estilo</th>
+							<th>Version Anterior</th>
+							<th>Version Nueva</th>
+							<th>Cambio</th>
+						</tr>
+					</thead>
+					<tbody>
+						<c:forEach var="result" items="${mapStyleChanges}">
+							<tr>
+								<td>${result.key.getName()}</td>
+								<td>${result.value[0]}</td>
+								<td>${result.value[1]}</td>
+								<c:if test="${result.value[0] gt result.value[1]}">
+									<td class="danger">-${result.value[2]}</td>
+								</c:if>
+								<c:if test="${result.value[0] eq result.value[1]}">
+									<td class="active">${result.value[2]}</td>
+								</c:if>
+								<c:if test="${result.value[0] lt result.value[1]}">
+									<td class="success">+${result.value[2]}</td>
+								</c:if>
+								
+							</tr>
+						</c:forEach>
+					</tbody>
+				</table>
+			</c:if>
+		</div>
 		<!-- 
 		<div class="panel panel-success">
 			<div class="panel-heading">
