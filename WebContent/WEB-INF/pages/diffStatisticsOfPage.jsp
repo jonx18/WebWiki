@@ -35,7 +35,13 @@
 							<div id="estilosEnElTiempo_chart_div"></div>
 						</div>
 					</li>
-
+					<li class="list-group-item">
+						<div id="contenidoDia_dashboard_div">
+							<!--Divs that will hold each control and chart-->
+							<div id="contenidoDia_filter_div"></div>
+							<div id="contenidoDia_chart_div"></div>
+						</div>
+					</li>
 
 				</ul>
 			</div>
@@ -60,6 +66,7 @@
 		//google.charts.setOnLoadCallback(paginasEnNamespace_drawChart);
 		//google.charts.setOnLoadCallback(nuevasPaginasDia_drawChart);
 		google.charts.setOnLoadCallback(estilosEnElTiempo_drawChart);
+		google.charts.setOnLoadCallback(contenidoDia_drawChart);
 		//google.charts.setOnLoadCallback(paginasConXRevisiones_drawChart);
 	
 
@@ -78,26 +85,7 @@
 		    	</c:forEach>
 		    	data.addRow(row);
 			</c:forEach>
-/* 			var head = true;
-			json.forEach(function(entry) {
-				if (head) {
-					entry.forEach(function(entry2) {
-						if (head) {
-							head = false;
-							data.addColumn('date', 'Tiempo')
-						} else {
-							data.addColumn('number', entry2);
-						}
 
-					});
-				} else {
-					entry[0] = new Date(entry[0]);
-					data.addRow(entry); // Add a row with a string and a date value.
-				}
-				;
-			}); */
-			//data.addRows(json);
-			//var data = google.visualization.arrayToDataTable(json);
 			// Create a dashboard.
 			var dashboard = new google.visualization.Dashboard(
 					document
@@ -145,7 +133,7 @@
 				'containerId' : 'estilosEnElTiempo_chart_div',
 				dataTable : data,
 				'options' : {
-					'title' : 'Estilos en el Tiempo por Namespace',
+					'title' : 'Estilos en el Tiempo',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -200,7 +188,66 @@
 					.getElementById('paginasConXRevisiones'));
 			chart.draw(data, options); */
 		}
+		function contenidoDia_drawChart() {
+			// Create the data table.
+			var data = new google.visualization.DataTable();
+			data.addColumn('date', 'Tiempo');
+			data.addColumn('number', 'Estilos');
+		    <c:forEach begin="1" end="${fn:length(dates)}" var="val">
+	    		var row = [new Date("<c:out value='${dates[val-1]}'/>")];
+	    		var total = 0;
+				<c:forEach var="result" items="${mapStyleChanges}">   
+					total = total + <c:out value="${result.value[val-1]}" />;
+					
+	    		</c:forEach>
+	    		row.push(total);
+	    		data.addRow(row);
+			</c:forEach>
 
+			//data.addRows(json);
+			//var data = google.visualization.arrayToDataTable(json);
+			// Create a dashboard.
+			var dashboard = new google.visualization.Dashboard(document
+					.getElementById('contenidoDia_dashboard_div'));
+			var linearRangeSlider = new google.visualization.ControlWrapper({
+				'controlType' : 'ChartRangeFilter',
+				'containerId' : 'contenidoDia_filter_div',
+				'options' : {
+					'filterColumnLabel' : 'Tiempo'
+				}
+			});
+
+			var lineChart = new google.visualization.ChartWrapper({
+				'chartType' : 'ColumnChart',
+				'containerId' : 'contenidoDia_chart_div',
+				'options' : {
+					'title' : 'Estilos en el Tiempo',
+					'subtitle' : '',
+					'bars' : 'vertical',
+					'vAxis' : {
+						'format' : 'long',
+						'maxValue' : {
+							'count' : 1000
+						}
+					},
+					'colors' : [ '#1b9e77' ],
+					'height' : 400,
+					'pieSliceText' : 'Tiempo',
+					'legend' : 'right'
+				}
+			});
+			// Establish dependencies, declaring that 'filter' drives 'pieChart',
+			// so that the pie chart will only display entries that are let through
+			// given the chosen slider range.
+			dashboard.bind(linearRangeSlider, lineChart);
+
+			// Draw the dashboard.
+			dashboard.draw(data);
+			// Instantiate and draw our chart, passing in some options.
+			/* var chart = new google.visualization.LineChart(document
+					.getElementById('paginasConXRevisiones'));
+			chart.draw(data, options); */
+		}
 		
 	</script>
 </body>
