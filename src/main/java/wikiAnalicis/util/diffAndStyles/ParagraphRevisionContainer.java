@@ -35,6 +35,10 @@ public class ParagraphRevisionContainer {
 				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
 			} else {
 				int id = indexValues[indiceDeAvance];
+				//System.out.println(id);
+				if (id<0) {
+					id=id*-1;
+				}
 				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];
@@ -51,6 +55,7 @@ public class ParagraphRevisionContainer {
 	public NodeContainer[] setIntoArray(NodeContainer[] arrayOfDiff) {
 		int index=0;
 		for (NodeContainer nodeContainer : this.getContainers()) {
+			//System.out.println(nodeContainer.componentsToString());
 			index=nodeContainer.setIntoArray(index,arrayOfDiff);
 		}
 		return arrayOfDiff;

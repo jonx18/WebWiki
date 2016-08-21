@@ -36,26 +36,27 @@ public class DiffContainer {
 			ParagraphContainer container = paragraphs.get(i);
 			Map<Delimiter, List<NodeContainer>> oldStyles = container.countOldStyles();
 			Map<Delimiter, List<NodeContainer>> newStyles = container.countNewStyles();
-			System.out.println("Diferencias entre:");
-			System.out.println(container.getParagraphDiff().getOldParagraph());
-			System.out.println(container.getParagraphDiff().getNewParagraph());
+			//System.out.println("Diferencias entre:");
+			//System.out.println(container.getParagraphDiff().getOldParagraph());
+			//System.out.println(container.getParagraphDiff().getNewParagraph());
 			LinkedList<NodeContainer> oldC = new LinkedList<NodeContainer>();
 			LinkedList<NodeContainer> newC = new LinkedList<NodeContainer>();
 			for (Delimiter delimiter : oldStyles.keySet()) {
 
 				//if ((newStyles.get(delimiter).size()-oldStyles.get(delimiter).size())!=0) {
 				if (newStyles.get(delimiter).size()!=0 || oldStyles.get(delimiter).size()!=0) {
-					System.out.print("Delimiter: "+delimiter.getOpenIndicator()+" Count: ");
+					//System.out.print("Delimiter: "+delimiter.getOpenIndicator()+" Count: ");
 					
 					//importante
 					int oldStylesSize=oldStyles.get(delimiter).size();
 					int newStylesSize=newStyles.get(delimiter).size();
-					int abs=Math.abs(newStyles.get(delimiter).size()-oldStyles.get(delimiter).size());
+					int abs=Math.abs(newStylesSize-oldStylesSize);
+					//System.out.println(abs);
 					if (map.containsKey(delimiter)) {
 						Integer[] array = map.get(delimiter);
 						oldStylesSize+=array[0];
 						newStylesSize+=array[1];
-						abs+=array[2];
+						abs=Math.abs(newStylesSize-oldStylesSize);
 					}
 					map.put(delimiter, new Integer []{
 							oldStylesSize,
@@ -66,19 +67,19 @@ public class DiffContainer {
 					
 					
 					if ((newStyles.get(delimiter).size()-oldStyles.get(delimiter).size())>0) {
-						System.out.println("+"+(newStyles.get(delimiter).size()-oldStyles.get(delimiter).size()));
+						//System.out.println("+"+(newStyles.get(delimiter).size()-oldStyles.get(delimiter).size()));
 					}else{
-						System.out.println((newStyles.get(delimiter).size()-oldStyles.get(delimiter).size()));
+						//System.out.println((newStyles.get(delimiter).size()-oldStyles.get(delimiter).size()));
 					}
 					for (NodeContainer nodeContainer : oldStyles.get(delimiter)) {
 						//if (nodeContainer.getHasChanges()) {
-							System.out.println(nodeContainer.getDelimiter().getOpenIndicator()+" change:"+nodeContainer.getHasChanges());
+							//System.out.println(nodeContainer.getDelimiter().getOpenIndicator()+" change:"+nodeContainer.getHasChanges());
 							oldC.add(nodeContainer);
 						//}
 					}
 					for (NodeContainer nodeContainer : newStyles.get(delimiter)) {
 						//if (nodeContainer.getHasChanges()) {
-							System.out.println(nodeContainer.getDelimiter().getOpenIndicator()+" change:"+nodeContainer.getHasChanges());
+							//System.out.println(nodeContainer.getDelimiter().getOpenIndicator()+" change:"+nodeContainer.getHasChanges());
 							newC.add(nodeContainer);
 						//}
 					}

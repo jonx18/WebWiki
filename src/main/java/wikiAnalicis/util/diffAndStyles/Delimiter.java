@@ -4,6 +4,10 @@ import java.util.LinkedList;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
+
+import wikiAnalicis.entity.UserContributor;
 
 public class Delimiter {
 	private String openIndicator;
@@ -120,6 +124,9 @@ public class Delimiter {
 				containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
 			} else {
 				int id = indexValues[indiceDeAvance];
+				if (id<0) {
+					id=id*-1;
+				}
 				Object[] par = delimiters.get(id).getComponentsFrom(text,indexValues,indiceDeAvance,delimiters);
 				containers.add((StyleContainer)par[0]);
 				indiceDeAvance=(Integer)par[1];
@@ -130,4 +137,35 @@ public class Delimiter {
 		Object[] result = {styleContainer,indiceDeAvance};
 		return result;
 	}
+	@Override
+	public boolean equals(Object obj) {
+		// TODO Auto-generated method stub
+	       if (!(obj instanceof Delimiter)){
+	            return false;
+	            }
+	        if (obj == this){
+	            return true;
+	        }
+	        Delimiter rhs = (Delimiter) obj;
+	        return new EqualsBuilder().
+	            // if deriving: appendSuper(super.equals(obj)).
+	        		append(openIndicator, rhs.getOpenIndicator()).
+	        		append(closeIndicator, rhs.getCloseIndicator()).
+	        		append(name, rhs.getName()).
+	        		append(isFullParagraph, rhs.getIsFullParagraph()).
+	            isEquals();
+		
+	}
+	@Override
+	public int hashCode() {
+        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+                // if deriving: appendSuper(super.hashCode()).
+        		append(openIndicator).
+        		append(closeIndicator).
+        		append(name).
+        		append(isFullParagraph).
+                toHashCode();
+
+	}
+
 }

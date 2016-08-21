@@ -52,7 +52,9 @@
 										class="badge">${page.getRevisions().size() }</span>
 								</a></td>
 								<td><a href="statisticsPageOf?parentId=${page.getId() }"
-									class="btn btn-primary" type="button"> Estadisticas </a></td>
+									class="btn btn-primary" type="button"> Estadisticas </a>
+									<a href="diffStatisticsOfPage?id=${page.getId() }"
+									class="btn btn-primary" type="button"> Evolucion </a></td>
 							</tr>
 						</c:forEach>
 					</tbody>

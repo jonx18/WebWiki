@@ -36,15 +36,25 @@ public String componentsToString() {
 @Override
 public int setIntoArray(int index, NodeContainer[] arrayOfDiff) {
 	for (int i = index; i < index+this.getDelimiter().getOpenIndicator().length(); i++) {
+		if (i>=arrayOfDiff.length) {
+			break;
+		}
 		arrayOfDiff[i]=this;
 	}
 	index+=this.getDelimiter().getOpenIndicator().length();
 
 	for (NodeContainer nodeContainer : childrens) {
+		//System.out.println(nodeContainer.componentsToString());
 		index = nodeContainer.setIntoArray(index, arrayOfDiff);
 	}
+
+	if (index>=arrayOfDiff.length) {//con que ponga la apertura alcanza
+		arrayOfDiff[arrayOfDiff.length-1]=this;
+	}
+	else{
 	for (int i = index; i < index+this.getDelimiter().getCloseIndicator().length(); i++) {
 		arrayOfDiff[i]=this;
+	}
 	}
 	index+=this.getDelimiter().getCloseIndicator().length();
 	return index;

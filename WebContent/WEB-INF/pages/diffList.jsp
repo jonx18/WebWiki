@@ -99,8 +99,8 @@
 					<thead>
 						<tr>
 							<th>Estilo</th>
-							<th>Version Anterior</th>
-							<th>Version Nueva</th>
+							<th>Ocurrencias en la version anterior</th>
+							<th>Ocurrencias en la version nueva</th>
 							<th>Cambio</th>
 						</tr>
 					</thead>
@@ -124,7 +124,9 @@
 						</c:forEach>
 					</tbody>
 				</table>
+				<div id='colchart_diff' ></div>
 			</c:if>
+
 		</div>
 		<!-- 
 		<div class="panel panel-success">
@@ -143,6 +145,49 @@
 
 	<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+	 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+  <script type="text/javascript">
+    google.charts.load('current', {'packages':['corechart'], 'language': 'es'});
+    google.charts.setOnLoadCallback(drawChart);
+  function drawChart() {
+	var oldData = new google.visualization.DataTable();
+	oldData.addColumn('string', 'Estilo');
+	oldData.addColumn('number', 'Occurrences');
+
+	var newData = new google.visualization.DataTable();
+	newData.addColumn('string', 'Estilo');
+	newData.addColumn('number', 'Occurrences');
+
+	<c:if test="${not empty mapStyleChanges}">
+	
+	<c:forEach var="result" items="${mapStyleChanges}">                                                   
+      oldData.addRow(['${result.key.getName()}', <c:out value="${result.value[0]}" />]);
+    </c:forEach>
+
+	<c:forEach var="result" items="${mapStyleChanges}">                                                   
+		newData.addRow(['${result.key.getName()}', <c:out value="${result.value[1]}" />]);
+    </c:forEach>
+
+    </c:if>
+
+    var colChartDiff = new google.visualization.ColumnChart(document.getElementById('colchart_diff'));
+
+
+    var options = { legend: { position: 'top' } ,vAxis : {'format' : 'short'},
+    		diff: { oldData: { opacity: 1.0,  title: "hola" },newData: { opacity: 0.5, }  } ,
+ 
+	};
+
+
+
+    var diffData = colChartDiff.computeDiff(oldData, newData);
+    colChartDiff.draw(diffData, options);
+
+  }
+</script>
+	
+	
+	
 	<!--    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript">
       google.charts.load('current', {packages:['wordtree']});
