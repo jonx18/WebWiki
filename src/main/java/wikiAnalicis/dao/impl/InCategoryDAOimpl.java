@@ -18,7 +18,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.InCategoryDAO;
+import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
+import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.util.HibernateUtil;
 import wikiAnalicis.util.ORMUtil;
@@ -77,7 +79,21 @@ public class InCategoryDAOimpl implements InCategoryDAO {
 	public Long count() {
 		return util.count(InCategory.class);
 	}
-
-
+@Override
+public List<InCategory> getAllInCategorysOfCategory(Category category) {
+	String q = "from InCategory i where i.category = :c ";
+	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+	query.setParameter("c", category);
+	List<InCategory> list = (List<InCategory>)query.list();
+	return list;
+}
+@Override
+public List<InCategory> getAllInCategorysOfPage(Page page) {
+	String q = "from InCategory i where i.page = :p ";
+	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+	query.setParameter("p", page);
+	List<InCategory> list = (List<InCategory>)query.list();
+	return list;
+}
 
 }

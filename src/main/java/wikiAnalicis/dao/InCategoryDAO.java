@@ -2,7 +2,9 @@ package wikiAnalicis.dao;
 
 import java.util.List;
 
+import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
+import wikiAnalicis.entity.Page;
 
 public interface InCategoryDAO {
 	public long createInCategory(InCategory inCategory);
@@ -19,6 +21,10 @@ public interface InCategoryDAO {
 
 	public List<InCategory> list(Integer offset, Integer maxResults);
 
+	public List<InCategory> getAllInCategorysOfPage(Page page);
+	
+	public List<InCategory> getAllInCategorysOfCategory(Category category);
+	
 	public Long count();
 
 }

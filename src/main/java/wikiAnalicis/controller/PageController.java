@@ -15,7 +15,9 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 
+import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 
@@ -25,6 +27,8 @@ public class PageController {
 	private PageService pageService;
 	@Autowired
 	private RevisionService revisionService; 
+	@Autowired
+	private InCategoryService inCategoryService;
 	
 	public PageController() {
 		// TODO Auto-generated constructor stub
@@ -64,6 +68,9 @@ public class PageController {
 		}	
 		gson = new Gson();
 		model.addObject("contenidoDia", gson.toJson(toJS));
+		//------------------InCategorys-----------------------
+		List<InCategory> categories = inCategoryService.getAllInCategorysOfPage(page);
+		model.addObject("categories", categories);
 		return model;
 	}
 

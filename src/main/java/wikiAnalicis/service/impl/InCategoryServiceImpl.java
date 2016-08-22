@@ -9,7 +9,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.InCategoryDAO;
+import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
+import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.service.InCategoryService;
 
@@ -60,7 +62,15 @@ public class InCategoryServiceImpl implements InCategoryService {
 	public Long count() {
 		return inInCategoryDAO.count();
 	}
-
-
+@Override
+public List<InCategory> getAllInCategorysOfCategory(Category category) {
+	// TODO Auto-generated method stub
+	return inInCategoryDAO.getAllInCategorysOfCategory(category);
+}
+@Override
+public List<InCategory> getAllInCategorysOfPage(Page page) {
+	// TODO Auto-generated method stub
+	return inInCategoryDAO.getAllInCategorysOfPage(page);
+}
 
 }

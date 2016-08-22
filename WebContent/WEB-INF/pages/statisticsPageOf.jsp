@@ -46,7 +46,15 @@
 							<div id="contenidoDia_chart_div"></div>
 						</div>
 					</li>
-
+					<li class="list-group-item">
+						<div id="contenidoDia_dashboard_div">
+							<div id="categoriasTiempo_chart_div">
+									<c:if test="${empty categories}">
+									Nunca fue categorizada.
+									</c:if>
+							</div>
+						</div>
+					</li>
 				</ul>
 			</div>
 		</div>
@@ -62,7 +70,7 @@
 	<script type="text/javascript">
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
-			'packages' : [ 'corechart', 'controls', 'bar' ],
+			'packages' : [ 'corechart', 'controls', 'bar','timeline' ],
 			'language' : 'es'
 		});
 
@@ -70,7 +78,11 @@
 		google.charts.setOnLoadCallback(distribucionDeAporte_drawChart);
 		google.charts.setOnLoadCallback(revisionesDia_drawChart);
 		google.charts.setOnLoadCallback(contenidoDia_drawChart);
+		<c:if test="${not empty categories}">
+		google.charts.setOnLoadCallback(categoriasTiempo_drawChart);
+		</c:if>
 
+		
 		function distribucionDeAporte_drawChart() {
 
 			var json = JSON.parse(' ${distribucionDeAporte} ');
@@ -198,6 +210,33 @@
 					.getElementById('paginasConXRevisiones'));
 			chart.draw(data, options); */
 		}
+		function categoriasTiempo_drawChart() {
+		    var container = document.getElementById('categoriasTiempo_chart_div');
+		    var chart = new google.visualization.Timeline(container);
+		    var dataTable = new google.visualization.DataTable();
+
+		    dataTable.addColumn({ type: 'string', id: 'Term' });
+		    dataTable.addColumn({ type: 'string', id: 'Categoria' });
+		    dataTable.addColumn({ type: 'date', id: 'Inicio' });
+		    dataTable.addColumn({ type: 'date', id: 'Fin' });
+		    var index=0;
+			<c:forEach var="result" items="${categories}">   
+				var index = index+1;
+				var row = [index.toString()];
+				row.push("<c:out value='${result.category.title}' />");
+				row.push(new Date("<c:out value='${result.revisionStart.timestamp}'/>"));
+				<c:if test="${not empty result.revisionEnd.timestamp}">
+				row.push(new Date("<c:out value='${result.revisionEnd.timestamp}'/>"));
+				</c:if>
+				<c:if test="${empty result.revisionEnd.timestamp}">
+				row.push(new Date());
+				</c:if>
+				dataTable.addRow(row);
+	   		</c:forEach>
+
+
+		    chart.draw(dataTable);
+		  }
 	</script>
 </body>
 </html>

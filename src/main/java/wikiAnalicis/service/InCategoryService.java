@@ -25,6 +25,8 @@ public interface InCategoryService {
 	public InCategory getInCategory(long id);
 
 	public List<InCategory> list(Integer offset, Integer maxResults);
+	public List<InCategory> getAllInCategorysOfPage(Page page);
+	public List<InCategory> getAllInCategorysOfCategory(Category category);
 
 	public Long count();
 
