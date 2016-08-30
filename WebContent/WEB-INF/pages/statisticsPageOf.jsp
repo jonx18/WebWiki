@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Estadistica de ${page.getTitle()}</title>
+<title><spring:message code="statisticspageof.titlepage" /> ${page.getTitle()}</title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -17,18 +18,19 @@
 
 								<div class="panel-title">
 					<div align="left">
-						<b>Estadistica de ${page.getTitle()}</b>
+						<b><spring:message code="statisticspageof.title" /> ${page.getTitle()}</b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">
+<spring:message code="statisticspageof.back" /></a>
 				</div>
 			</div>
 			<div class="panel-body">
 				<ul class="list-group">
-					<li class="list-group-item">Esta Pagina posee un total de:
-						${totalRevisiones} revisiones</li>
+					<li class="list-group-item"><spring:message code="statisticspageof.li1.start" />
+						${totalRevisiones} <spring:message code="statisticspageof.li1.end" /></li>
 					<li class="list-group-item"><div
 							id="distribucionDeAporte_piechart"
 							style="width: 900px; height: 500px;"></div></li>
@@ -50,7 +52,7 @@
 						<div id="contenidoDia_dashboard_div">
 							<div id="categoriasTiempo_chart_div">
 									<c:if test="${empty categories}">
-									Nunca fue categorizada.
+									<spring:message code="statisticspageof.li4.empty" />
 									</c:if>
 							</div>
 						</div>
@@ -71,7 +73,7 @@
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
 			'packages' : [ 'corechart', 'controls', 'bar','timeline' ],
-			'language' : 'es'
+			'language' : '<spring:message code="index.languageSelector.active" />'
 		});
 
 		// Set a callback to run when the Google Visualization API is loaded.
@@ -88,14 +90,14 @@
 			var json = JSON.parse(' ${distribucionDeAporte} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('string', 'Autores');
-			data.addColumn('number', 'Revisiones');
+			data.addColumn('string', '<spring:message code="statisticspageof.distribucionDeAporte.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticspageof.distribucionDeAporte.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ entry[0], entry[1] ]); // Add a row with a string and a date value.
 			});
 
 			var options = {
-				title : 'Revisiones de Autore'
+				title : '<spring:message code="statisticspageof.distribucionDeAporte.title" />'
 			};
 
 			var chart = new google.visualization.PieChart(document
@@ -108,8 +110,8 @@
 			var json = JSON.parse(' ${revisionesDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
-			data.addColumn('number', 'Revisiones');
+			data.addColumn('date', '<spring:message code="statisticspageof.revisionesDia.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticspageof.revisionesDia.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ new Date(entry[0]), entry[1] ]); // Add a row with a string and a date value.
 			});
@@ -122,7 +124,7 @@
 				'controlType' : 'ChartRangeFilter',
 				'containerId' : 'revisionesDia_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="statisticspageof.revisionesDia.filterColumnLabel" />'
 				}
 			});
 
@@ -130,7 +132,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'revisionesDia_chart_div',
 				'options' : {
-					'title' : 'Revisiones en el Tiempo',
+					'title' : '<spring:message code="statisticspageof.revisionesDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -141,7 +143,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="statisticspageof.revisionesDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -161,8 +163,8 @@
 			var json = JSON.parse(' ${contenidoDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
-			data.addColumn('number', 'Bytes');
+			data.addColumn('date', '<spring:message code="statisticspageof.contenidoDia.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticspageof.contenidoDia.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ new Date(entry[0]), entry[1] ]); // Add a row with a string and a date value.
 			});
@@ -175,7 +177,7 @@
 				'controlType' : 'ChartRangeFilter',
 				'containerId' : 'contenidoDia_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="statisticspageof.contenidoDia.filterColumnLabel" />'
 				}
 			});
 
@@ -183,7 +185,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'contenidoDia_chart_div',
 				'options' : {
-					'title' : 'Contenido en el Tiempo',
+					'title' : '<spring:message code="statisticspageof.contenidoDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -194,7 +196,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="statisticspageof.contenidoDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -215,10 +217,10 @@
 		    var chart = new google.visualization.Timeline(container);
 		    var dataTable = new google.visualization.DataTable();
 
-		    dataTable.addColumn({ type: 'string', id: 'Term' });
-		    dataTable.addColumn({ type: 'string', id: 'Categoria' });
-		    dataTable.addColumn({ type: 'date', id: 'Inicio' });
-		    dataTable.addColumn({ type: 'date', id: 'Fin' });
+		    dataTable.addColumn({ type: 'string', id: '<spring:message code="statisticspageof.categoriasTiempo.colum1" />' });
+		    dataTable.addColumn({ type: 'string', id: '<spring:message code="statisticspageof.categoriasTiempo.colum2" />' });
+		    dataTable.addColumn({ type: 'date', id: '<spring:message code="statisticspageof.categoriasTiempo.colum3" />' });
+		    dataTable.addColumn({ type: 'date', id: '<spring:message code="statisticspageof.categoriasTiempo.colum4" />' });
 		    var index=0;
 			<c:forEach var="result" items="${categories}">   
 				var index = index+1;

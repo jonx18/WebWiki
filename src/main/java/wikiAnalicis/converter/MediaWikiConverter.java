@@ -42,6 +42,11 @@ public class MediaWikiConverter implements Converter {
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		Mediawiki mediawiki = new Mediawiki();
+		if (reader.getAttribute("lang")!=null) {
+//			xml:lang
+			System.out.println("el lenguaje es: "+reader.getAttribute("lang"));
+			mediawiki.setLang(reader.getAttribute("lang"));
+		}
 		reader.moveDown();
 		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
 		mediawiki.setSiteinfo(siteinfo);

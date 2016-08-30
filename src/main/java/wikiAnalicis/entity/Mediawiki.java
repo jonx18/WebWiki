@@ -52,6 +52,7 @@ public class Mediawiki {
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<Page> pages= new LinkedList<Page>();//no sequiere borrar
+	private String lang;
 	
 	public Mediawiki() {
 		// TODO Auto-generated constructor stub
@@ -98,6 +99,14 @@ public class Mediawiki {
 		String text = gson.toJson(this, getClass());
 		pages = temp;
 		return text;
+	}
+
+	public String getLang() {
+		return lang;
+	}
+
+	public void setLang(String lang) {
+		this.lang = lang;
 	}
 	
 }

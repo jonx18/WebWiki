@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Estadistica de Revisiones</title>
+<title><spring:message code="statisticsReviews.titlepage" /></title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -16,20 +17,21 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Estadistica de Revisiones</b>
+						<b><spring:message code="statisticsReviews.title" /></b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">
+<spring:message code="statisticsReviews.back" /></a>
 				</div>
 			</div>
 			<div class="panel-body">
 				<ul class="list-group">
-					<li class="list-group-item">En la Wiki hay un total de:
-						${totalRevisiones} revisiones</li>
-					<li class="list-group-item">Un promedio de
-						${promedioPorPagina} revisiones por pagina</li>
+					<li class="list-group-item"><spring:message code="statisticsReviews.li1.start" />
+						${totalRevisiones} <spring:message code="statisticsReviews.li1.end" /></li>
+					<li class="list-group-item"><spring:message code="statisticsReviews.li2.start" />
+						${promedioPorPagina} <spring:message code="statisticsReviews.li2.end" /></li>
 					<li class="list-group-item"><div
 							id="revisionesEnNamespace_piechart"
 							style="width: 900px; height: 500px;"></div></li>
@@ -62,7 +64,7 @@
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
 			'packages' : [ 'corechart', 'controls', 'bar' ],
-			'language' : 'es'
+			'language' : '<spring:message code="index.languageSelector.active" />'
 		});
 
 		// Set a callback to run when the Google Visualization API is loaded.
@@ -75,14 +77,14 @@
 			var json = JSON.parse(' ${revisionesEnNamespace} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('string', 'Namespace');
-			data.addColumn('number', 'Revisiones');
+			data.addColumn('string', '<spring:message code="statisticsReviews.revisionesEnNamespace.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticsReviews.revisionesEnNamespace.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ entry[0], entry[1] ]); // Add a row with a string and a date value.
 			});
 
 			var options = {
-				title : 'Revisiones en Namespaces'
+				title : '<spring:message code="statisticsReviews.revisionesEnNamespace.title" />'
 			};
 
 			var chart = new google.visualization.PieChart(document
@@ -104,7 +106,7 @@
 				'controlType' : 'NumberRangeFilter',
 				'containerId' : 'paginasConXRevisiones_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Revisiones'
+					'filterColumnLabel' : '<spring:message code="statisticsReviews.paginasConXRevisiones.filterColumnLabel" />'
 				}
 			});
 			/* 			// Set chart options
@@ -128,7 +130,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'paginasConXRevisiones_chart_div',
 				'options' : {
-					'title' : 'Distribucion de revisiones en paginas',
+					'title' : '<spring:message code="statisticsReviews.paginasConXRevisiones.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -139,7 +141,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Revisiones',
+					'pieSliceText' : '<spring:message code="statisticsReviews.paginasConXRevisiones.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -159,8 +161,8 @@
 			var json = JSON.parse(' ${revisionesDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
-			data.addColumn('number', 'Revisiones');
+			data.addColumn('date', '<spring:message code="statisticsReviews.revisionesDia.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticsReviews.revisionesDia.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ new Date(entry[0]), entry[1] ]); // Add a row with a string and a date value.
 			});
@@ -173,7 +175,7 @@
 				'controlType' : 'ChartRangeFilter',
 				'containerId' : 'revisionesDia_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="statisticsReviews.revisionesDia.filterColumnLabel" />'
 				}
 			});
 
@@ -181,7 +183,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'revisionesDia_chart_div',
 				'options' : {
-					'title' : 'Revisiones en el Tiempo',
+					'title' : '<spring:message code="statisticsReviews.revisionesDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -192,7 +194,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="statisticsReviews.revisionesDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});

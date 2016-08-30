@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Procesamiento</title>
+<title><spring:message code="dumptodb.titlepage" /></title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -16,24 +17,24 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Procesamiento</b>
+						<b><spring:message code="dumptodb.title" /></b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button"><spring:message code="dumptodb.back" /></a>
 				</div>
 			</div>
 
 			<c:if test="${empty result}">
-				<div class="panel-body">No hay Tiempos</div>
+				<div class="panel-body"><spring:message code="dumptodb.table.empty" /></div>
 			</c:if>
 			<c:if test="${not empty result}">
 				<table class="table table-striped">
 					<thead>
 						<tr>
-							<th>Operacion</th>
-							<th>Tiempo en milisegundos</th>
+							<th><spring:message code="dumptodb.table.head1" /></th>
+							<th><spring:message code="dumptodb.table.head2" /></th>
 						</tr>
 					</thead>
 					<tbody>

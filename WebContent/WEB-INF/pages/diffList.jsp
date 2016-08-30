@@ -2,11 +2,12 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Diff</title>
+<title><spring:message code="difflist.titlepage" /></title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -17,17 +18,18 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Diff</b>
+						<b><spring:message code="difflist.title" /></b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">
+<spring:message code="difflist.back" /></a>
 				</div>
 			</div>
 			<div class="panel-body">
 				<c:if test="${empty listListDiff}">
-						No hay diff
+						<spring:message code="difflist.table.empty" />
 				</c:if>
 				<ul class="list-group">
 					<c:if test="${not empty listListDiff}">
@@ -88,20 +90,20 @@
 		<div class="panel panel-success">
 			<div class="panel-heading">
 				<h3 class="panel-title">
-					<b>Cambios de estilo</b>
+					<b><spring:message code="difflist.title2" /></b>
 				</h3>
 			</div>
 			<c:if test="${empty mapStyleChanges}">
-				<div class="panel-body">No hay Cambios</div>
+				<div class="panel-body"><spring:message code="difflist.table2.empty" /></div>
 			</c:if>
 			<c:if test="${not empty mapStyleChanges}">
 				<table class="table table-striped">
 					<thead>
 						<tr>
-							<th>Estilo</th>
-							<th>Ocurrencias en la version anterior</th>
-							<th>Ocurrencias en la version nueva</th>
-							<th>Cambio</th>
+							<th><spring:message code="difflist.table2.head1" /></th>
+							<th><spring:message code="difflist.table2.head2" /></th>
+							<th><spring:message code="difflist.table2.head3" /></th>
+							<th><spring:message code="difflist.table2.head4" /></th>
 						</tr>
 					</thead>
 					<tbody>
@@ -147,16 +149,16 @@
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
 	 <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
   <script type="text/javascript">
-    google.charts.load('current', {'packages':['corechart'], 'language': 'es'});
+    google.charts.load('current', {'packages':['corechart'], 'language': '<spring:message code="index.languageSelector.active" />'});
     google.charts.setOnLoadCallback(drawChart);
   function drawChart() {
 	var oldData = new google.visualization.DataTable();
-	oldData.addColumn('string', 'Estilo');
-	oldData.addColumn('number', 'Occurrences');
+	oldData.addColumn('string', '<spring:message code="difflist.drawChart.colum1" />');
+	oldData.addColumn('number', '<spring:message code="difflist.drawChart.colum2" />');
 
 	var newData = new google.visualization.DataTable();
-	newData.addColumn('string', 'Estilo');
-	newData.addColumn('number', 'Occurrences');
+	newData.addColumn('string', '<spring:message code="difflist.drawChart.colum3" />');
+	newData.addColumn('number', '<spring:message code="difflist.drawChart.colum4" />');
 
 	<c:if test="${not empty mapStyleChanges}">
 	
@@ -174,7 +176,7 @@
 
 
     var options = { legend: { position: 'top' } ,vAxis : {'format' : 'short'},
-    		diff: { oldData: { opacity: 1.0,  title: "hola" },newData: { opacity: 0.5, }  } ,
+    		diff: { oldData: { opacity: 1.0,  title: '<spring:message code="difflist.drawChart.label1" />' },newData: { opacity: 0.5, }  } ,
  
 	};
 

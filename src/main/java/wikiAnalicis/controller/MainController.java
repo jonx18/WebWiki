@@ -15,7 +15,7 @@ public class MainController {
 	@Autowired
 	private MediawikiService mediawikiService;
 	
-	@RequestMapping(value = {"index", "/"})
+	@RequestMapping(value = {"index", "/"},produces = "text/plain;charset=UTF-8")
 	public ModelAndView getAllRevisions() {
 		Mediawiki mediawiki = null;
 		List<Mediawiki> allMediawikis = mediawikiService.getAllMediawikis();

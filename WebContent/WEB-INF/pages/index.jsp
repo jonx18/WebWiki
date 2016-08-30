@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -18,26 +19,30 @@
 				<c:if test="${not empty mediawiki }">
 					<h1>${mediawiki.getSiteinfo().getSitename() }</h1>
 					<p>
-						<a class="btn btn-primary btn-lg" href="listPages" role="button">Lista
-							de Paginas </a>
+						<a class="btn btn-primary btn-lg" href="listPages" role="button"><spring:message
+								code="index.listpages" /> </a>
 					</p>
 					<p>
 						<a class="btn btn-primary btn-lg" href="statisticsReviews"
-							role="button">Estadisticas de revisiones </a>
+							role="button"><spring:message code="index.statisticsReviews" /> </a>
 					</p>
 										<p>
 						<a class="btn btn-primary btn-lg" href="statisticsPages"
-							role="button">Estadisticas de paginas </a>
+							role="button"><spring:message code="index.statisticsPages" /> </a>
 					</p>
+					
 				</c:if>
 				<c:if test="${empty mediawiki }">
-					<h1>No hay Wiki Cargada</h1>
+					<h1><spring:message code="index.notWiki.title" /></h1>
 					<p>
-						<a class="btn btn-primary btn-lg" href="dumptobd" role="button">Cargar
-							Wiki</a>
+						<a class="btn btn-primary btn-lg" href="dumptobd" 
+						role="button"><spring:message code="index.notWiki.dumptobd" /></a>
 					</p>
 				</c:if>
-
+					<select id="languageSelector" class="form-control">
+					  <option value="es"><spring:message code="index.languageSelector.es" /></option>
+					  <option value="en"><spring:message code="index.languageSelector.en" /></option>
+					</select>
 
 			</div>
 		</div>
@@ -45,5 +50,11 @@
 
 	<script src="<c:url value="/resources/js/jquery-2.2.4.js"/>"></script>
 	<script src="<c:url value="/resources/js/bootstrap.min.js"/>"></script>
+	<script type="text/javascript">
+		$("#languageSelector").val("<spring:message code='index.languageSelector.active' />").attr('selected', true);;
+		$("#languageSelector").change(function() {
+			window.location.href = "?lang="+$( "#languageSelector option:selected" ).val();
+		});
+	</script>
 </body>
 </html>

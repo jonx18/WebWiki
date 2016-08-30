@@ -2,11 +2,12 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Diff de la Pagina</title>
+<title><spring:message code="diffstatisticsofpage.titlepage" /></title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -17,11 +18,12 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Diff de la Pagina</b>
+						<b><spring:message code="diffstatisticsofpage.title" /></b>
 					</div>
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">
+					<spring:message code="diffstatisticsofpage.back" /></a>
 				</div>
 			</div>
 			<div class="panel-body">
@@ -59,7 +61,7 @@
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
 			'packages' : [ 'corechart', 'controls', 'bar' ],
-			'language' : 'es'
+			'language' : '<spring:message code="index.languageSelector.active" />'
 		});
 
 		// Set a callback to run when the Google Visualization API is loaded.
@@ -74,7 +76,7 @@
 			//var json = JSON.parse(' ${nuevasPaginasPorNamespaceDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
+			data.addColumn('date', '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.colum1" />');
 			<c:forEach var="result" items="${mapStyleChanges}">   
 				data.addColumn('number', '${result.key.getName()}');
 		    </c:forEach>
@@ -110,7 +112,7 @@
 				'options' : {
 					filterColumnLabel : 'colLabel',
 					ui : {
-						label : 'Estilos',
+						label : '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.label1" />',
 						allowTyping : false,
 						allowMultiple : true,
 						allowNone : false,
@@ -124,7 +126,7 @@
 				'containerId' : 'estilosEnElTiempo_filter_div2',
 				'dataTable' : data,
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.filterColumnLabel" />'
 				}
 			});
 
@@ -133,7 +135,7 @@
 				'containerId' : 'estilosEnElTiempo_chart_div',
 				dataTable : data,
 				'options' : {
-					'title' : 'Estilos en el Tiempo',
+					'title' : '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -144,7 +146,7 @@
 					},
 
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -191,8 +193,8 @@
 		function contenidoDia_drawChart() {
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
-			data.addColumn('number', 'Estilos');
+			data.addColumn('date', '<spring:message code="diffstatisticsofpage.contenidoDia.colum1" />');
+			data.addColumn('number', '<spring:message code="diffstatisticsofpage.contenidoDia.colum2" />');
 		    <c:forEach begin="1" end="${fn:length(dates)}" var="val">
 	    		var row = [new Date("<c:out value='${dates[val-1]}'/>")];
 	    		var total = 0;
@@ -213,7 +215,7 @@
 				'controlType' : 'ChartRangeFilter',
 				'containerId' : 'contenidoDia_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="diffstatisticsofpage.contenidoDia.filterColumnLabel" />'
 				}
 			});
 
@@ -221,7 +223,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'contenidoDia_chart_div',
 				'options' : {
-					'title' : 'Estilos en el Tiempo',
+					'title' : '<spring:message code="diffstatisticsofpage.contenidoDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -232,7 +234,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="diffstatisticsofpage.contenidoDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});

@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="tag" uri="/WEB-INF/tag/paginationTag.tld"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -18,29 +19,30 @@
 
 				<div class="panel-title">
 					<div align="left">
-						<b>Revisiones</b>
+						<b><spring:message code="revisionlistof.title" /></b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">Atras</a>
+					<a class="btn btn-primary" href="javascript:window.history.back();" role="button">
+					<spring:message code="revisionlistof.back" /></a>
 				</div>
 			</div>
 
 			<c:if test="${empty revisions}">
-				<div class="panel-body">No hay Revisiones</div>
+				<div class="panel-body"><spring:message code="revisionlistof.table.empty" /></div>
 			</c:if>
 			<c:if test="${not empty revisions}">
 			
 			  <table class="table table-stripped">
 			  <thead>
 				   <tr>
-				    <th>Id</th>
-				    <th>Fecha</th>
-				    <th>Autor</th>
-				    <th>Menor</th>
-				    <th>Comentario</th>
-				    <th>Diff</th>
+				    <th><spring:message code="revisionlistof.table.head1" /></th>
+				    <th><spring:message code="revisionlistof.table.head2" /></th>
+				    <th><spring:message code="revisionlistof.table.head3" /></th>
+				    <th><spring:message code="revisionlistof.table.head4" /></th>
+				    <th><spring:message code="revisionlistof.table.head5" /></th>
+				    <th><spring:message code="revisionlistof.table.head6" /></th>
 				   </tr>
 				   </thead>
 				   <tbody>
@@ -53,23 +55,23 @@
 				     	<td>${revision.getContributor().getUsername() }</td>
 				     </c:if>
 				     <c:if test="${revision.getContributor().getRealId()<0}">
-				     	<td>Anonimo - ${revision.getContributor().getIp() }</td>
+				     	<td><spring:message code="revisionlistof.table.value1" /> - ${revision.getContributor().getIp() }</td>
 				     </c:if>
 				     </c:if>
 					 <c:if test="${revision.getContributor().getDeleted()}">
-					 <td>Deleted</td>
+					 <td><spring:message code="revisionlistof.table.value2" /></td>
 					 </c:if>
 				     <c:if test="${revision.getMinor()}">
-				     	<td>Si</td>
+				     	<td><spring:message code="revisionlistof.table.value3" /></td>
 				     </c:if>
 				     <c:if test="${not revision.getMinor()}">
-				     	<td>No</td>
+				     	<td><spring:message code="revisionlistof.table.value4" /></td>
 				     </c:if>
 					 <td>${revision.getComment() }</td>
 					 <c:if test="${not empty revision.getParentid()}">
 				     	<td>
 				     	<a href="diffList?id=${ revision.getId()}&parentId=${ revision.getParentid()}"  class="btn btn-primary" type="button">
-					  		Ver Diff con<span class="badge">${ revision.getParentid()}</span>
+					  		<spring:message code="revisionlistof.table.button1" /><span class="badge">${ revision.getParentid()}</span>
 						</a>
 				     	</td>
 				     </c:if>

@@ -11,6 +11,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.BatchSize;
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
 
@@ -37,24 +39,28 @@ public class InCategory implements Serializable{
 	 @JoinColumn(name = "category_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 @Cascade(CascadeType.ALL)
 	 //categoria que la contiene
 	 private Category category;
-	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
+	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "page_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 @Cascade(CascadeType.ALL)
 	 //page o categoria contenida
 	private Page page;
-	 @ManyToOne(optional = false,fetch=FetchType.EAGER)
+	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionStart_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 @Cascade(CascadeType.ALL)
 	 //revision de entrada a la categoria
 	private Revision revisionStart;
 	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "revisionEnd_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
+	 @Cascade(CascadeType.ALL)
 	 //revision de salida de la categoria
 	private Revision revisionEnd;
 

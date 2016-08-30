@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -13,12 +14,17 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.thoughtworks.xstream.XStream;
@@ -49,6 +55,10 @@ import wikiAnalicis.service.UserContributorService;
 public class DumpToBDController {
 	private static final Logger LOGGER = Logger.getLogger(Revision.class);
 	@Autowired
+	private LocaleResolver localeResolver;
+	@Autowired
+	private MessageSource messageSource;
+	@Autowired
 	private MediawikiService mediawikiService;
 	@Autowired
 	private PageService pageService;
@@ -65,27 +75,27 @@ public class DumpToBDController {
 	@Autowired
 	private Environment env;
 
-	@RequestMapping("dumptobd")
-	public ModelAndView dumpToBD() {
+	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
+	public ModelAndView dumpToBD(HttpServletRequest request) {
 		Map<String, Long> times = new TreeMap<String, Long>();
 
 		long startTime = System.currentTimeMillis();
 		dropDB();
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
-		times.put("1- Vaciado de Base de Datos", elapsedTime);
+		times.put("1-dropDB", elapsedTime);
 
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
 		System.out.println(env.getProperty("history.path.test"));
 		XStream xStream = configXStream();
 		String historyPath = env.getProperty("history.path.test");
-		historyXMLToDB(xStream, historyPath);
+		Mediawiki mediawiki = historyXMLToDB(xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("2- Carga de: " + historyPath, elapsedTime);
+		times.put("2-historyXMLToDB-" + historyPath, elapsedTime);
 
 		// dropDB();
 		// aca van masprocesamintos
@@ -94,9 +104,18 @@ public class DumpToBDController {
 		asignacionCategorias();
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("3- Asignacion de Categorias", elapsedTime);
+		times.put("3-asignacionCategorias", elapsedTime);
+		//Locale locale = new Locale(mediawiki.getLang());
+		Locale locale = localeResolver.resolveLocale(request);
+		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
+		int index=0;
+		for (String label : times.keySet()) {
+			index++;
+			timesLabeled.put(index+"- "+messageSource.getMessage("dumptodb.table."+(label.split("-")[1]), null, locale), times.get(label));
+		}
+		
 		ModelAndView model = new ModelAndView("dumptodb");
-		model.addObject("result", times);
+		model.addObject("result", timesLabeled);
 		return model;
 
 	}
@@ -288,7 +307,7 @@ public class DumpToBDController {
 		mediawikiService.truncateAll();
 	}
 
-	private void historyXMLToDB(XStream xStream, String historyPath) {
+	private Mediawiki historyXMLToDB(XStream xStream, String historyPath) {
 		Mediawiki mediawiki = null;
 		try {
 			mediawiki = (Mediawiki) xStream.fromXML(new FileInputStream(historyPath));
@@ -297,6 +316,7 @@ public class DumpToBDController {
 			e.printStackTrace();
 		}
 		mediawikiService.mergeMediawiki(mediawiki);
+		return mediawiki;
 	}
 
 	private XStream configXStream() {

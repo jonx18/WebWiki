@@ -2,11 +2,12 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="tag" uri="/WEB-INF/tag/paginationTag.tld"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Lista de Paginas</title>
+<title><spring:message code="listpages.titlepage" /> </title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -17,27 +18,28 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Paginas</b>
+						<b><spring:message code="listpages.title" /> </b>
 					</div>
 
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">
+					<spring:message code="listpages.back" /></a>
 				</div>
 			</div>
 
 			<c:if test="${empty pages}">
-				<div class="panel-body">No hay Paginas</div>
+				<div class="panel-body"><spring:message code="listpages.table.empty" /></div>
 			</c:if>
 			<c:if test="${not empty pages}">
 
 				<table class="table table-stripped">
 					<thead>
 						<tr>
-							<th>Id</th>
-							<th>Titulo</th>
-							<th>Namespace</th>
-							<th>Nº de Reviciones</th>
+							<th><spring:message code="listpages.table.head1" /></th>
+							<th><spring:message code="listpages.table.head2" /></th>
+							<th><spring:message code="listpages.table.head3" /></th>
+							<th><spring:message code="listpages.table.head4" /></th>
 							<th></th>
 						</tr>
 					</thead>
@@ -48,13 +50,14 @@
 								<td>${page.getTitle() }</td>
 								<td>${page.getNs() }</td>
 								<td><a href="getAllRevisionsOf?parentId=${page.getId() }"
-									class="btn btn-primary" type="button"> Ver <span
+									class="btn btn-primary" type="button">
+									 <spring:message code="listpages.table.button1" /> <span
 										class="badge">${page.getRevisions().size() }</span>
 								</a></td>
 								<td><a href="statisticsPageOf?parentId=${page.getId() }"
-									class="btn btn-primary" type="button"> Estadisticas </a>
+									class="btn btn-primary" type="button"> <spring:message code="listpages.table.button2" /> </a>
 									<a href="diffStatisticsOfPage?id=${page.getId() }"
-									class="btn btn-primary" type="button"> Evolucion </a></td>
+									class="btn btn-primary" type="button"> <spring:message code="listpages.table.button3" /> </a></td>
 							</tr>
 						</c:forEach>
 					</tbody>

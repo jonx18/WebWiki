@@ -1,11 +1,12 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-<title>Estadistica de Paginas</title>
+<title><spring:message code="statisticsPages.titlepage" /></title>
 <!-- Bootstrap CSS -->
 <link href="<c:url value="/resources/css/bootstrap.min.css" />"
 	rel="stylesheet">
@@ -16,17 +17,18 @@
 			<div class="panel-heading">
 				<div class="panel-title">
 					<div align="left">
-						<b>Estadistica de Paginas</b>
+						<b><spring:message code="statisticsPages.title" /></b>
 					</div>
 				</div>
 				<div align="right">
-					<a class="btn btn-primary" href="/WikiWebTest/" role="button">Atras</a>
+					<a class="btn btn-primary" href="/WikiWebTest/" role="button">
+<spring:message code="statisticsPages.back" /></a>
 				</div>
 			</div>
 			<div class="panel-body">
 				<ul class="list-group">
-					<li class="list-group-item">En la Wiki hay un total de:
-						${totalPaginas} paginas</li>
+					<li class="list-group-item"><spring:message code="statisticsPages.li1.start" />
+						${totalPaginas} <spring:message code="statisticsPages.li1.end" /></li>
 					<li class="list-group-item"><div
 							id="paginasEnNamespace_piechart"
 							style="width: 900px; height: 500px;"></div></li>
@@ -70,7 +72,7 @@
 		// Load the Visualization API and the corechart package.
 		google.charts.load('current', {
 			'packages' : [ 'corechart', 'controls', 'bar' ],
-			'language' : 'es'
+			'language' : '<spring:message code="index.languageSelector.active" />'
 		});
 
 		// Set a callback to run when the Google Visualization API is loaded.
@@ -84,14 +86,14 @@
 			var json = JSON.parse(' ${paginasEnNamespace} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('string', 'Namespace');
-			data.addColumn('number', 'Paginas');
+			data.addColumn('string', '<spring:message code="statisticsPages.paginasEnNamespace.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticsPages.paginasEnNamespace.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ entry[0], entry[1] ]); // Add a row with a string and a date value.
 			});
 
 			var options = {
-				title : 'Paginas en Namespaces'
+				title : '<spring:message code="statisticsPages.paginasEnNamespace.title" />'
 			};
 
 			var chart = new google.visualization.PieChart(document
@@ -104,8 +106,8 @@
 			var json = JSON.parse(' ${nuevasPaginasDia} ');
 			// Create the data table.
 			var data = new google.visualization.DataTable();
-			data.addColumn('date', 'Tiempo');
-			data.addColumn('number', 'Nuevas Paginas');
+			data.addColumn('date', '<spring:message code="statisticsPages.nuevasPaginasDia.colum1" />');
+			data.addColumn('number', '<spring:message code="statisticsPages.nuevasPaginasDia.colum2" />');
 			json.forEach(function(entry) {
 				data.addRow([ new Date(entry[0]), entry[1] ]); // Add a row with a string and a date value.
 			});
@@ -119,7 +121,7 @@
 				'controlType' : 'ChartRangeFilter',
 				'containerId' : 'nuevasPaginasDia_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="statisticsPages.nuevasPaginasDia.filterColumnLabel" />'
 				}
 			});
 
@@ -127,7 +129,7 @@
 				'chartType' : 'ColumnChart',
 				'containerId' : 'nuevasPaginasDia_chart_div',
 				'options' : {
-					'title' : 'Nuevas Paginas en el Tiempo',
+					'title' : '<spring:message code="statisticsPages.nuevasPaginasDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -138,7 +140,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="statisticsPages.nuevasPaginasDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -166,7 +168,7 @@
 					entry.forEach(function(entry2) {
 						if (head) {
 							head = false;
-							data.addColumn('date', 'Tiempo')
+							data.addColumn('date', '<spring:message code="statisticsPages.nuevasPaginasPorNamespaceDia.colum1" />')
 						} else {
 							data.addColumn('number', entry2);
 						}
@@ -204,7 +206,7 @@
 				'options' : {
 					filterColumnLabel : 'colLabel',
 					ui : {
-						label : 'Columns',
+						label : '<spring:message code="statisticsPages.nuevasPaginasPorNamespaceDia.label1" />',
 						allowTyping : false,
 						allowMultiple : true,
 						allowNone : false,
@@ -218,7 +220,7 @@
 				'containerId' : 'nuevasPaginasPorNamespaceDia_filter_div2',
 				'dataTable' : data,
 				'options' : {
-					'filterColumnLabel' : 'Tiempo'
+					'filterColumnLabel' : '<spring:message code="statisticsPages.nuevasPaginasPorNamespaceDia.filterColumnLabel" />'
 				}
 			});
 
@@ -227,7 +229,7 @@
 				'containerId' : 'nuevasPaginasPorNamespaceDia_chart_div',
 				dataTable : data,
 				'options' : {
-					'title' : 'Nuevas Paginas en el Tiempo por Namespace',
+					'title' : '<spring:message code="statisticsPages.nuevasPaginasPorNamespaceDia.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -238,7 +240,7 @@
 					},
 
 					'height' : 400,
-					'pieSliceText' : 'Tiempo',
+					'pieSliceText' : '<spring:message code="statisticsPages.nuevasPaginasPorNamespaceDia.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
@@ -297,7 +299,7 @@
 				'controlType' : 'NumberRangeFilter',
 				'containerId' : 'paginasConXRevisiones_filter_div',
 				'options' : {
-					'filterColumnLabel' : 'Revisiones'
+					'filterColumnLabel' : '<spring:message code="statisticsPages.paginasConXRevisiones.filterColumnLabel" />'
 				}
 			});
 			/* 			// Set chart options
@@ -321,7 +323,7 @@
 				'chartType' : 'LineChart',
 				'containerId' : 'paginasConXRevisiones_chart_div',
 				'options' : {
-					'title' : 'Distribucion de revisiones en paginas',
+					'title' : '<spring:message code="statisticsPages.paginasConXRevisiones.title" />',
 					'subtitle' : '',
 					'bars' : 'vertical',
 					'vAxis' : {
@@ -332,7 +334,7 @@
 					},
 					'colors' : [ '#1b9e77' ],
 					'height' : 400,
-					'pieSliceText' : 'Revisiones',
+					'pieSliceText' : '<spring:message code="statisticsPages.paginasConXRevisiones.pieSliceText" />',
 					'legend' : 'right'
 				}
 			});
