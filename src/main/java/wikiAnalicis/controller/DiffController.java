@@ -12,20 +12,24 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.IntStream;
 
 import javax.jws.soap.SOAPBinding.Style;
+import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
@@ -52,12 +56,17 @@ public class DiffController {
 	private RevisionService revisionService;
 	@Autowired
 	private PageService pageService;
+	@Autowired
+	private MessageSource messageSource;
+	@Autowired
+	private LocaleResolver localeResolver;
 	public DiffController() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@RequestMapping("diffList")
-	public ModelAndView showDiff(Long id, Long parentId) {
+	public ModelAndView showDiff(Long id, Long parentId,HttpServletRequest request) {
+		Locale locale = localeResolver.resolveLocale(request);
 		String revText1 = revisionService.getRevision(parentId).getText();
 		String revText2 = revisionService.getRevision(id).getText();
 		// try {
@@ -87,7 +96,7 @@ public class DiffController {
 		ParagraphDiffer differ = new ParagraphDiffer();
 		LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
 		//String json = gson.toJson(result, result.getClass());
-		DiffContainer diffContainer = cambiosContenido(listListDiff);
+		DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
 		Map<Delimiter, Integer[]> mapStyleChanges = diffContainer.getStyleChanges();
 		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
@@ -101,12 +110,13 @@ public class DiffController {
 
 	}
 	@RequestMapping("diffStatisticsOfPage")
-	public ModelAndView diffStatisticsOfPage(Long id) {
+	public ModelAndView diffStatisticsOfPage(Long id,HttpServletRequest request) {
+		Locale locale = localeResolver.resolveLocale(request);
 		Page page = pageService.getPage(id);
 		page = pageService.mergePage(page);
 		List<Revision> revisions = page.getRevisions();
 		int size = revisions.size();
-		List<Delimiter> delimiters = this.getDelimiters();
+		List<Delimiter> delimiters = this.getDelimiters(locale);
 		Map<Delimiter, int[]> mapStyleChanges = new HashMap<Delimiter, int[]>();
 		Date[] dates= new Date[size];
 		for (Delimiter delimiter : delimiters) {
@@ -123,7 +133,7 @@ public class DiffController {
 				String revText2 = newRevision.getText();
 				ParagraphDiffer differ = new ParagraphDiffer();
 				LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
-				DiffContainer diffContainer = cambiosContenido(listListDiff);
+				DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
 				Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
 				for (Delimiter delimiter : mapRevChanges.keySet()) {
 					int[] array = mapStyleChanges.get(delimiter);
@@ -141,7 +151,7 @@ public class DiffController {
 			String revText2 = "";
 			ParagraphDiffer differ = new ParagraphDiffer();
 			LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
-			DiffContainer diffContainer = cambiosContenido(listListDiff);
+			DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
 			Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
 			for (Delimiter delimiter : mapRevChanges.keySet()) {
 				mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
@@ -181,8 +191,8 @@ public class DiffController {
 
 	}
 
-	private DiffContainer cambiosContenido(LinkedList<ParagraphDiff> listListDiff) {
-		List<Delimiter> delimiters = getDelimiters();
+	private DiffContainer cambiosContenido(LinkedList<ParagraphDiff> listListDiff,Locale locale) {
+		List<Delimiter> delimiters = getDelimiters(locale);
 		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
 		DiffContainer diffContainer = styleAnalyzer.textDescomsition(listListDiff);
 		//diffContainer.calculateDifferenes(); lo hago al crearlo
@@ -224,7 +234,7 @@ public class DiffController {
 		return diffContainer;
 	}
 
-	private List<Delimiter> getDelimiters() {
+	private List<Delimiter> getDelimiters(Locale locale) {
 		List<Delimiter> delimiters = new LinkedList<Delimiter>();
 //		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
 //				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
@@ -234,15 +244,41 @@ public class DiffController {
 				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
 		String[] closeIndicator ={"","</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
 				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
-		String[] name ={"","Nowiki","Grande","Pequeño","Super indice","Sub-indice","Tachado","Bloque de Cita","includeonly",
-				"referencia","Encabezado de 2.º nivel","Encabezado de 3.º nivel","Encabezado de 4.º nivel","Encabezado de 5.º nivel",
-				"Cursiva","Negrita","Negrita & cursiva","Enlace Externo","Enlace Interno"};
+		
+		String[] name ={"",
+				messageSource.getMessage("delimiter.nowiki.name", null, locale),
+				messageSource.getMessage("delimiter.big.name", null, locale),
+				messageSource.getMessage("delimiter.small.name", null, locale),
+				messageSource.getMessage("delimiter.sup.name", null, locale),
+				messageSource.getMessage("delimiter.sub.name", null, locale),
+				messageSource.getMessage("delimiter.s.name", null, locale),
+				messageSource.getMessage("delimiter.blockquote.name", null, locale),
+				messageSource.getMessage("delimiter.includeonly.name", null, locale),
+				messageSource.getMessage("delimiter.reference.name", null, locale),
+				messageSource.getMessage("delimiter.heading2.name", null, locale),
+				messageSource.getMessage("delimiter.heading3.name", null, locale),
+				messageSource.getMessage("delimiter.heading4.name", null, locale),
+				messageSource.getMessage("delimiter.heading5.name", null, locale),
+				messageSource.getMessage("delimiter.italic.name", null, locale),
+				messageSource.getMessage("delimiter.blod.name", null, locale),
+				messageSource.getMessage("delimiter.italicblod.name", null, locale),
+				messageSource.getMessage("delimiter.link.external.name", null, locale),
+				messageSource.getMessage("delimiter.link.internal.name", null, locale)
+				};
 		for (int i = 0; i < openIndicator.length; i++) {
 			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],name[i],false);
 			delimiters.add(d);
 		}
-		String[] openIndicatorFull ={"#","#REDIRECCIÓN","*","::",":"};
-		String[] nameFull ={"Elemento Enumerado","REDIRECCIÓN","Elemento Listado","Sangria 2","Sangria 1"};
+		String[] openIndicatorFull ={"#",
+				messageSource.getMessage("delimiter.redirection.delimiter", null, locale),
+				"*","::",":"};
+		String[] nameFull ={
+				messageSource.getMessage("delimiter.numberedelement.name", null, locale),
+				messageSource.getMessage("delimiter.redirection.name", null, locale),
+				messageSource.getMessage("delimiter.bulletedelement.name", null, locale),
+				messageSource.getMessage("delimiter.indent2.name", null, locale),
+				messageSource.getMessage("delimiter.indent1.name", null, locale)
+				};
 		for (int i = 0; i < openIndicatorFull.length; i++) {
 			Delimiter d = new Delimiter(openIndicatorFull[i],nameFull[i],true);
 			delimiters.add(d);
