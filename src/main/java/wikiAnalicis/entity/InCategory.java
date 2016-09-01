@@ -2,6 +2,7 @@ package wikiAnalicis.entity;
 
 import java.io.Serializable;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -9,6 +10,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -26,6 +28,7 @@ import org.hibernate.annotations.FetchMode;
  *
  */
 @Entity
+@Table(name="incategory")
 public class InCategory implements Serializable{
 	
 	/**
@@ -34,6 +37,7 @@ public class InCategory implements Serializable{
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="id")
 	private Long id;
 	 @ManyToOne(fetch=FetchType.EAGER)
 	 @JoinColumn(name = "category_id")
@@ -50,14 +54,14 @@ public class InCategory implements Serializable{
 	 //page o categoria contenida
 	private Page page;
 	 @ManyToOne(fetch=FetchType.EAGER)
-	 @JoinColumn(name = "revisionStart_id")
+	 @JoinColumn(name = "revisionstart_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
 	 @Cascade(CascadeType.ALL)
 	 //revision de entrada a la categoria
 	private Revision revisionStart;
 	 @ManyToOne(fetch=FetchType.EAGER)
-	 @JoinColumn(name = "revisionEnd_id")
+	 @JoinColumn(name = "revisionend_id")
 	 @Fetch(FetchMode.SELECT)
 	 @BatchSize(size = 5)
 	 @Cascade(CascadeType.ALL)

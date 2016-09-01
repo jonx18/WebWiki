@@ -8,6 +8,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -24,6 +25,7 @@ import org.hibernate.annotations.FetchMode;
  *
  */
 @Entity
+@Table(name="category")
 public class Category extends Page {
 
 	@ManyToMany(targetEntity = InCategory.class,fetch = FetchType.EAGER)
@@ -33,7 +35,7 @@ public class Category extends Page {
 	            name = "category_id", 
 	            referencedColumnName = "id"),
 	        inverseJoinColumns = @JoinColumn(
-	            name = "inCategory_id", 
+	            name = "incategory_id", 
 	            referencedColumnName = "id")
 	    )
 	@Cascade(CascadeType.ALL)
@@ -48,7 +50,7 @@ public class Category extends Page {
 	            name = "category_id", 
 	            referencedColumnName = "id"),
 	        inverseJoinColumns = @JoinColumn(
-	            name = "inCategory_id", 
+	            name = "incategory_id", 
 	            referencedColumnName = "id")
 	    )
 	@Cascade(CascadeType.ALL)
@@ -63,7 +65,7 @@ public class Category extends Page {
 	            name = "category_id", 
 	            referencedColumnName = "id"),
 	        inverseJoinColumns = @JoinColumn(
-	            name = "inCategory_id", 
+	            name = "incategory_id", 
 	            referencedColumnName = "id")
 	    )
 	@Cascade(CascadeType.ALL)

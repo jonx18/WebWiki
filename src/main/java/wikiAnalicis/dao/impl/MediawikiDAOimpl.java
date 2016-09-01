@@ -77,39 +77,42 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 	}
 	@Override
 	public void truncateAll() {
-		SQLQuery query = util.getSessionFactory().getCurrentSession().createSQLQuery("SET foreign_key_checks = 0;");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_child`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_page`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_parent`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `incategory`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki_page`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki_siteinfo`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `namespace`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `page`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `revision`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `siteinfo`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `siteinfo_namespace`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `usercontributor`");
-        query.executeUpdate();
-		query = util.getSessionFactory().getCurrentSession().createSQLQuery("SET foreign_key_checks = 1;");
-        // todo - generify this to all tables
-        query.executeUpdate();
+		if (this.getAllMediawikis().size()>0) {
+			SQLQuery query = util.getSessionFactory().getCurrentSession().createSQLQuery("SET foreign_key_checks = 0;");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_child`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_page`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `category_parent`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `incategory`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki_page`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `mediawiki_siteinfo`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `namespace`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `page`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `revision`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `siteinfo`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `siteinfo_namespace`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `usercontributor`");
+	        query.executeUpdate();
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("SET foreign_key_checks = 1;");
+	        // todo - generify this to all tables
+	        query.executeUpdate();
+		}
+		
 //		System.out.println("InCategory.class");
 //		deletAllFrom(InCategory.class);
 //		System.out.println("Mediawiki.class");

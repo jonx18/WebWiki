@@ -1,9 +1,11 @@
 package wikiAnalicis.entity;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import com.google.gson.Gson;
 /**
@@ -13,15 +15,20 @@ import com.google.gson.Gson;
  *
  */
 @Entity
+@Table(name="namespace")
 public class Namespace{
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="id")
 	private Long id;
+	@Column(name="keyclave")
 	private Integer keyclave;
+	@Column(name="stringcase")
 	private String stringCase;
+	@Column(name="value")
 	private String value;
 	
 	public Namespace() {

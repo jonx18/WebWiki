@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -13,6 +14,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -28,12 +30,14 @@ import com.google.gson.Gson;
  *
  */
 @Entity
+@Table(name="mediawiki")
 public class Mediawiki {
 
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy=GenerationType.AUTO)
+	@Column(name="id")
 	private Long id;
 	@OneToOne(targetEntity= Siteinfo.class,orphanRemoval = true)
 	@JoinTable(
@@ -48,10 +52,20 @@ public class Mediawiki {
 	@Cascade(CascadeType.ALL)
 	private Siteinfo siteinfo;
 	@OneToMany(orphanRemoval = true,fetch = FetchType.LAZY)
+	@JoinTable(
+	        name = "mediawiki_page",
+	        joinColumns = @JoinColumn(
+	            name = "mediawiki_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "page_id", 
+	            referencedColumnName = "id")
+	    )
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<Page> pages= new LinkedList<Page>();//no sequiere borrar
+	@Column(name="lang")
 	private String lang;
 	
 	public Mediawiki() {

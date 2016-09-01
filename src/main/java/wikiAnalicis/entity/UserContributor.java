@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Table;
 
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.apache.commons.lang3.builder.HashCodeBuilder;
@@ -19,6 +20,7 @@ import com.google.gson.Gson;
  *
  */
 @Entity
+@Table(name="usercontributor")
 public class UserContributor {
 	//Contador de anonimos
 	public static Long anonimusID=new Long(-1);
@@ -26,14 +28,17 @@ public class UserContributor {
 	private static final long serialVersionUID = 1L;
     @Id
     @GeneratedValue(strategy=GenerationType.AUTO)
+    @Column(name="id")
     //es un id para desambiguar en caso de repeticion del id real.
 	private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false,name="realid")
     //representa el id del usuario en la wiki o un identificador negativo de ser anonimo
     private Long realId=anonimusID;
-    @Column(nullable = false,unique=true)
+    @Column(nullable = false,unique=true,name="username")
 	private String username;
+    @Column(name="ip")
 	private String ip;
+    @Column(name="deleted")
 	private Boolean deleted=false;
 	public UserContributor() {
 		// TODO Auto-generated constructor stub

@@ -89,9 +89,9 @@ public class DumpToBDController {
 
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.en"));
+		System.out.println(env.getProperty("history.path.test"));
 		XStream xStream = configXStream();
-		String historyPath = env.getProperty("history.path.en");
+		String historyPath = env.getProperty("history.path.test");
 		mediawiki = historyXMLToDB(xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");

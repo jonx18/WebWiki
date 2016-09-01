@@ -13,6 +13,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -31,6 +32,7 @@ import com.google.gson.Gson;
  */
 @Entity
 @Inheritance(strategy = InheritanceType.JOINED)
+@Table(name="page")
 public class Page implements Identificable{
 
 	@SuppressWarnings("unused")
@@ -39,11 +41,14 @@ public class Page implements Identificable{
 	@Basic(optional = false)
 	@GeneratedValue(strategy = GenerationType.IDENTITY, generator = "IdOrGenerated")
 	@GenericGenerator(name = "IdOrGenerated", strategy = "wikiAnalicis.util.UseIdOrGenerate")
-	@Column(nullable = false)
+	@Column(nullable = false,name="id")
 	//Id de la Page, viene seteado del XML
 	protected Long id;
+	@Column(name="title")
 	private String title;
+	@Column(name="ns")
 	private Integer ns;// name space
+	@Column(name="redirect")
 	private String redirect;
 	@OneToMany(mappedBy = "page",targetEntity = Revision.class,fetch = FetchType.LAZY)
 	@Cascade(CascadeType.ALL)

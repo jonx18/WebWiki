@@ -3,12 +3,16 @@ package wikiAnalicis.entity;
 import java.util.LinkedList;
 import java.util.List;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
 import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -25,18 +29,34 @@ import com.google.gson.Gson;
  *
  */
 @Entity
+@Table(name="siteinfo")
 public class Siteinfo {
 	@SuppressWarnings("unused")
 	private static final long serialVersionUID = 1L;
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
+	@Column(name="id")
 	private Long id;
+	@Column(name="sitename")
 	private String sitename;
+	@Column(name="dbname")
 	private String dbname;
+	@Column(name="base")
 	private String base;
+	@Column(name="generator")
 	private String generator;
+	@Column(name="casee")
 	private String casee;//problema con el nombre solucionar;
 	@OneToMany( targetEntity= Namespace.class, fetch = FetchType.EAGER,orphanRemoval=true)
+	@JoinTable(
+	        name = "siteinfo_namespace",
+	        joinColumns = @JoinColumn(
+	            name = "siteinfo_id", 
+	            referencedColumnName = "id"),
+	        inverseJoinColumns = @JoinColumn(
+	            name = "namespaces_id", 
+	            referencedColumnName = "id")
+	    )
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.JOIN)
     @BatchSize(size = 10)

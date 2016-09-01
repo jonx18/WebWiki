@@ -16,6 +16,7 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
@@ -34,6 +35,7 @@ import com.google.gson.Gson;
  *
  */
 @Entity
+@Table(name="revision")
 public class Revision implements Identificable{
 	
 	@SuppressWarnings("unused")
@@ -42,10 +44,13 @@ public class Revision implements Identificable{
     @GeneratedValue(strategy=GenerationType.AUTO, generator="idOrGenerate")
     @GenericGenerator(name="idOrGenerate",
                       strategy="wikiAnalicis.util.UseIdOrGenerate")
+    @Column(name="id")
     //representa el id de la revision que se obtiene del XML
 	private Long id;
     //representa el id de la revision anterior a esta, si es 0 esla primera.
+    @Column(name="parentid")
 	private Long parentid;
+    @Column(name="timestamp")
 	private Date timestamp = Calendar.getInstance().getTime();
 	@OneToOne(fetch=FetchType.EAGER, targetEntity = UserContributor.class)
 	@JoinColumn(name = "contributor_id")
@@ -59,13 +64,19 @@ public class Revision implements Identificable{
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private Page page;
+    @Column(name="comment")
 	private String comment;
+    @Column(name="minor")
 	private	Boolean minor = false;//TODO no carga con xstream
+    @Column(name="model")
 	private String model;
+    @Column(name="format")
 	private String format;
+    @Column(name="deleted")
 	private Boolean deleted=false;
-	@Column(columnDefinition="LONGBLOB")
+	@Column(columnDefinition="LONGBLOB",name="text")
 	private String text;
+    @Column(name="sha1")
 	private String sha1;
 	
 	public Revision() {
