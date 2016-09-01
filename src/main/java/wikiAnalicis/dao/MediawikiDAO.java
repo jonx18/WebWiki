@@ -15,4 +15,5 @@ public interface MediawikiDAO {
 	public Mediawiki getMediawiki(long id); 
 	public void addPagesTo(Mediawiki mediawiki,List<Page> pages);
 	public void truncateAll();
+	public String getLang();
 }

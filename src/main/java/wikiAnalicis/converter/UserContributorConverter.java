@@ -1,5 +1,7 @@
 package wikiAnalicis.converter;
 
+import org.springframework.context.MessageSource;
+
 import com.thoughtworks.xstream.converters.Converter;
 import com.thoughtworks.xstream.converters.MarshallingContext;
 import com.thoughtworks.xstream.converters.UnmarshallingContext;
@@ -12,8 +14,12 @@ import wikiAnalicis.service.UserContributorService;
 
 public class UserContributorConverter implements Converter {
 	private UserContributorService userContributorService;
-	public UserContributorConverter(UserContributorService userContributorService) {
+	private MediaWikiConverter mediaWikiConverter;
+	private MessageSource messageSource;
+	public UserContributorConverter(UserContributorService userContributorService, MediaWikiConverter mediaWikiConverter, MessageSource messageSource) {
 		this.userContributorService=userContributorService;
+		this.mediaWikiConverter = mediaWikiConverter;
+		this.messageSource = messageSource;
 	}
 
 	@Override
@@ -52,18 +58,21 @@ public class UserContributorConverter implements Converter {
 			if ("ip".equalsIgnoreCase(reader.getNodeName())) {
 				userContributor.setIp(reader.getValue());
 				userContributor.setAnonimus();
-				userContributor.setUsername("anonimo"+userContributor.getRealId());
+				String text = messageSource.getMessage("usercontributor.anonymous", null, this.mediaWikiConverter.getLang());
+				userContributor.setUsername(text+userContributor.getRealId());
 				reader.moveUp();
 			}
 		} else {
 			userContributor.setDeleted(true);
 			userContributor.setIp("0.0.0.0");
 			userContributor.setAnonimus();
-			userContributor.setUsername("deleted"+userContributor.getRealId());
+			String text = messageSource.getMessage("usercontributor.deleted", null, this.mediaWikiConverter.getLang());
+			userContributor.setUsername(text+userContributor.getRealId());
 		}
 		userContributorService.mergeUserContributor(userContributor);//para que los encuentre 1 a 1
 		userContributor = userContributorService.getUserContributor(userContributor.getUsername());
 		return userContributor;
 	}
 
+	
 }

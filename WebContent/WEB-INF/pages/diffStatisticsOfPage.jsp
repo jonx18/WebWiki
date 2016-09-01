@@ -35,6 +35,9 @@
 							<div id="estilosEnElTiempo_filter_div"></div>
 							<div id="estilosEnElTiempo_filter_div2"></div>
 							<div id="estilosEnElTiempo_chart_div"></div>
+							<c:if test="${empty mapStyleChanges}">
+								<spring:message code="diffstatisticsofpage.estilosEnElTiempo.error" />
+							</c:if>
 						</div>
 					</li>
 					<li class="list-group-item">
@@ -67,7 +70,9 @@
 		// Set a callback to run when the Google Visualization API is loaded.
 		//google.charts.setOnLoadCallback(paginasEnNamespace_drawChart);
 		//google.charts.setOnLoadCallback(nuevasPaginasDia_drawChart);
-		google.charts.setOnLoadCallback(estilosEnElTiempo_drawChart);
+		<c:if test="${not empty mapStyleChanges}">
+				google.charts.setOnLoadCallback(estilosEnElTiempo_drawChart);
+		</c:if>
 		google.charts.setOnLoadCallback(contenidoDia_drawChart);
 		//google.charts.setOnLoadCallback(paginasConXRevisiones_drawChart);
 	
@@ -104,7 +109,7 @@
 				// you can comment out this next line if you want to have a default selection other than the whole list
 				//initState.selectedValues.push(data.getColumnLabel(i));
 			}
-			initState.selectedValues.push(data.getColumnLabel(1));
+			initState.selectedValues.push(data.getColumnLabel(0));
 			var columnFilter = new google.visualization.ControlWrapper({
 				'controlType' : 'CategoryFilter',
 				'containerId' : 'estilosEnElTiempo_filter_div',

@@ -4,20 +4,26 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
+import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 
@@ -28,6 +34,10 @@ public class RevisionController {
 	private RevisionService revisionService; 
 	@Autowired
 	private PageService pageService; 
+	@Autowired
+	private MessageSource messageSource;
+	@Autowired
+	private LocaleResolver localeResolver;
 	public RevisionController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -88,7 +98,7 @@ public class RevisionController {
 		return model;
 	}
 	@RequestMapping(value = {"statisticsReviews"})
-	public ModelAndView statisticsReviews() {
+	public ModelAndView statisticsReviews(HttpServletRequest request) {
 	ModelAndView model = new ModelAndView("statisticsReviews");
 	//---------------------------------------------------------------------------------------
 	Long totalRevisiones = revisionService.count();
@@ -107,7 +117,10 @@ public class RevisionController {
 	//---------------------------------------------------------------------------------------
 	Map<Long,Long> 	paginasConXRevisiones= pageService.countPagesForNumberOfRevisions();
 	toJS= new LinkedList<Object[]>();
-	toJS.add(new Object[]{"Revisiones","Nº de Paginas"});
+	Locale locale = localeResolver.resolveLocale(request);
+	String column1 = messageSource.getMessage("statisticsPages.paginasConXRevisiones.colum1", null, locale);
+	String column2 = messageSource.getMessage("statisticsPages.paginasConXRevisiones.colum2", null, locale);
+	toJS.add(new Object[]{column1,column2});
 	for (Long key : paginasConXRevisiones.keySet()) {
 		toJS.add(new Object[]{key,paginasConXRevisiones.get(key)});
 	}	

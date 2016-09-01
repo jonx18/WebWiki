@@ -3,6 +3,7 @@ package wikiAnalicis.dao.impl;
 import java.util.List;
 import java.util.Map;
 
+import org.hibernate.Query;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.metadata.ClassMetadata;
@@ -133,5 +134,9 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 //		for (Object object : list) {
 //			util.delete(object);
 //		}
+	}
+	@Override
+	public String getLang() {
+		return this.getMediawiki(1).getLang();
 	}
 }

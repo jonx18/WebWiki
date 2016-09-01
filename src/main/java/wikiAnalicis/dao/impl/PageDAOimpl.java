@@ -13,6 +13,7 @@ import java.util.TreeMap;
 
 import org.hibernate.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,7 +28,9 @@ import wikiAnalicis.util.ORMUtil;
 public class PageDAOimpl implements PageDAO {
 	@Autowired
 	private HibernateUtil util;
-
+	@Autowired
+	private MessageSource messageSource;
+	
 	public PageDAOimpl() {
 		// TODO Auto-generated constructor stub
 	}
@@ -130,14 +133,15 @@ public class PageDAOimpl implements PageDAO {
 
 	@Override
 	// texto del namespace, cantidad de paginas
-	public Map<String, Long> countPagesInNamespace() {
+	public Map<String, Long> countPagesInNamespace(Locale locale) {
 		String q = "select  n.value,count(p) from Page p,Namespace n where p.ns=n.keyclave group by n.keyclave";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 		List<Object[]> list = query.list();
 		Map<String, Long> result = new TreeMap<String, Long>();
+		String defaultWord = messageSource.getMessage("countPagesInNamespace.defaultWord", null, locale);
 		for (Object[] arr : list) {
 			if (arr[0].toString().isEmpty()) {
-				arr[0] = "Articulo";
+				arr[0] = defaultWord;
 			}
 			result.put(arr[0].toString(), new Long(arr[1].toString()));
 			// System.out.println(Arrays.toString(arr));
@@ -170,14 +174,15 @@ public class PageDAOimpl implements PageDAO {
 	@Override
 	// una revision sin padre es la creacion de una pag, y tengo un map de
 	// namespace con su map de dias
-	public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays() {
+	public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays(Locale locale) {
 		String q = "select  n.value,r.timestamp,count(r) from Revision r,Namespace n where r.parentid is null and r.page.ns = n.keyclave group by r.page.ns,year(r.timestamp),month(r.timestamp), day(r.timestamp)";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 		List<Object[]> list = query.list();
 		Map<String, TreeMap<Date, Long>> result = new TreeMap<String, TreeMap<Date, Long>>();
+		String defaultWord = messageSource.getMessage("newPagesForNamespacesInDays.defaultWord", null, locale);
 		for (Object[] arr : list) {
 			if (arr[0].toString().isEmpty()) {
-				arr[0] = "Articulo";
+				arr[0] = defaultWord;
 			}
 			DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
 			Date date = null;
@@ -238,15 +243,16 @@ public class PageDAOimpl implements PageDAO {
 		return result;
 	}
 	@Override
-	public Map<String, Long> countColaboratorRevisionsInPage(Page page) {
+	public Map<String, Long> countColaboratorRevisionsInPage(Page page,Locale locale) {
 		String q = "select  c.realId,c.username ,count(r) from Page p join p.revisions r join r.contributor c where p = :page group by c.username";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 		query.setParameter("page", page);
 		List<Object[]> list = query.list();
 		Map<String, Long> result = new TreeMap<String, Long>();
+		String anonymous = messageSource.getMessage("countColaboratorRevisionsInPage.anonymous", null, locale);
 		for (Object[] arr : list) {
 			if ((new Long(arr[0].toString())).compareTo(new Long(0))<0) {
-				arr[1] = "Anonimo";
+				arr[1] = anonymous;
 			}
 			result.put(arr[1].toString(), new Long(arr[2].toString()));
 			// System.out.println(Arrays.toString(arr));

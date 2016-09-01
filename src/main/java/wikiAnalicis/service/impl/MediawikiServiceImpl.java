@@ -58,4 +58,8 @@ public class MediawikiServiceImpl implements MediawikiService {
 	public void truncateAll() {
 		mediawikiDAO.truncateAll();
 	}
+	@Override
+	public String getLang() {
+		return mediawikiDAO.getLang();
+	}
 }

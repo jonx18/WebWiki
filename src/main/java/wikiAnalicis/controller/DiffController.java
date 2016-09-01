@@ -174,9 +174,9 @@ public class DiffController {
 		ModelAndView model = new ModelAndView("diffStatisticsOfPage");
 		model.addObject("mapStyleChanges", mapStyleChanges);
 		model.addObject("dates", dates);
-		for (Delimiter delimiter : mapStyleChanges.keySet()) {
-			System.out.println(delimiter.getName()+" "+mapStyleChanges.get(delimiter)[0]+" "+mapStyleChanges.get(delimiter)[1]+" "+mapStyleChanges.get(delimiter)[2]);
-		}
+//		for (Delimiter delimiter : mapStyleChanges.keySet()) {
+//			System.out.println(delimiter.getName()+" "+mapStyleChanges.get(delimiter)[0]+" "+mapStyleChanges.get(delimiter)[1]+" "+mapStyleChanges.get(delimiter)[2]);
+//		}
 		return model;
 
 	}

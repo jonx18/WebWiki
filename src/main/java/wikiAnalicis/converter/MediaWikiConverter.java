@@ -2,6 +2,7 @@ package wikiAnalicis.converter;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,7 +22,7 @@ import wikiAnalicis.service.PageService;
 public class MediaWikiConverter implements Converter {
 
 	private MediawikiService mediawikiService;
-
+	private Locale lang;
 	public MediaWikiConverter(MediawikiService mediawikiService) {
 		super();
 		this.mediawikiService = mediawikiService;
@@ -46,6 +47,7 @@ public class MediaWikiConverter implements Converter {
 //			xml:lang
 			System.out.println("el lenguaje es: "+reader.getAttribute("lang"));
 			mediawiki.setLang(reader.getAttribute("lang"));
+			this.lang = new Locale(mediawiki.getLang());
 		}
 		reader.moveDown();
 		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
@@ -77,4 +79,11 @@ public class MediaWikiConverter implements Converter {
 		return mediawiki;
 	}
 
+	public Locale getLang() {
+		return lang;
+	}
+
+
+
+	
 }

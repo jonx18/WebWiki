@@ -3,12 +3,14 @@ package wikiAnalicis.controller;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
@@ -18,6 +20,7 @@ import com.google.gson.Gson;
 import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.service.InCategoryService;
+import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 
@@ -29,6 +32,8 @@ public class PageController {
 	private RevisionService revisionService; 
 	@Autowired
 	private InCategoryService inCategoryService;
+	@Autowired
+	private MediawikiService mediawikiService;
 	
 	public PageController() {
 		// TODO Auto-generated constructor stub
@@ -37,13 +42,14 @@ public class PageController {
 	@RequestMapping(value = "statisticsPageOf")
 	public ModelAndView statisticsPageOf(Long parentId) {
 		ModelAndView model = new ModelAndView("statisticsPageOf");
+		Locale locale = new Locale(mediawikiService.getLang());
 		Page page = pageService.getPage(parentId);
 		model.addObject("page", page);
 		//---------------------------------------------------------------------------------------
 		Long totalRevisiones = revisionService.count(page);
 		model.addObject("totalRevisiones", totalRevisiones);
 		// ---------------------------------------------------------------------------------------
-		Map<String, Long> distribucionDeAporte = pageService.countColaboratorRevisionsInPage(page);
+		Map<String, Long> distribucionDeAporte = pageService.countColaboratorRevisionsInPage(page,locale);
 		LinkedList<Object[]> toJS = new LinkedList<Object[]>();
 		for (String key : distribucionDeAporte.keySet()) {
 			toJS.add(new Object[] { key, distribucionDeAporte.get(key) });
@@ -90,11 +96,13 @@ public class PageController {
 	@RequestMapping(value = { "statisticsPages" })
 	public ModelAndView statisticsReviews() {
 		ModelAndView model = new ModelAndView("statisticsPages");
+		Locale locale = new Locale(mediawikiService.getLang());
 		// ---------------------------------------------------------------------------------------
 		Long totalPaginas = pageService.count();
 		model.addObject("totalPaginas", totalPaginas);
 		// ---------------------------------------------------------------------------------------
-		Map<String, Long> paginasEnNamespace = pageService.countPagesInNamespace();
+		
+		Map<String, Long> paginasEnNamespace = pageService.countPagesInNamespace(locale);
 		LinkedList<Object[]> toJS = new LinkedList<Object[]>();
 		for (String key : paginasEnNamespace.keySet()) {
 			toJS.add(new Object[] { key, paginasEnNamespace.get(key) });
@@ -110,7 +118,7 @@ public class PageController {
 		}
 		model.addObject("nuevasPaginasDia", gson.toJson(toJS));
 		// ---------------------------------------------------------------------------------------
-		Map<String, TreeMap<Date, Long>> nuevasPaginasPorNamespaceDia = pageService.newPagesForNamespacesInDays();
+		Map<String, TreeMap<Date, Long>> nuevasPaginasPorNamespaceDia = pageService.newPagesForNamespacesInDays(locale);
 		toJS = new LinkedList<Object[]>();
 		// toJS.add(new Object[]{"Tiempo","Nº de Revisiones"});
 		LinkedList<Object> encabezado = new LinkedList<Object>();

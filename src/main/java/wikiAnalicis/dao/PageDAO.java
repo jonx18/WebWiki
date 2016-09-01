@@ -2,6 +2,7 @@ package wikiAnalicis.dao;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -22,11 +23,13 @@ public interface PageDAO {
 	 public Long count();
 	 public Double  averageRevisionsInAllPages();
 	 public Map<Long, Long> countPagesForNumberOfRevisions();
-	 public Map<String, Long> countPagesInNamespace();
+	 public Map<String, Long> countPagesInNamespace(Locale locale);
 	 public Map<Date, Long> newPagesInDays();
-	 public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays();
+	 public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays(Locale locale);
 	public Map<Date, Long> revisionInDaysOf(Page page);
 	public Map<Date, Long> contentInDaysOf(Page page);
-	public Map<String, Long> countColaboratorRevisionsInPage(Page page);
+	public Map<String, Long> countColaboratorRevisionsInPage(Page page, Locale locale);
 	public List<Page> getAllPagesInNamespace(Integer ns);
+	
+	
 }

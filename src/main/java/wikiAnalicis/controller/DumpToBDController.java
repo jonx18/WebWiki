@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -74,6 +75,7 @@ public class DumpToBDController {
 	private CargaDumpService cargaDumpService;
 	@Autowired
 	private Environment env;
+	private Mediawiki mediawiki;
 
 	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
 	public ModelAndView dumpToBD(HttpServletRequest request) {
@@ -87,10 +89,10 @@ public class DumpToBDController {
 
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.test"));
+		System.out.println(env.getProperty("history.path.en"));
 		XStream xStream = configXStream();
-		String historyPath = env.getProperty("history.path.test");
-		Mediawiki mediawiki = historyXMLToDB(xStream, historyPath);
+		String historyPath = env.getProperty("history.path.en");
+		mediawiki = historyXMLToDB(xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
@@ -246,15 +248,24 @@ public class DumpToBDController {
 
 	private List<Category> categoriesFromText(String text) {
 		List<Category> categories = new LinkedList<Category>();
-		Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
-		// Pattern pattern = Pattern.compile("[[Categoría\\:(.*?)]]");
+		Locale locale = new Locale(mediawiki.getLang());
+		String categoryWord = messageSource.getMessage("categoriesFromText.categoryWord", null, locale);
+		//Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
+		Pattern pattern = Pattern.compile(Pattern.quote("[["+categoryWord+":") + "(.*?)" + Pattern.quote("]]"));
+		 //Pattern pattern = Pattern.compile(Pattern.quote("[[Categoria\\:")+"(.*?)"+Pattern.quote("]]"));
 		Matcher matcher = pattern.matcher(text);
 		while (matcher.find()) {
 			String str = matcher.group(1);
-			// System.out.println(str);
-			// System.out.println(str.substring(4, str.length()));
+			//String str = matcher.group();
+			//System.out.println(str);
+			//System.out.println(str.substring(4, str.length()));
 
-			Category category = categoryService.getCategory("Categoria:" + str.substring(4, str.length()));
+//			Category category = categoryService.getCategory("Categoria:" + str.substring(4, str.length()));
+			while(!Character.isLetterOrDigit((str.charAt(str.length()-1)))){
+				str = str.substring(0, str.length()-1);
+			//	System.out.println(str);
+			}
+			Category category = categoryService.getCategory(categoryWord+":" + str);
 			if (category != null) {
 				// System.out.println("categoria recuperada id:
 				// "+category.getId());
@@ -334,11 +345,12 @@ public class DumpToBDController {
 		// converters
 //		xStream.registerConverter(new MediaWikiConverter(cargaDumpService));
 //		xStream.registerConverter(new PageConverter(cargaDumpService));
-		xStream.registerConverter(new MediaWikiConverter( mediawikiService));
+		MediaWikiConverter mediaWikiConverter = new MediaWikiConverter( mediawikiService);
+		xStream.registerConverter(mediaWikiConverter);
 		xStream.registerConverter(new PageConverter(pageService,revisionService));
 		xStream.registerConverter(new NamespaceConverter());
 		xStream.registerConverter(new RevisionConverter());
-		xStream.registerConverter(new UserContributorConverter(userContributorService));
+		xStream.registerConverter(new UserContributorConverter(userContributorService,mediaWikiConverter,messageSource));
 //		xStream.registerConverter(new UserContributorConverter(cargaDumpService));
 		return xStream;
 	}

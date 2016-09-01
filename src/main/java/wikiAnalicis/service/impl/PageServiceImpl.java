@@ -2,6 +2,7 @@ package wikiAnalicis.service.impl;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -78,9 +79,9 @@ public Map<Long, Long> countPagesForNumberOfRevisions() {
 	return pageDAO.countPagesForNumberOfRevisions();
 }
 @Override
-public Map<String, Long> countPagesInNamespace() {
+public Map<String, Long> countPagesInNamespace(Locale locale) {
 	// TODO Auto-generated method stub
-	return pageDAO.countPagesInNamespace();
+	return pageDAO.countPagesInNamespace(locale);
 }
 @Override
 public Map<Date, Long> newPagesInDays() {
@@ -88,9 +89,9 @@ public Map<Date, Long> newPagesInDays() {
 	return pageDAO.newPagesInDays();
 }
 @Override
-public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays() {
+public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays(Locale locale) {
 	// TODO Auto-generated method stub
-	return pageDAO.newPagesForNamespacesInDays();
+	return pageDAO.newPagesForNamespacesInDays(locale);
 }@Override
 public Map<Date, Long> revisionInDaysOf(Page page) {
 	// TODO Auto-generated method stub
@@ -102,9 +103,9 @@ public Map<Date, Long> contentInDaysOf(Page page) {
 	return pageDAO.contentInDaysOf(page);
 }
 @Override
-public Map<String, Long> countColaboratorRevisionsInPage(Page page) {
+public Map<String, Long> countColaboratorRevisionsInPage(Page page,Locale locale) {
 	// TODO Auto-generated method stub
-	return pageDAO.countColaboratorRevisionsInPage(page);
+	return pageDAO.countColaboratorRevisionsInPage(page,locale);
 }
 @Override
 public List<Page> getAllPagesInNamespace(Integer ns) {
