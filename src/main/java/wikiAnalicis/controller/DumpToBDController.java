@@ -121,7 +121,12 @@ public class DumpToBDController {
 		return model;
 
 	}
-
+	@RequestMapping(value = "wikidrop", method = RequestMethod.GET)
+	public ModelAndView wikidrop(HttpServletRequest request) {
+		ModelAndView model = new ModelAndView("index");
+		dropDB();
+		return model;
+	}
 	private void asignacionCategorias() {
 		// TODO Auto-generated method stub
 		List<Page> pages = pageService.getAllPages();

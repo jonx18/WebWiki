@@ -30,7 +30,10 @@
 						<a class="btn btn-primary btn-lg" href="statisticsPages"
 							role="button"><spring:message code="index.statisticsPages" /> </a>
 					</p>
-					
+										<p>
+						<a class="btn btn-primary btn-lg" href="wikidrop" 
+						role="button"><spring:message code="index.wikidrop" /></a>
+					</p>
 				</c:if>
 				<c:if test="${empty mediawiki }">
 					<h1><spring:message code="index.notWiki.title" /></h1>
