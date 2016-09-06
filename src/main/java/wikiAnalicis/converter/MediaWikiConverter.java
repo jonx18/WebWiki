@@ -43,6 +43,10 @@ public class MediaWikiConverter implements Converter {
 	@Override
 	public Object unmarshal(HierarchicalStreamReader reader, UnmarshallingContext context) {
 		Mediawiki mediawiki = new Mediawiki();
+		List<Mediawiki> allMediawikis = mediawikiService.getAllMediawikis();
+		if (!allMediawikis.isEmpty()) {
+			mediawiki = allMediawikis.get(0);
+		}
 		if (reader.getAttribute("lang")!=null) {
 //			xml:lang
 			System.out.println("el lenguaje es: "+reader.getAttribute("lang"));
@@ -67,14 +71,20 @@ public class MediaWikiConverter implements Converter {
 			reader.moveUp();
 			if (pageIndex%100 == 0) {
 				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-				mediawiki.getPages().addAll(pages);
-				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-				pages= new LinkedList<Page>();
+				if (!mediawiki.getPages().containsAll(pages)) {
+					mediawiki.getPages().addAll(pages);
+					mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+					pages= new LinkedList<Page>();
+				}
+				
 			}
 		}
 		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-		mediawiki.getPages().addAll(pages);
-		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		if (!mediawiki.getPages().containsAll(pages)) {
+			mediawiki.getPages().addAll(pages);
+			mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+		}
+
 		System.out.println("fin");
 		return mediawiki;
 	}

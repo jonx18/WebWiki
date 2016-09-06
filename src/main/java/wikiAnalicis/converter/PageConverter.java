@@ -65,8 +65,12 @@ public class PageConverter implements Converter {
 		if (page.getNs().compareTo(14)==0) {
 			page=pageToCategory(page);
 		}
-//		pageService.mergePage(page);
-//		page = pageService.getPage(page.getId());
+		Page pageExistence = pageService.getPage(page.getId());
+		if (pageExistence != null) {
+			page = pageService.mergePage(pageExistence);
+		}
+		
+
 		Integer indexRevision = 0;
 		Integer charused = 0;
 		List<Revision> revisions = new LinkedList<Revision>();

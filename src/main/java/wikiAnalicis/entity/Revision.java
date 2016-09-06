@@ -109,6 +109,15 @@ public class Revision implements Identificable{
 	public Date getTimestamp() {
 		return timestamp;
 	}
+	/**
+	 * Retorna el momento en que la revision se realizo en el formato original
+	 * @return String
+	 */
+	public String getStringTimestamp() {
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'", Locale.getDefault());
+		String date = format.format(this.timestamp);
+		return date;
+	}
 	public void setTimestamp(Date timestamp) {
 		this.timestamp = timestamp;
 	}

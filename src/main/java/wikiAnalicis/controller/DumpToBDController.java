@@ -168,13 +168,30 @@ public class DumpToBDController {
 		
 		XStream xStream = configXStream(true);
 		InputStream historyPath=null;
-		try {
-			historyPath = this.postRequest(pagename,"1");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		String timestamp= "1";
+		String oldTimestamp = "";
+		while(!timestamp.equalsIgnoreCase(oldTimestamp))
+		{
+			try {
+				historyPath = this.postRequest(pagename,timestamp,false);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			mediawiki = historyXMLToDB(xStream, historyPath);
+			Page page = pageService.getPage(pagename);
+			if (page == null) {
+				String title = pagename.replace('_', ' ');
+//				System.out.println(pagename);
+//				System.out.println(title);
+				page = pageService.getPage(title);
+			}
+			page = pageService.mergePage(page);
+			System.out.println("old = "+oldTimestamp+" actual = "+timestamp);
+			oldTimestamp=timestamp;
+			timestamp=page.getRevisions().get(page.getRevisions().size()-1).getStringTimestamp();
+			System.out.println("new = "+timestamp);
 		}
-		mediawiki = historyXMLToDB(xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();

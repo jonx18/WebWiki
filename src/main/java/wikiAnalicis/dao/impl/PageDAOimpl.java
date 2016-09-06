@@ -69,6 +69,17 @@ public class PageDAOimpl implements PageDAO {
 	public Page getPage(long id) {
 		return util.fetchById(id, Page.class);
 	}
+	@Override
+	public Page getPage(String title) {
+		String q = "from Page p where p.title = :title ";
+		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+		query.setParameter("title", title);
+		List<Page> list = (List<Page>)query.list();
+		if (list.size()!=0) {
+			return list.get(0);
+		}
+		return null;
+	}
 
 	@Transactional
 	public List<Page> list(Integer offset, Integer maxResults) {

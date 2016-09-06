@@ -15,6 +15,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.builder.EqualsBuilder;
+import org.apache.commons.lang3.builder.HashCodeBuilder;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -133,5 +135,33 @@ public class Page implements Identificable{
 public Boolean isCategory() {
 	// TODO Auto-generated method stub
 	return false;
+}
+@Override
+public boolean equals(Object obj) {
+	// TODO Auto-generated method stub
+       if (!(obj instanceof Page)){
+            return false;
+            }
+        if (obj == this){
+            return true;
+        }
+        Page rhs = (Page) obj;
+        return new EqualsBuilder().
+            // if deriving: appendSuper(super.equals(obj)).
+        		append(id, rhs.getId()).
+        		append(title, rhs.getTitle()).
+        		append(ns, rhs.getNs()).
+            isEquals();
+	
+}
+@Override
+public int hashCode() {
+    return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
+            // if deriving: appendSuper(super.hashCode()).
+            append(id).
+            append(title).
+            append(ns).
+            toHashCode();
+
 }
 }
