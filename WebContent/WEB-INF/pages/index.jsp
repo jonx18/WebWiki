@@ -2,6 +2,7 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form"%>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
@@ -30,7 +31,7 @@
 						<a class="btn btn-primary btn-lg" href="statisticsPages"
 							role="button"><spring:message code="index.statisticsPages" /> </a>
 					</p>
-										<p>
+					<p>
 						<a class="btn btn-primary btn-lg" href="wikidrop" 
 						role="button"><spring:message code="index.wikidrop" /></a>
 					</p>
@@ -41,6 +42,16 @@
 						<a class="btn btn-primary btn-lg" href="dumptobd" 
 						role="button"><spring:message code="index.notWiki.dumptobd" /></a>
 					</p>
+					<p>
+										<spring:url value="/urltobd" var="urltobd" />
+						<form method="post" id="verify" action='<c:out value = "urltobd" />  '>
+					        <input name="pagename" type="text"/>
+					        <c:out value = "${pagenameError}" />            
+					        <input class="btn btn-primary btn-lg" type="submit" value='<spring:message code="index.urltobd" />'
+						role="button"/>     
+					    </form>
+					</p>
+
 				</c:if>
 					<select id="languageSelector" class="form-control">
 					  <option value="es"><spring:message code="index.languageSelector.es" /></option>

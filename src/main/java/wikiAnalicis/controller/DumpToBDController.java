@@ -1,7 +1,14 @@
 package wikiAnalicis.controller;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -17,6 +24,15 @@ import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.message.BasicNameValuePair;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -90,9 +106,14 @@ public class DumpToBDController {
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
 		System.out.println(env.getProperty("history.path.test"));
-		XStream xStream = configXStream();
+		XStream xStream = configXStream(true);
 		String historyPath = env.getProperty("history.path.test");
-		mediawiki = historyXMLToDB(xStream, historyPath);
+		try {
+			mediawiki = historyXMLToDB(xStream, new FileInputStream(historyPath));
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
@@ -126,6 +147,103 @@ public class DumpToBDController {
 		ModelAndView model = new ModelAndView("index");
 		dropDB();
 		return model;
+	}
+	@RequestMapping(value = "urltobd", method = RequestMethod.POST)
+	public ModelAndView urlToBD(HttpServletRequest request ) {
+		String pagename= request.getParameter("pagename");
+		System.out.println(pagename);
+		Map<String, Long> times = new TreeMap<String, Long>();
+
+		long startTime = System.currentTimeMillis();
+		dropDB();
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		times.put("1-dropDB", elapsedTime);
+
+		startTime = System.currentTimeMillis();
+		System.out.println("Cargando:");
+
+		
+		
+		
+		XStream xStream = configXStream(true);
+		InputStream historyPath=null;
+		try {
+			historyPath = this.postRequest(pagename,"1");
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		mediawiki = historyXMLToDB(xStream, historyPath);
+		// pagesWithoutRevisions();
+		System.out.println("Finalizo guardado");
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("2-historyXMLToDB-" + historyPath, elapsedTime);
+
+		// dropDB();
+		// aca van masprocesamintos
+
+//		startTime = System.currentTimeMillis();
+//		asignacionCategorias();
+//		stopTime = System.currentTimeMillis();
+//		elapsedTime = stopTime - startTime;
+//		times.put("3-asignacionCategorias", elapsedTime);
+		//Locale locale = new Locale(mediawiki.getLang());
+		Locale locale = localeResolver.resolveLocale(request);
+		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
+		int index=0;
+		for (String label : times.keySet()) {
+			index++;
+			timesLabeled.put(index+"- "+messageSource.getMessage("dumptodb.table."+(label.split("-")[1]), null, locale), times.get(label));
+		}
+		
+		ModelAndView model = new ModelAndView("dumptodb");
+		model.addObject("result", timesLabeled);
+		return model;
+
+	}
+	public InputStream postRequest(String page,String offset,Boolean curonly) throws ClientProtocolException, IOException {
+		String url = "https://en.wikipedia.org/w/index.php?title=Special:Export";
+		String USER_AGENT = "Mozilla/5.0";
+		HttpClient client = HttpClientBuilder.create().build();
+		HttpPost post = new HttpPost(url);
+
+		// add header
+		post.setHeader("User-Agent", USER_AGENT);
+
+		List<NameValuePair> urlParameters = new ArrayList<NameValuePair>();
+//		urlParameters.add(new BasicNameValuePair("pages", "Pope"));
+//		urlParameters.add(new BasicNameValuePair("offset", "2001-12-05T12:04:10Z"));
+		urlParameters.add(new BasicNameValuePair("pages", page));
+		if (!curonly) {
+			urlParameters.add(new BasicNameValuePair("offset", offset));
+			urlParameters.add(new BasicNameValuePair("limit", "2"));
+		} else {
+			urlParameters.add(new BasicNameValuePair("curonly", "curonly"));
+		}
+		//urlParameters.add(new BasicNameValuePair("wpDownload", "wpDownload"));
+		urlParameters.add(new BasicNameValuePair("action", "submit"));
+
+		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+
+		HttpResponse response = client.execute(post);
+		System.out.println("\nSending 'POST' request to URL : " + url);
+		System.out.println("Post parameters : " + post.getEntity());
+		System.out.println("Response Code : " +
+                                    response.getStatusLine().getStatusCode());
+
+//		BufferedReader rd = new BufferedReader(
+//                        new InputStreamReader(response.getEntity().getContent()));
+//
+//		StringBuffer result = new StringBuffer();
+//		String line = "";
+//		while ((line = rd.readLine()) != null) {
+//			result.append(line);
+//		}
+//
+//		System.out.println(result.toString());
+		return response.getEntity().getContent();
 	}
 	private void asignacionCategorias() {
 		// TODO Auto-generated method stub
@@ -323,19 +441,14 @@ public class DumpToBDController {
 		mediawikiService.truncateAll();
 	}
 
-	private Mediawiki historyXMLToDB(XStream xStream, String historyPath) {
+	private Mediawiki historyXMLToDB(XStream xStream, InputStream historyPath) {
 		Mediawiki mediawiki = null;
-		try {
-			mediawiki = (Mediawiki) xStream.fromXML(new FileInputStream(historyPath));
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		mediawiki = (Mediawiki) xStream.fromXML(historyPath);
 		mediawikiService.mergeMediawiki(mediawiki);
 		return mediawiki;
 	}
 
-	private XStream configXStream() {
+	private XStream configXStream(Boolean saver) {
 		// configuro xstream
 		XStream xStream = new XStream(new StaxDriver());
 		xStream.alias("revision", Revision.class);
@@ -350,13 +463,16 @@ public class DumpToBDController {
 		// converters
 //		xStream.registerConverter(new MediaWikiConverter(cargaDumpService));
 //		xStream.registerConverter(new PageConverter(cargaDumpService));
-		MediaWikiConverter mediaWikiConverter = new MediaWikiConverter( mediawikiService);
-		xStream.registerConverter(mediaWikiConverter);
-		xStream.registerConverter(new PageConverter(pageService,revisionService));
-		xStream.registerConverter(new NamespaceConverter());
-		xStream.registerConverter(new RevisionConverter());
-		xStream.registerConverter(new UserContributorConverter(userContributorService,mediaWikiConverter,messageSource));
-//		xStream.registerConverter(new UserContributorConverter(cargaDumpService));
+		if (saver) {
+			MediaWikiConverter mediaWikiConverter = new MediaWikiConverter( mediawikiService);
+			xStream.registerConverter(mediaWikiConverter);
+			xStream.registerConverter(new PageConverter(pageService,revisionService));
+			xStream.registerConverter(new NamespaceConverter());
+			xStream.registerConverter(new RevisionConverter());
+			xStream.registerConverter(new UserContributorConverter(userContributorService,mediaWikiConverter,messageSource));
+//			xStream.registerConverter(new UserContributorConverter(cargaDumpService));
+		}
+
 		return xStream;
 	}
 
