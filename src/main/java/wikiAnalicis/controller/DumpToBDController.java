@@ -161,13 +161,9 @@ public class DumpToBDController {
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		times.put("1-dropDB", elapsedTime);
-
+//--------------------------------------------------------------------------------------------------
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-
-		
-		
-		
 		XStream xStream = configXStream(true);
 		InputStream historyPath=null;
 		String timestamp= "1";
@@ -198,23 +194,80 @@ public class DumpToBDController {
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("2-historyXMLToDB-" + historyPath, elapsedTime);
+		times.put("2-urlToDB-" + historyPath, elapsedTime);
+		//--------------------------------------------------------------------------------------------------------------
 
-		// dropDB();
-		// aca van masprocesamintos
 
-//		startTime = System.currentTimeMillis();
-//		asignacionCategorias();
-//		stopTime = System.currentTimeMillis();
-//		elapsedTime = stopTime - startTime;
-//		times.put("3-asignacionCategorias", elapsedTime);
+		startTime = System.currentTimeMillis();
+		Page page = pageService.getPage(pagename);
+		if (page == null) {
+			String title = pagename.replace('_', ' ');
+//			System.out.println(pagename);
+//			System.out.println(title);
+			page = pageService.getPage(title);
+		}
+		page = pageService.mergePage(page);
+		List<Revision> revisions = page.getRevisions();
+		for (Revision revision : revisions) {
+			List<String> categoriesNames = this.categoriesNamesFromText(revision.getText());
+			List<String> newsCategories = new LinkedList<String>(); 
+			for (String string : categoriesNames) {
+				Category category = categoryService.getCategory(string);
+				if (category == null) {
+					// System.out.println("categoria recuperada id:
+					// "+category.getId());
+					newsCategories.add(string);
+				} 
+			}
+			int rest=0;
+			StringBuilder torequest= new StringBuilder();
+			for (int i = 0; i < newsCategories.size(); i++) {
+				if ((i%1000==0)&&(i>=1000)) {
+					rest+=1000;
+					try {
+						historyPath = this.postRequest(torequest.toString(),"1",true,1000);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					mediawiki = historyXMLToDB(xStream, historyPath);
+					torequest= new StringBuilder();
+				}
+				String name = newsCategories.get(i-rest);
+				if (torequest.length()>0) {
+					torequest.append("\n");
+				}
+				torequest.append(name);
+			}
+			if (torequest.length()>0) {
+				try {
+					System.out.println(torequest.toString());
+					historyPath = this.postRequest(torequest.toString(),"1",true,1000);
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				mediawiki = historyXMLToDB(xStream, historyPath);
+			}
+
+		};
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("3-descargaCategorias", elapsedTime);
+//-----------------------------------------------------------------------------------------------------------------		
+		
+		startTime = System.currentTimeMillis();
+		asignacionCategorias();
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("4-asignacionCategorias", elapsedTime);
 		//Locale locale = new Locale(mediawiki.getLang());
 		Locale locale = localeResolver.resolveLocale(request);
 		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
 		int index=0;
 		for (String label : times.keySet()) {
 			index++;
-			timesLabeled.put(index+"- "+messageSource.getMessage("dumptodb.table."+(label.split("-")[1]), null, locale), times.get(label));
+			timesLabeled.put(index+"- "+messageSource.getMessage("urltobd.table."+(label.split("-")[1]), null, locale), times.get(label));
 		}
 		
 		ModelAndView model = new ModelAndView("dumptodb");
@@ -389,9 +442,8 @@ public class DumpToBDController {
 		}
 		return map;
 	}
-
-	private List<Category> categoriesFromText(String text) {
-		List<Category> categories = new LinkedList<Category>();
+	private List<String> categoriesNamesFromText(String text) {
+		List<String> categories = new LinkedList<String>();
 		Locale locale = new Locale(mediawiki.getLang());
 		String categoryWord = messageSource.getMessage("categoriesFromText.categoryWord", null, locale);
 		//Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
@@ -409,7 +461,20 @@ public class DumpToBDController {
 				str = str.substring(0, str.length()-1);
 			//	System.out.println(str);
 			}
-			Category category = categoryService.getCategory(categoryWord+":" + str);
+			categories.add(categoryWord+":" + str);
+		}
+
+		// categories.addAll(randomSample4(categoryService.getAllCategorys(),
+		// 5));
+
+		return categories;
+	}
+	
+	private List<Category> categoriesFromText(String text) {
+		List<Category> categories = new LinkedList<Category>();
+		List<String> categoriesNames = this.categoriesNamesFromText(text);
+		for (String string : categoriesNames) {
+			Category category = categoryService.getCategory(string);
 			if (category != null) {
 				// System.out.println("categoria recuperada id:
 				// "+category.getId());
@@ -417,12 +482,7 @@ public class DumpToBDController {
 			} else {
 				// System.out.println("null");
 			}
-			// System.out.println(matcher.group(1));
 		}
-
-		// categories.addAll(randomSample4(categoryService.getAllCategorys(),
-		// 5));
-
 		return categories;
 	}
 
@@ -455,10 +515,10 @@ public class DumpToBDController {
 
 	private void dropDB() {
 		System.out.println("Dropeando Mediawiki");
-		for (Mediawiki mediawiki : mediawikiService.getAllMediawikis()) {
-			System.out.println(mediawiki.getSiteinfo().getSitename());
-			mediawikiService.deleteMediawiki(mediawiki.getId());
-		}
+//		for (Mediawiki mediawiki : mediawikiService.getAllMediawikis()) {
+//			System.out.println(mediawiki.getSiteinfo().getSitename());
+//			mediawikiService.deleteMediawiki(mediawiki.getId());
+//		}
 		mediawikiService.truncateAll();
 	}
 

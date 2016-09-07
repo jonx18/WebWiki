@@ -131,12 +131,12 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 //
 ////		deletAllFrom(Mediawiki.class);
 ////		deletAllFrom(Mediawiki.class);
-//	}
-//	private void deletAllFrom(Class clase) {
-//		List<Object> list = util.fetchAll(clase);
-//		for (Object object : list) {
-//			util.delete(object);
-//		}
+	}
+	private void deletAllFrom(Class clase) {
+		List<Object> list = util.fetchAll(clase);
+		for (Object object : list) {
+			util.delete(object);
+		}
 	}
 	@Override
 	public String getLang() {
