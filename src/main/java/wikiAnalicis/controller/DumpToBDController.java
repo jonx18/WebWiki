@@ -2,12 +2,14 @@ package wikiAnalicis.controller;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -173,7 +175,7 @@ public class DumpToBDController {
 		while(!timestamp.equalsIgnoreCase(oldTimestamp))
 		{
 			try {
-				historyPath = this.postRequest(pagename,timestamp,false);
+				historyPath = this.postRequest(pagename,timestamp,false,1000);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -220,7 +222,7 @@ public class DumpToBDController {
 		return model;
 
 	}
-	public InputStream postRequest(String page,String offset,Boolean curonly) throws ClientProtocolException, IOException {
+	public InputStream postRequest(String page,String offset,Boolean curonly,Integer limit) throws ClientProtocolException, IOException {
 		String url = "https://en.wikipedia.org/w/index.php?title=Special:Export";
 		String USER_AGENT = "Mozilla/5.0";
 		HttpClient client = HttpClientBuilder.create().build();
@@ -235,7 +237,7 @@ public class DumpToBDController {
 		urlParameters.add(new BasicNameValuePair("pages", page));
 		if (!curonly) {
 			urlParameters.add(new BasicNameValuePair("offset", offset));
-			urlParameters.add(new BasicNameValuePair("limit", "2"));
+			urlParameters.add(new BasicNameValuePair("limit", limit.toString()));
 		} else {
 			urlParameters.add(new BasicNameValuePair("curonly", "curonly"));
 		}
@@ -250,17 +252,19 @@ public class DumpToBDController {
 		System.out.println("Response Code : " +
                                     response.getStatusLine().getStatusCode());
 
-//		BufferedReader rd = new BufferedReader(
-//                        new InputStreamReader(response.getEntity().getContent()));
-//
-//		StringBuffer result = new StringBuffer();
-//		String line = "";
-//		while ((line = rd.readLine()) != null) {
-//			result.append(line);
-//		}
-//
-//		System.out.println(result.toString());
-		return response.getEntity().getContent();
+		BufferedReader rd = new BufferedReader(
+                        new InputStreamReader(response.getEntity().getContent()));
+
+		StringBuilder result = new StringBuilder();
+		String line = "";
+		while ((line = rd.readLine()) != null) {
+			result.append(line+"\n");
+		}
+
+		System.out.println(result.toString());
+		InputStream stream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
+
+		return stream;
 	}
 	private void asignacionCategorias() {
 		// TODO Auto-generated method stub

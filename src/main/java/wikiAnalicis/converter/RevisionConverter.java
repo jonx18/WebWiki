@@ -84,7 +84,15 @@ public class RevisionConverter implements Converter {
 			if (reader.getAttribute("deleted")!=null) {
 				revision.setDeleted(true);
 			}
-			String text = reader.getValue();
+			String text = null;
+			try {
+				text = reader.getValue();
+			} catch (Exception e) {
+				// TODO: handle exception
+				System.out.println(revision.getStringTimestamp());
+				System.out.println(revision.getId());
+			}
+			
 			text = removeAccents(text);
 			revision.setText(text);
 			reader.moveUp();
