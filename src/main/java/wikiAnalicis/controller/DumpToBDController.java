@@ -153,11 +153,14 @@ public class DumpToBDController {
 	@RequestMapping(value = "urltobd", method = RequestMethod.POST)
 	public ModelAndView urlToBD(HttpServletRequest request ) {
 		String pagename= request.getParameter("pagename");
+		System.out.println(request.getParameter("drop"));
 		System.out.println(pagename);
 		Map<String, Long> times = new TreeMap<String, Long>();
 
 		long startTime = System.currentTimeMillis();
-		dropDB();
+		if (request.getParameter("drop")!=null) {
+			dropDB();
+		}
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		times.put("1-dropDB", elapsedTime);
