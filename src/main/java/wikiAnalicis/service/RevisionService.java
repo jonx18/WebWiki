@@ -19,4 +19,5 @@ public interface RevisionService {
 	public Long count(Page page);
 	public Map<Date, Long> revisionInDays();
 	public Map<String, Long> countRevisionsInNamespace();
+	public void createAllRevisions(List<Revision> revisions);
 }

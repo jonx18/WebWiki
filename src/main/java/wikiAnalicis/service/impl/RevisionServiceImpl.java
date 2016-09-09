@@ -27,7 +27,11 @@ public class RevisionServiceImpl implements RevisionService {
 	public long createRevision(Revision revision) {
 		return revisionDAO.createRevision(revision);
 	}
-
+@Override
+public void createAllRevisions(List<Revision> revisions) {
+	revisionDAO.createAllRevisions(revisions);
+	
+}
 	@Override
 	public Revision updateRevision(Revision revision) {
 		return revisionDAO.updateRevision(revision);

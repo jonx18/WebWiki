@@ -102,28 +102,32 @@ public class PageConverter implements Converter {
 				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
 				for (Revision revision : revisions) {
 					revision.setPage(page);//---------yo tendria que alcanzar + -Xms4096m -Xmx8192m -XX:PermSize=128m -XX:MaxPermSize=512m
+//					revisionService.createRevision(revision);
 				}
+				revisionService.createAllRevisions(revisions);
 				//--------------Comentame a ver que pasa
 				
-				page=pageService.mergePage(page);
-				page.getRevisions().addAll(revisions);
-				page=pageService.mergePage(page);
+//				page=pageService.mergePage(page);
+//				page.getRevisions().addAll(revisions);
+//				page=pageService.mergePage(page);
 
 				revisions = new LinkedList<Revision>();
 			}
 		}
 		for (Revision revision : revisions) {
 			revision.setPage(page);//---------yo tendria que alcanzar
+//			revisionService.createRevision(revision);
 		}
+		revisionService.createAllRevisions(revisions);
 		//--------------Comentame a ver que pasa
-		page=pageService.mergePage(page);
-		page.getRevisions().addAll(revisions);
-		page=pageService.mergePage(page);
-		if (page.getRevisions().isEmpty()) {
-			System.out.println("borrando");
-			pageService.deletePage(page.getId());
-			page=null;
-		}
+//		page=pageService.mergePage(page);
+//		page.getRevisions().addAll(revisions);
+//		page=pageService.mergePage(page);
+//		if (page.getRevisions().isEmpty()) {
+//			System.out.println("borrando");
+//			pageService.deletePage(page.getId());
+//			page=null;
+//		}
 		return page;
 	}
 	private Category pageToCategory(Page page) {

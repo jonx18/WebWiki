@@ -99,7 +99,7 @@ public List<InCategory> getAllInCategorysOfPage(Page page) {
 }
 @Override
 public List<Page> getAllCategorysedPages() {
-	String q = "i.page from InCategory i ";
+	String q = "select i.page from InCategory i ";
 	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 	List<Page> list = (List<Page>)query.list();
 	HashSet<Page> set = new HashSet<Page>();

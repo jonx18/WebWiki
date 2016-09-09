@@ -12,6 +12,7 @@ import java.util.TreeMap;
 
 import org.hibernate.Query;
 import org.hibernate.Session;
+import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
@@ -31,7 +32,12 @@ public class RevisionDAOimpl implements RevisionDAO {
 	public long createRevision(Revision revision) {
 		return (Long) util.create(revision);
 	}
-
+@Override
+public void createAllRevisions(List<Revision> revisions) {
+	for (Revision revision : revisions) {
+		util.merge(revision);
+	}
+}
 	@Override
 	public Revision updateRevision(Revision revision) {
 		return util.update(revision);
