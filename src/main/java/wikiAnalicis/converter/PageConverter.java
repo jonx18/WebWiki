@@ -68,6 +68,8 @@ public class PageConverter implements Converter {
 		Page pageExistence = pageService.getPage(page.getId());
 		if (pageExistence != null) {
 			page = pageService.mergePage(pageExistence);
+		}else{
+			page.setId(pageService.createPage(page));
 		}
 		
 
@@ -99,8 +101,10 @@ public class PageConverter implements Converter {
 			if ((indexRevision % 50 == 0)){
 				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
 				for (Revision revision : revisions) {
-					revision.setPage(page);
+					revision.setPage(page);//---------yo tendria que alcanzar + -Xms4096m -Xmx8192m -XX:PermSize=128m -XX:MaxPermSize=512m
 				}
+				//--------------Comentame a ver que pasa
+				
 				page=pageService.mergePage(page);
 				page.getRevisions().addAll(revisions);
 				page=pageService.mergePage(page);
@@ -109,8 +113,9 @@ public class PageConverter implements Converter {
 			}
 		}
 		for (Revision revision : revisions) {
-			revision.setPage(page);
+			revision.setPage(page);//---------yo tendria que alcanzar
 		}
+		//--------------Comentame a ver que pasa
 		page=pageService.mergePage(page);
 		page.getRevisions().addAll(revisions);
 		page=pageService.mergePage(page);

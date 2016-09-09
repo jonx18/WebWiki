@@ -27,4 +27,6 @@ public interface InCategoryDAO {
 	
 	public Long count();
 
+	public List<Page> getAllCategorysedPages();
+
 }

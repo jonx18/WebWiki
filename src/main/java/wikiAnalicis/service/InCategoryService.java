@@ -30,4 +30,6 @@ public interface InCategoryService {
 
 	public Long count();
 
+	public List<Page> getAllCategorysedPages();
+
 }

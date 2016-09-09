@@ -31,6 +31,12 @@ public class InCategoryServiceImpl implements InCategoryService {
 	}
 
 	@Override
+	public List<Page> getAllCategorysedPages() {
+		// TODO Auto-generated method stub
+		return inInCategoryDAO.getAllCategorysedPages();
+	}
+	
+	@Override
 	public InCategory mergeInCategory(InCategory inInCategory) {
 		return inInCategoryDAO.mergeInCategory(inInCategory);
 	}

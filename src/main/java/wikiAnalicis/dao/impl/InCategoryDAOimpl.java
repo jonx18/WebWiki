@@ -6,6 +6,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -95,5 +97,15 @@ public List<InCategory> getAllInCategorysOfPage(Page page) {
 	List<InCategory> list = (List<InCategory>)query.list();
 	return list;
 }
-
+@Override
+public List<Page> getAllCategorysedPages() {
+	String q = "i.page from InCategory i ";
+	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+	List<Page> list = (List<Page>)query.list();
+	HashSet<Page> set = new HashSet<Page>();
+	set.addAll(list);
+	list=new LinkedList<Page>();
+	list.addAll(set);
+	return list;
+}
 }

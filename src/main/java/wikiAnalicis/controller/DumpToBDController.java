@@ -169,30 +169,7 @@ public class DumpToBDController {
 		System.out.println("Cargando:");
 		XStream xStream = configXStream(true);
 		InputStream historyPath=null;
-		String timestamp= "1";
-		String oldTimestamp = "";
-		while(!timestamp.equalsIgnoreCase(oldTimestamp))
-		{
-			try {
-				historyPath = this.postRequest(pagename,timestamp,false,1000);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			mediawiki = historyXMLToDB(xStream, historyPath);
-			Page page = pageService.getPage(pagename);
-			if (page == null) {
-				String title = pagename.replace('_', ' ');
-//				System.out.println(pagename);
-//				System.out.println(title);
-				page = pageService.getPage(title);
-			}
-			page = pageService.mergePage(page);
-			System.out.println("old = "+oldTimestamp+" actual = "+timestamp);
-			oldTimestamp=timestamp;
-			timestamp=page.getRevisions().get(page.getRevisions().size()-1).getStringTimestamp();
-			System.out.println("new = "+timestamp);
-		}
+		historyPath = downloadMainPage(pagename, xStream, historyPath);
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
@@ -202,6 +179,37 @@ public class DumpToBDController {
 
 
 		startTime = System.currentTimeMillis();
+		downloadCategories(pagename, xStream, historyPath);
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("3-descargaCategorias", elapsedTime);
+//-----------------------------------------------------------------------------------------------------------------		
+		
+		startTime = System.currentTimeMillis();
+		asignacionCategorias();
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		times.put("4-asignacionCategorias", elapsedTime);
+		//Locale locale = new Locale(mediawiki.getLang());
+		Locale locale = localeResolver.resolveLocale(request);
+		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
+		int index=0;
+		for (String label : times.keySet()) {
+			index++;
+			timesLabeled.put(index+"- "+messageSource.getMessage("urltobd.table."+(label.split("-")[1]), null, locale), times.get(label));
+		}
+		
+		ModelAndView model = new ModelAndView("dumptodb");
+		model.addObject("result", timesLabeled);
+		return model;
+
+	}
+	/**
+	 * @param pagename
+	 * @param xStream
+	 * @param historyPath
+	 */
+	private void downloadCategories(String pagename, XStream xStream, InputStream historyPath) {
 		Page page = pageService.getPage(pagename);
 		if (page == null) {
 			String title = pagename.replace('_', ' ');
@@ -254,29 +262,39 @@ public class DumpToBDController {
 			}
 
 		};
-		stopTime = System.currentTimeMillis();
-		elapsedTime = stopTime - startTime;
-		times.put("3-descargaCategorias", elapsedTime);
-//-----------------------------------------------------------------------------------------------------------------		
-		
-		startTime = System.currentTimeMillis();
-		asignacionCategorias();
-		stopTime = System.currentTimeMillis();
-		elapsedTime = stopTime - startTime;
-		times.put("4-asignacionCategorias", elapsedTime);
-		//Locale locale = new Locale(mediawiki.getLang());
-		Locale locale = localeResolver.resolveLocale(request);
-		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
-		int index=0;
-		for (String label : times.keySet()) {
-			index++;
-			timesLabeled.put(index+"- "+messageSource.getMessage("urltobd.table."+(label.split("-")[1]), null, locale), times.get(label));
+	}
+	/**
+	 * @param pagename
+	 * @param xStream
+	 * @param historyPath
+	 * @return
+	 */
+	private InputStream downloadMainPage(String pagename, XStream xStream, InputStream historyPath) {
+		String timestamp= "1";
+		String oldTimestamp = "";
+		while(!timestamp.equalsIgnoreCase(oldTimestamp))
+		{
+			try {
+				historyPath = this.postRequest(pagename,timestamp,false,1000);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			mediawiki = historyXMLToDB(xStream, historyPath);
+			Page page = pageService.getPage(pagename);
+			if (page == null) {
+				String title = pagename.replace('_', ' ');
+//				System.out.println(pagename);
+//				System.out.println(title);
+				page = pageService.getPage(title);
+			}
+			page = pageService.mergePage(page);
+			System.out.println("old = "+oldTimestamp+" actual = "+timestamp);
+			oldTimestamp=timestamp;
+			timestamp=page.getRevisions().get(page.getRevisions().size()-1).getStringTimestamp();
+			System.out.println("new = "+timestamp);
 		}
-		
-		ModelAndView model = new ModelAndView("dumptodb");
-		model.addObject("result", timesLabeled);
-		return model;
-
+		return historyPath;
 	}
 	public InputStream postRequest(String page,String offset,Boolean curonly,Integer limit) throws ClientProtocolException, IOException {
 		String url = "https://en.wikipedia.org/w/index.php?title=Special:Export";
@@ -325,6 +343,10 @@ public class DumpToBDController {
 	private void asignacionCategorias() {
 		// TODO Auto-generated method stub
 		List<Page> pages = pageService.getAllPages();
+		List<Page> pagesCategorised = inCategoryService.getAllCategorysedPages();
+		for (Page page : pagesCategorised) {
+			pages.remove(page);
+		}
 		Integer index = 0;
 		for (Page page : pages) {
 			page = pageService.mergePage(page);// para que levante revisiones
