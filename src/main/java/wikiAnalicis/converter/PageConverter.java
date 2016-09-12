@@ -76,8 +76,13 @@ public class PageConverter implements Converter {
 		Integer indexRevision = 0;
 		Integer charused = 0;
 		List<Revision> revisions = new LinkedList<Revision>();
+		//temporizador
+		long startTime = System.currentTimeMillis();
 		while (reader.hasMoreChildren()) {
-			reader.moveDown();
+			reader.moveDown();		
+			
+			//downloadCategories(pagename, xStream, historyPath);
+
 
 			if ("revision".equals(reader.getNodeName())) {
 				indexRevision++;
@@ -99,12 +104,17 @@ public class PageConverter implements Converter {
 			}
 			reader.moveUp();
 			if ((indexRevision % 50 == 0)){
-				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" caracteres: "+charused);
 				for (Revision revision : revisions) {
 					revision.setPage(page);//---------yo tendria que alcanzar + -Xms4096m -Xmx8192m -XX:PermSize=128m -XX:MaxPermSize=512m
 //					revisionService.createRevision(revision);
 				}
 				revisionService.createAllRevisions(revisions);
+				//temporizador
+				long stopTime = System.currentTimeMillis();
+				long elapsedTime = stopTime - startTime;
+				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
+				startTime = System.currentTimeMillis();
+				
 				//--------------Comentame a ver que pasa
 				
 //				page=pageService.mergePage(page);
@@ -119,6 +129,10 @@ public class PageConverter implements Converter {
 //			revisionService.createRevision(revision);
 		}
 		revisionService.createAllRevisions(revisions);
+		//temporizador
+		long stopTime = System.currentTimeMillis();
+		long elapsedTime = stopTime - startTime;
+		System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
 		//--------------Comentame a ver que pasa
 //		page=pageService.mergePage(page);
 //		page.getRevisions().addAll(revisions);
