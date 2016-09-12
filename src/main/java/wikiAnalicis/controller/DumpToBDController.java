@@ -156,14 +156,18 @@ public class DumpToBDController {
 		System.out.println(request.getParameter("drop"));
 		System.out.println(pagename);
 		Map<String, Long> times = new TreeMap<String, Long>();
-
-		long startTime = System.currentTimeMillis();
+		int step = 0;
+		long startTime ;
+		long stopTime;
+		long elapsedTime;
 		if (request.getParameter("drop")!=null) {
-			dropDB();
+		startTime = System.currentTimeMillis();
+		dropDB();
+		stopTime = System.currentTimeMillis();
+		elapsedTime = stopTime - startTime;
+		step++;
+		times.put(step+"-dropDB", elapsedTime);
 		}
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
-		times.put("1-dropDB", elapsedTime);
 //--------------------------------------------------------------------------------------------------
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
@@ -174,7 +178,8 @@ public class DumpToBDController {
 		System.out.println("Finalizo guardado");
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("2-urlToDB-" + historyPath, elapsedTime);
+		step++;
+		times.put(step+"-urlToDB-" + historyPath, elapsedTime);
 		//--------------------------------------------------------------------------------------------------------------
 
 
@@ -182,14 +187,16 @@ public class DumpToBDController {
 		downloadCategories(pagename, xStream, historyPath);
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("3-descargaCategorias", elapsedTime);
+		step++;
+		times.put(step+"-descargaCategorias", elapsedTime);
 //-----------------------------------------------------------------------------------------------------------------		
 		
 		startTime = System.currentTimeMillis();
-		asignacionCategorias();
+		//asignacionCategorias();
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
-		times.put("4-asignacionCategorias", elapsedTime);
+		step++;
+		times.put(step+"-asignacionCategorias", elapsedTime);
 		//Locale locale = new Locale(mediawiki.getLang());
 		Locale locale = localeResolver.resolveLocale(request);
 		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
@@ -335,7 +342,7 @@ public class DumpToBDController {
 			result.append(line+"\n");
 		}
 
-		System.out.println(result.toString());
+		//System.out.println(result.toString());
 		InputStream stream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
 
 		return stream;
@@ -352,13 +359,15 @@ public class DumpToBDController {
 			page = pageService.mergePage(page);// para que levante revisiones
 			List<Revision> revisions = page.getRevisions();
 			List<Category> oldCategories = new LinkedList<Category>();
+			int rev=0;
 			for (Revision revision : revisions) {
 				List<Category> newCategories = categoriesFromText(revision.getText());
 				// System.out.println("news "+newCategories.size());
 				Map<Category, Boolean> cambiosCategories = diffCategories(oldCategories, newCategories);
 				// System.out.println("changes "+cambiosCategories.size());
 				if (true) {
-					System.out.println("Revision: " + revision.getId());
+					rev++;
+					System.out.println(rev+"-Revision: " + revision.getId());
 					for (Category category : cambiosCategories.keySet()) {
 						System.out.println(category.getTitle() + " se " + cambiosCategories.get(category));
 					}
@@ -407,6 +416,7 @@ public class DumpToBDController {
 					if (page.getNs().compareTo(14) == 0) {
 						categoryService.mergeCategory((Category) page);
 					}
+					
 					oldCategories = newCategories;
 				}
 			}			
