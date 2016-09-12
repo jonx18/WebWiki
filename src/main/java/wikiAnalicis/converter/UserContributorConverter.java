@@ -59,7 +59,7 @@ public class UserContributorConverter implements Converter {
 				userContributor.setIp(reader.getValue());
 				userContributor.setAnonimus();
 				String text = messageSource.getMessage("usercontributor.anonymous", null, this.mediaWikiConverter.getLang());
-				userContributor.setUsername(text+userContributor.getRealId());
+				userContributor.setUsername(text+userContributor.getId());
 				reader.moveUp();
 			}
 		} else {
