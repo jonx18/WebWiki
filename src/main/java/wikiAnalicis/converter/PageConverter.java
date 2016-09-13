@@ -106,7 +106,7 @@ public class PageConverter implements Converter {
 			if ((indexRevision % 50 == 0)){
 				for (Revision revision : revisions) {
 					revision.setPage(page);//---------yo tendria que alcanzar 
-					//-Xms8192m -Xmx12288m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:+UseG1GC -XX:G1HeapRegionSize=7 -XX:MaxGCPauseMillis=100m -XX:ParallelGCThreads=7 -XX:ConcGCThreads=7 -XX:-UseGCOverheadLimit
+					//-Xms8192m -Xmx16384m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:+UseG1GC -XX:G1HeapRegionSize=7 -XX:MaxGCPauseMillis=100m -XX:ParallelGCThreads=7 -XX:ConcGCThreads=7 -XX:-UseGCOverheadLimit
 //					revisionService.createRevision(revision);
 				}
 				revisionService.createAllRevisions(revisions);

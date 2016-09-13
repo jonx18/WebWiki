@@ -9,8 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -63,6 +66,7 @@ import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
 import wikiAnalicis.service.CargaDumpService;
 import wikiAnalicis.service.CategoryService;
+import wikiAnalicis.service.EmailService;
 import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
@@ -90,7 +94,7 @@ public class DumpToBDController {
 	@Autowired
 	private UserContributorService userContributorService;
 	@Autowired
-	private CargaDumpService cargaDumpService;
+	private EmailService emailService;
 	@Autowired
 	private Environment env;
 	private Mediawiki mediawiki;
@@ -155,6 +159,29 @@ public class DumpToBDController {
 		String pagename= request.getParameter("pagename");
 		System.out.println(request.getParameter("drop"));
 		System.out.println(pagename);
+		//--------------- send an email
+		String userpc = System.getProperty("user.name");
+		String hostname = "Unknown";
+		try
+		{
+		    InetAddress addr;
+		    addr = InetAddress.getLocalHost();
+		    hostname = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+		    System.out.println("Hostname can not be resolved");
+		}
+		long startTimeFull = System.currentTimeMillis();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(startTimeFull);
+		String fuente = "wikianalisis@gmail.com";
+		String destino = "jonamar10@hotmail.com";
+		String asunto = "Comienzo de proceso urltodb en "+hostname+":"+userpc;
+		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
+		emailService.enviar(fuente, destino, asunto, mensaje);
+		
+		//--------------
 		Map<String, Long> times = new TreeMap<String, Long>();
 		int step = 0;
 		long startTime ;
@@ -205,6 +232,22 @@ public class DumpToBDController {
 			index++;
 			timesLabeled.put(index+"- "+messageSource.getMessage("urltobd.table."+(label.split("-")[1]), null, locale), times.get(label));
 		}
+		
+		//--------------- send an email
+		long stopTimeFull = System.currentTimeMillis();
+		long elapsedTimeFull = stopTimeFull - startTimeFull;
+		calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(stopTimeFull);
+		fuente = "wikianalisis@gmail.com";
+		destino = "jonamar10@hotmail.com";
+		asunto = "Finalizacion de proceso urltodb en "+hostname+":"+userpc;
+		mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
+				+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
+		emailService.enviar(fuente, destino, asunto, mensaje);
+
+		
+		//--------------
+		
 		
 		ModelAndView model = new ModelAndView("dumptodb");
 		model.addObject("result", timesLabeled);
