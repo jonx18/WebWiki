@@ -105,7 +105,8 @@ public class PageConverter implements Converter {
 			reader.moveUp();
 			if ((indexRevision % 50 == 0)){
 				for (Revision revision : revisions) {
-					revision.setPage(page);//---------yo tendria que alcanzar + -Xms4096m -Xmx8192m -XX:PermSize=128m -XX:MaxPermSize=512m
+					revision.setPage(page);//---------yo tendria que alcanzar 
+					//-Xms8192m -Xmx12288m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:+UseG1GC -XX:G1HeapRegionSize=7 -XX:MaxGCPauseMillis=100m -XX:ParallelGCThreads=7 -XX:ConcGCThreads=7 -XX:-UseGCOverheadLimit
 //					revisionService.createRevision(revision);
 				}
 				revisionService.createAllRevisions(revisions);
@@ -122,6 +123,7 @@ public class PageConverter implements Converter {
 //				page=pageService.mergePage(page);
 
 				revisions = new LinkedList<Revision>();
+				System.gc();
 			}
 		}
 		for (Revision revision : revisions) {
@@ -129,6 +131,7 @@ public class PageConverter implements Converter {
 //			revisionService.createRevision(revision);
 		}
 		revisionService.createAllRevisions(revisions);
+		System.gc();
 		//temporizador
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;

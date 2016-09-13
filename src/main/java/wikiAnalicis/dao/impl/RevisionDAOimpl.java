@@ -37,6 +37,8 @@ public void createAllRevisions(List<Revision> revisions) {
 	for (Revision revision : revisions) {
 		util.merge(revision);
 	}
+	util.getSessionFactory().getCurrentSession().flush();
+	util.getSessionFactory().getCurrentSession().clear();
 }
 	@Override
 	public Revision updateRevision(Revision revision) {
