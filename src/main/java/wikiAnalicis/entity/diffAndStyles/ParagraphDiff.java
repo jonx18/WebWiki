@@ -1,10 +1,8 @@
-package wikiAnalicis.util.diffAndStyles;
+package wikiAnalicis.entity.diffAndStyles;
 
 import java.util.LinkedList;
 import java.util.List;
 
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
 
 public class ParagraphDiff {
 	Boolean change=false;

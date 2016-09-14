@@ -1,4 +1,4 @@
-package wikiAnalicis.util.diffAndStyles;
+package wikiAnalicis.entity.diffAndStyles;
 
 import java.util.LinkedList;
 

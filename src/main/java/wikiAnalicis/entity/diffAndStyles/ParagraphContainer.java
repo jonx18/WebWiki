@@ -1,11 +1,8 @@
-package wikiAnalicis.util.diffAndStyles;
+package wikiAnalicis.entity.diffAndStyles;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
 
 public class ParagraphContainer {
 	private ParagraphDiff paragraphDiff;

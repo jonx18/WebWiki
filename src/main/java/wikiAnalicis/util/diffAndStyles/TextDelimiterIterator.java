@@ -7,6 +7,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
 
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+
 public class TextDelimiterIterator {
 	StringBuilder text=new StringBuilder();
 	List<Delimiter> delimiters;

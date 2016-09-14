@@ -14,6 +14,9 @@ import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import wikiAnalicis.entity.diffAndStyles.Diff;
+import wikiAnalicis.entity.diffAndStyles.Operation;
+
 /*
  * Functions for diff, match and patch.
  * Computes the difference between two texts to create a patch.
@@ -86,16 +89,6 @@ public class diff_match_patch {
 
   //  DIFF FUNCTIONS
 
-
-  /**
-   * The data structure representing a diff is a Linked list of Diff objects:
-   * {Diff(Operation.DELETE, "Hello"), Diff(Operation.INSERT, "Goodbye"),
-   *  Diff(Operation.EQUAL, " world.")}
-   * which means: delete "Hello", add "Goodbye" and keep " world."
-   */
-  public enum Operation {
-    DELETE, INSERT, EQUAL
-  }
 
   /**
    * Find the differences between two texts.
@@ -2283,98 +2276,6 @@ public class diff_match_patch {
   }
 
 
-  /**
-   * Class representing one diff operation.
-   */
-  public static class Diff {
-    /**
-     * One of: INSERT, DELETE or EQUAL.
-     */
-    public Operation operation;
-    /**
-     * The text associated with this diff operation.
-     */
-    public String text;
-
-    public Operation getOperation() {
-		return operation;
-	}
-
-	public void setOperation(Operation operation) {
-		this.operation = operation;
-	}
-
-	public String getText() {
-		return text;
-	}
-
-	public void setText(String text) {
-		this.text = text;
-	}
-
-	/**
-     * Constructor.  Initializes the diff with the provided values.
-     * @param operation One of INSERT, DELETE or EQUAL.
-     * @param text The text being applied.
-     */
-    public Diff(Operation operation, String text) {
-      // Construct a diff with the specified operation and text.
-      this.operation = operation;
-      this.text = text;
-    }
-
-    /**
-     * Display a human-readable version of this Diff.
-     * @return text version.
-     */
-    public String toString() {
-      String prettyText = this.text.replace('\n', '\u00b6');
-      return "Diff(" + this.operation + ",\"" + prettyText + "\")";
-    }
-
-    /**
-     * Create a numeric hash value for a Diff.
-     * This function is not used by DMP.
-     * @return Hash value.
-     */
-    @Override
-    public int hashCode() {
-      final int prime = 31;
-      int result = (operation == null) ? 0 : operation.hashCode();
-      result += prime * ((text == null) ? 0 : text.hashCode());
-      return result;
-    }
-
-    /**
-     * Is this Diff equivalent to another Diff?
-     * @param obj Another Diff to compare against.
-     * @return true or false.
-     */
-    @Override
-    public boolean equals(Object obj) {
-      if (this == obj) {
-        return true;
-      }
-      if (obj == null) {
-        return false;
-      }
-      if (getClass() != obj.getClass()) {
-        return false;
-      }
-      Diff other = (Diff) obj;
-      if (operation != other.operation) {
-        return false;
-      }
-      if (text == null) {
-        if (other.text != null) {
-          return false;
-        }
-      } else if (!text.equals(other.text)) {
-        return false;
-      }
-      return true;
-    }
-  }
 
 
   /**

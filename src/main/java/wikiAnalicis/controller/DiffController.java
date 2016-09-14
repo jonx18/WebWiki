@@ -1,34 +1,21 @@
 package wikiAnalicis.controller;
 
-import java.io.IOException;
-import java.nio.charset.Charset;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Scanner;
-import java.util.Set;
-import java.util.stream.IntStream;
 
-import javax.jws.soap.SOAPBinding.Style;
 import javax.servlet.http.HttpServletRequest;
 
-import org.apache.commons.lang3.StringUtils;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -36,18 +23,14 @@ import com.google.gson.Gson;
 
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+import wikiAnalicis.entity.diffAndStyles.Diff;
+import wikiAnalicis.entity.diffAndStyles.DiffContainer;
+import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
-import wikiAnalicis.util.diffAndStyles.Delimiter;
-import wikiAnalicis.util.diffAndStyles.DiffContainer;
-import wikiAnalicis.util.diffAndStyles.NodeContainer;
-import wikiAnalicis.util.diffAndStyles.ParagraphContainer;
-import wikiAnalicis.util.diffAndStyles.ParagraphDiff;
 import wikiAnalicis.util.diffAndStyles.ParagraphDiffer;
 import wikiAnalicis.util.diffAndStyles.StyleAnalyzer;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
 
 @Controller
 public class DiffController {
@@ -60,6 +43,7 @@ public class DiffController {
 	private MessageSource messageSource;
 	@Autowired
 	private LocaleResolver localeResolver;
+	private Locale langSeted=null;
 	public DiffController() {
 		// TODO Auto-generated constructor stub
 	}
@@ -67,36 +51,14 @@ public class DiffController {
 	@RequestMapping("diffList")
 	public ModelAndView showDiff(Long id, Long parentId,HttpServletRequest request) {
 		Locale locale = localeResolver.resolveLocale(request);
-		String revText1 = revisionService.getRevision(parentId).getText();
-		String revText2 = revisionService.getRevision(id).getText();
-		// try {
-		// revText1 = readFileLines(
-		// "C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision2text1text.txt",
-		// StandardCharsets.UTF_8);
-		// revText2 = readFileLines(
-		// "C:\\Users\\Jonx\\Downloads\\WikiAnalicis\\pagesv2\\revisiones7777\\revision3text1text.txt",
-		// StandardCharsets.UTF_8);
-		// } catch (IOException e) {
-		// // TODO Auto-generated catch block
-		// e.printStackTrace();
-		// }
-
-//		diff_match_patch differ = new diff_match_patch();
-//		LinkedList<Diff> diffs = differ.diff_main(revText1, revText2);
-//		differ.Diff_Timeout = 0;
-//		// differ.Diff_EditCost=5;
-//		// differ.diff_cleanupEfficiency(diffs);
-//		differ.diff_cleanupSemantic(diffs);
-
-		//LinkedList<Diff[]> result = estructureComparision(diffs);
-		// differ.diff_cleanupEfficiency(diffs);
-		// differ.diff_levenshtein(diffs);
-		// differ.diff_cleanupMerge(diffs);
+		Revision revText1 = revisionService.getRevision(parentId);
+		Revision revText2 = revisionService.getRevision(id);
+;
 		Gson gson = new Gson();
-		ParagraphDiffer differ = new ParagraphDiffer();
-		LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
+
 		//String json = gson.toJson(result, result.getClass());
-		DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
+		DiffContainer diffContainer = cambiosContenido(revText1,revText2,locale);
+		List<ParagraphDiff> listListDiff = diffContainer.getParagraphDiffs();
 		Map<Delimiter, Integer[]> mapStyleChanges = diffContainer.getStyleChanges();
 		String json = gson.toJson(listListDiff, listListDiff.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
@@ -117,7 +79,7 @@ public class DiffController {
 		List<Revision> revisions = page.getRevisions();
 		int size = revisions.size();
 		List<Delimiter> delimiters = this.getDelimiters(locale);
-		Map<Delimiter, int[]> mapStyleChanges = new HashMap<Delimiter, int[]>();
+		Map<Delimiter, int[]> mapStyleChanges = new EnumMap<Delimiter, int[]>(Delimiter.class);
 		Date[] dates= new Date[size];
 		for (Delimiter delimiter : delimiters) {
 			int[] array= new int[size];
@@ -129,11 +91,7 @@ public class DiffController {
 			for (int i = 1; i < size; i++) {
 				Revision newRevision = revisions.get(i);		
 				dates[i]=newRevision.getTimestamp();
-				String revText1 = oldRevision.getText();
-				String revText2 = newRevision.getText();
-				ParagraphDiffer differ = new ParagraphDiffer();
-				LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
-				DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
+				DiffContainer diffContainer = cambiosContenido(oldRevision,newRevision,locale);
 				Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
 				for (Delimiter delimiter : mapRevChanges.keySet()) {
 					int[] array = mapStyleChanges.get(delimiter);
@@ -147,11 +105,7 @@ public class DiffController {
 				oldRevision = newRevision;
 			}
 		}else{
-			String revText1 = oldRevision.getText();
-			String revText2 = "";
-			ParagraphDiffer differ = new ParagraphDiffer();
-			LinkedList<ParagraphDiff> listListDiff = differ.paragraphComparetor(revText1, revText2);
-			DiffContainer diffContainer = cambiosContenido(listListDiff,locale);
+			DiffContainer diffContainer = cambiosContenido(oldRevision,null,locale);
 			Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
 			for (Delimiter delimiter : mapRevChanges.keySet()) {
 				mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
@@ -191,98 +145,75 @@ public class DiffController {
 
 	}
 
-	private DiffContainer cambiosContenido(LinkedList<ParagraphDiff> listListDiff,Locale locale) {
+	private DiffContainer cambiosContenido(Revision oldRevision,Revision newRevision,Locale locale) {
 		List<Delimiter> delimiters = getDelimiters(locale);
 		StyleAnalyzer styleAnalyzer = new StyleAnalyzer(delimiters);
-		DiffContainer diffContainer = styleAnalyzer.textDescomsition(listListDiff);
-		//diffContainer.calculateDifferenes(); lo hago al crearlo
-		//DiffContainer grafo = styleAnalyzer.getStryleGraph(listListDiff);
-		//System.out.println("------------------------------------");
-		//dfsTest(grafo);
-		for (ParagraphDiff paragraphDiff : listListDiff) {
-//			String oldParagraph = paragraphDiff.getOldParagraph();
-//			String newParagraph = paragraphDiff.getNewParagraph();
-//			System.out.println(oldParagraph);
-//			System.out.println(newParagraph);
-//			Integer countOld = 0;
-//			Integer countNew = 0;
-//			String[] substringsBetween = StringUtils.substringsBetween(oldParagraph, "==", "==");
-//			if (substringsBetween!=null) {
-//				for (String string : substringsBetween) {
-//					System.out.println(string);
-//				}
-//				countOld = substringsBetween.length;
-//			}
-//			substringsBetween = StringUtils.substringsBetween(newParagraph, "==", "==");
-//			if (substringsBetween!=null) {
-//				for (String string : substringsBetween) {
-//					System.out.println(string);
-//				}
-//				countNew = substringsBetween.length;
-//			}
-//
-//			System.out.println("Cantida de '==' en Old: "+countOld+" en New: "+countNew);
-//			StringUtils.substringsBetween(oldParagraph, "==", "==");
+		DiffContainer diffContainer = styleAnalyzer.textDescomsition(oldRevision,newRevision);
 		
-			//StyleAnalyzer.elementsInParagraph(paragraphDiff);
-			for (Diff[] diffs : paragraphDiff.getDiffs()) {
-				
-				
-				
-			}
-		}
 		return diffContainer;
 	}
 
 	private List<Delimiter> getDelimiters(Locale locale) {
-		List<Delimiter> delimiters = new LinkedList<Delimiter>();
-//		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
-//				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
-//		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
-//				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
-		String[] openIndicator ={"","<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
-				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
-		String[] closeIndicator ={"","</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
-				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
-		
-		String[] name ={"",
-				messageSource.getMessage("delimiter.nowiki.name", null, locale),
-				messageSource.getMessage("delimiter.big.name", null, locale),
-				messageSource.getMessage("delimiter.small.name", null, locale),
-				messageSource.getMessage("delimiter.sup.name", null, locale),
-				messageSource.getMessage("delimiter.sub.name", null, locale),
-				messageSource.getMessage("delimiter.s.name", null, locale),
-				messageSource.getMessage("delimiter.blockquote.name", null, locale),
-				messageSource.getMessage("delimiter.includeonly.name", null, locale),
-				messageSource.getMessage("delimiter.reference.name", null, locale),
-				messageSource.getMessage("delimiter.heading2.name", null, locale),
-				messageSource.getMessage("delimiter.heading3.name", null, locale),
-				messageSource.getMessage("delimiter.heading4.name", null, locale),
-				messageSource.getMessage("delimiter.heading5.name", null, locale),
-				messageSource.getMessage("delimiter.italic.name", null, locale),
-				messageSource.getMessage("delimiter.blod.name", null, locale),
-				messageSource.getMessage("delimiter.italicblod.name", null, locale),
-				messageSource.getMessage("delimiter.link.external.name", null, locale),
-				messageSource.getMessage("delimiter.link.internal.name", null, locale)
-				};
-		for (int i = 0; i < openIndicator.length; i++) {
-			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],name[i],false);
-			delimiters.add(d);
+		if (langSeted==null || langSeted != locale) {
+			langSeted=locale;
+			for (Delimiter delimiter : Delimiter.values()) {
+				if (delimiter==Delimiter.NONE) {
+					continue;
+				}
+				if(delimiter==Delimiter.REDIRECTION){
+					delimiter.setOpenIndicator(messageSource.getMessage("delimiter.redirection.delimiter", null, locale));
+				}
+				delimiter.setName(messageSource.getMessage("delimiter."+delimiter.toString()+".name", null, locale));
+			}
 		}
-		String[] openIndicatorFull ={"#",
-				messageSource.getMessage("delimiter.redirection.delimiter", null, locale),
-				"*","::",":"};
-		String[] nameFull ={
-				messageSource.getMessage("delimiter.numberedelement.name", null, locale),
-				messageSource.getMessage("delimiter.redirection.name", null, locale),
-				messageSource.getMessage("delimiter.bulletedelement.name", null, locale),
-				messageSource.getMessage("delimiter.indent2.name", null, locale),
-				messageSource.getMessage("delimiter.indent1.name", null, locale)
-				};
-		for (int i = 0; i < openIndicatorFull.length; i++) {
-			Delimiter d = new Delimiter(openIndicatorFull[i],nameFull[i],true);
-			delimiters.add(d);
-		}
+		List<Delimiter> delimiters = Arrays.asList(Delimiter.values());
+////		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+////				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
+////		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+////				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
+//		String[] openIndicator ={"","<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
+//				"<ref","==","===","====","=====","''","'''","'''''","[","[["};
+//		String[] closeIndicator ={"","</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
+//				"</ref>","==","===","====","=====","''","'''","'''''","]","]]"};
+//		
+//		String[] name ={"",
+//				messageSource.getMessage("delimiter.nowiki.name", null, locale),
+//				messageSource.getMessage("delimiter.big.name", null, locale),
+//				messageSource.getMessage("delimiter.small.name", null, locale),
+//				messageSource.getMessage("delimiter.sup.name", null, locale),
+//				messageSource.getMessage("delimiter.sub.name", null, locale),
+//				messageSource.getMessage("delimiter.s.name", null, locale),
+//				messageSource.getMessage("delimiter.blockquote.name", null, locale),
+//				messageSource.getMessage("delimiter.includeonly.name", null, locale),
+//				messageSource.getMessage("delimiter.reference.name", null, locale),
+//				messageSource.getMessage("delimiter.heading2.name", null, locale),
+//				messageSource.getMessage("delimiter.heading3.name", null, locale),
+//				messageSource.getMessage("delimiter.heading4.name", null, locale),
+//				messageSource.getMessage("delimiter.heading5.name", null, locale),
+//				messageSource.getMessage("delimiter.italic.name", null, locale),
+//				messageSource.getMessage("delimiter.blod.name", null, locale),
+//				messageSource.getMessage("delimiter.italicblod.name", null, locale),
+//				messageSource.getMessage("delimiter.link.external.name", null, locale),
+//				messageSource.getMessage("delimiter.link.internal.name", null, locale)
+//				};
+//		for (int i = 0; i < openIndicator.length; i++) {
+//			Delimiter d = new Delimiter(openIndicator[i], closeIndicator[i],name[i],false);
+//			delimiters.add(d);
+//		}
+//		String[] openIndicatorFull ={"#",
+//				messageSource.getMessage("delimiter.redirection.delimiter", null, locale),
+//				"*","::",":"};
+//		String[] nameFull ={
+//				messageSource.getMessage("delimiter.numberedelement.name", null, locale),
+//				messageSource.getMessage("delimiter.redirection.name", null, locale),
+//				messageSource.getMessage("delimiter.bulletedelement.name", null, locale),
+//				messageSource.getMessage("delimiter.indent2.name", null, locale),
+//				messageSource.getMessage("delimiter.indent1.name", null, locale)
+//				};
+//		for (int i = 0; i < openIndicatorFull.length; i++) {
+//			Delimiter d = new Delimiter(openIndicatorFull[i],nameFull[i],true);
+//			delimiters.add(d);
+//		}
 		return delimiters;
 	}
 

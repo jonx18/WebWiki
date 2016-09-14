@@ -11,8 +11,10 @@ import java.util.Scanner;
 
 import org.apache.commons.lang3.StringUtils;
 
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Diff;
-import wikiAnalicis.util.diffAndStyles.diff_match_patch.Operation;
+import wikiAnalicis.entity.diffAndStyles.Diff;
+import wikiAnalicis.entity.diffAndStyles.Operation;
+import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
+
 
 public class ParagraphDiffer {
 
@@ -27,6 +29,7 @@ public class ParagraphDiffer {
 			String paragraph = scanner.nextLine();
 			listParagraph1.add(paragraph);
 		}
+		scanner.close();
 		scanner = new Scanner(revText2);
 		while (scanner.hasNextLine()) {
 			String paragraph = scanner.nextLine();
@@ -43,6 +46,8 @@ public class ParagraphDiffer {
 			LinkedList<Diff[]> resultParagraph = estructureComparision(diffs);
 			listListDiff.add(new ParagraphDiff(resultParagraph));
 		}
+		scanner.close();
+		
 		return listListDiff;
 
 	}
@@ -126,12 +131,12 @@ public class ParagraphDiffer {
 	}
 
 	private LinkedList<Diff[]> estructureComparision(LinkedList<Diff> diffs) {
-		LinkedList<Diff> deletionsEqualities = new LinkedList<diff_match_patch.Diff>();
-		LinkedList<Diff> insertionsEqualities = new LinkedList<diff_match_patch.Diff>();
+		LinkedList<Diff> deletionsEqualities = new LinkedList<Diff>();
+		LinkedList<Diff> insertionsEqualities = new LinkedList<Diff>();
 		splitDiffs(diffs, deletionsEqualities, insertionsEqualities);
 		Iterator<Diff> deletionIterator = deletionsEqualities.iterator();
 		Iterator<Diff> insertionIterator = insertionsEqualities.iterator();
-		LinkedList<Diff[]> result = new LinkedList<diff_match_patch.Diff[]>();
+		LinkedList<Diff[]> result = new LinkedList<Diff[]>();
 		if (deletionsEqualities.isEmpty() || insertionsEqualities.isEmpty()) {
 			if (deletionsEqualities.isEmpty()) {
 				for (Diff diff : insertionsEqualities) {
@@ -213,12 +218,12 @@ public class ParagraphDiffer {
 				}
 			}
 			while (insertionIterator.hasNext()) {
-				diff_match_patch.Diff diff = (diff_match_patch.Diff) insertionIterator.next();
+				Diff diff = (Diff) insertionIterator.next();
 				Diff[] par = { null, diff };
 				result.add(par);
 			}
 			while (deletionIterator.hasNext()) {
-				diff_match_patch.Diff diff = (diff_match_patch.Diff) deletionIterator.next();
+				Diff diff = (Diff) deletionIterator.next();
 				Diff[] par = { diff, null };
 				result.add(par);
 			}

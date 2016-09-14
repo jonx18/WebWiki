@@ -11,6 +11,10 @@ import java.util.regex.Pattern;
 import org.apache.commons.lang3.StringUtils;
 
 import wikiAnalicis.entity.Category;
+import wikiAnalicis.entity.Revision;
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+import wikiAnalicis.entity.diffAndStyles.DiffContainer;
+import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
 
 public class StyleAnalyzer {
 	List<Delimiter> delimiters;
@@ -19,8 +23,8 @@ public class StyleAnalyzer {
 		super();
 		this.delimiters = delimiters;
 	}
-	public DiffContainer textDescomsition(LinkedList<ParagraphDiff> paragraphDiffs) {
-		DiffContainer diffContainer = new DiffContainer(paragraphDiffs, delimiters);
+	public DiffContainer textDescomsition(Revision oldRevision,Revision newRevision) {
+		DiffContainer diffContainer = new DiffContainer(oldRevision,newRevision, delimiters);
 		
 		
 		

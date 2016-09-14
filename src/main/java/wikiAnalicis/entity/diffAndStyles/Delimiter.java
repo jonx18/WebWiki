@@ -1,34 +1,46 @@
-package wikiAnalicis.util.diffAndStyles;
+package wikiAnalicis.entity.diffAndStyles;
 
 import java.util.LinkedList;
 import java.util.TreeMap;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.apache.commons.lang3.builder.HashCodeBuilder;
 
-import wikiAnalicis.entity.UserContributor;
-
-public class Delimiter {
+public enum Delimiter {
+	NONE("","","",false),
+	NOWIKI("<nowiki>","<nowiki>","",false),
+	BIG("<big>","<big>","",false),
+	SMALL("<small>","<small>","",false),
+	SUP("<sup>","<sup>","",false),
+	SUB("<sub>","<sub>","",false),
+	S("<s>","<s>","",false),
+	BLOCKQUOTE("<blockquote>","<blockquote>","",false),
+	INCLUDEONLY("<includeonly>","</includeonly>","",false),
+	REFERENCE("<ref","</ref>","",false),
+	HEADING2("==","==","",false),
+	HEADING3("===","===","",false),
+	HEADING4("====","====","",false),
+	HEADING5("=====","=====","",false),
+	ITALIC("''","''","",false),
+	BLOD("'''","'''","",false),
+	ITALICBLOD("'''''","'''''","",false),
+	EXTERNAL("[","]","",false),
+	INTERNAL("[[","]]","",false),
+	NUMBEREDELEMENT("#","","",true),
+	REDIRECTION("redirection","","",true),
+	BULLETEDELEMENT("*","","",true),
+	INDENT2("::","","",true),
+	INDENT1(":","","",true);
 	private String openIndicator;
 	private String closeIndicator;
 	private String name;
 	private Boolean isFullParagraph;
-
-	public Delimiter(String openIndicator, String closeIndicator,String name, Boolean isFullParagraph) {
-		super();
+	private Delimiter(String openIndicator, String closeIndicator, String name, Boolean isFullParagraph) {
 		this.openIndicator = openIndicator;
 		this.closeIndicator = closeIndicator;
 		this.name = name;
 		this.isFullParagraph = isFullParagraph;
-	}
-	public Delimiter(String openIndicator,String name, Boolean isFullParagraph) {
-		super();
-		this.openIndicator = openIndicator;
-		this.closeIndicator = "";
-		this.name = name;
-		this.isFullParagraph = isFullParagraph;
-	}
+	} 
+	
 	public Boolean getIsFullParagraph() {
 		return isFullParagraph;
 	}
@@ -137,35 +149,10 @@ public class Delimiter {
 		Object[] result = {styleContainer,indiceDeAvance};
 		return result;
 	}
-	@Override
-	public boolean equals(Object obj) {
-		// TODO Auto-generated method stub
-	       if (!(obj instanceof Delimiter)){
-	            return false;
-	            }
-	        if (obj == this){
-	            return true;
-	        }
-	        Delimiter rhs = (Delimiter) obj;
-	        return new EqualsBuilder().
-	            // if deriving: appendSuper(super.equals(obj)).
-	        		append(openIndicator, rhs.getOpenIndicator()).
-	        		append(closeIndicator, rhs.getCloseIndicator()).
-	        		append(name, rhs.getName()).
-	        		append(isFullParagraph, rhs.getIsFullParagraph()).
-	            isEquals();
-		
-	}
-	@Override
-	public int hashCode() {
-        return new HashCodeBuilder(17, 31). // two randomly chosen prime numbers
-                // if deriving: appendSuper(super.hashCode()).
-        		append(openIndicator).
-        		append(closeIndicator).
-        		append(name).
-        		append(isFullParagraph).
-                toHashCode();
-
-	}
-
+	public String toString() {
+		String id = name();
+		String minuscula = id.toLowerCase();
+		return minuscula;
+		}
+	
 }

@@ -1,4 +1,4 @@
-package wikiAnalicis.util.diffAndStyles;
+package wikiAnalicis.entity.diffAndStyles;
 
 public class TextContainer extends NodeContainer {
 	private String text;
