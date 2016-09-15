@@ -27,6 +27,7 @@ import wikiAnalicis.entity.diffAndStyles.Delimiter;
 import wikiAnalicis.entity.diffAndStyles.Diff;
 import wikiAnalicis.entity.diffAndStyles.DiffContainer;
 import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
+import wikiAnalicis.service.DiffContainerService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 import wikiAnalicis.util.diffAndStyles.ParagraphDiffer;
@@ -39,6 +40,8 @@ public class DiffController {
 	private RevisionService revisionService;
 	@Autowired
 	private PageService pageService;
+	@Autowired
+	private DiffContainerService diffContainerService;
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
@@ -57,11 +60,21 @@ public class DiffController {
 		Gson gson = new Gson();
 
 		//String json = gson.toJson(result, result.getClass());
-		DiffContainer diffContainer = cambiosContenido(revText1,revText2,locale);
-		List<ParagraphDiff> listListDiff = diffContainer.getParagraphDiffs();
-		Map<Delimiter, Integer[]> mapStyleChanges = diffContainer.getStyleChanges();
-		String json = gson.toJson(listListDiff, listListDiff.getClass());
-		LOGGER.info("Mostrando Diff. Data : " + json);
+		DiffContainer diffContainer = diffContainerService.getDiffContainer(revText1);
+		List<ParagraphDiff> listListDiff;
+		Map<Delimiter, Integer[]> mapStyleChanges;
+		if (diffContainer==null) {
+			diffContainer = cambiosContenido(revText1,revText2,locale);
+			listListDiff = diffContainer.getParagraphDiffs();
+			mapStyleChanges = diffContainer.getStyleChanges();
+			diffContainerService.createDiffContainer(diffContainer);
+		}
+		listListDiff = diffContainer.getParagraphDiffs();
+		mapStyleChanges = diffContainer.getStyleChanges();
+//		String json = gson.toJson(listListDiff, listListDiff.getClass());
+//		LOGGER.info("Mostrando Diff. Data : " + json);
+//		json = gson.toJson(mapStyleChanges, mapStyleChanges.getClass());
+//		LOGGER.info("Mostrando mapStyleChanges. Data : " + json);
 		ModelAndView model = new ModelAndView("diffList");
 		model.addObject("listListDiff", listListDiff);
 		model.addObject("mapStyleChanges", mapStyleChanges);
@@ -79,10 +92,10 @@ public class DiffController {
 		List<Revision> revisions = page.getRevisions();
 		int size = revisions.size();
 		List<Delimiter> delimiters = this.getDelimiters(locale);
-		Map<Delimiter, int[]> mapStyleChanges = new EnumMap<Delimiter, int[]>(Delimiter.class);
+		Map<Delimiter, Integer[]> mapStyleChanges = new EnumMap<Delimiter, Integer[]>(Delimiter.class);
 		Date[] dates= new Date[size];
 		for (Delimiter delimiter : delimiters) {
-			int[] array= new int[size];
+			Integer[] array= new Integer[size];
 			mapStyleChanges.put(delimiter, array);
 		}
 		Revision oldRevision = revisions.get(0);
@@ -91,10 +104,16 @@ public class DiffController {
 			for (int i = 1; i < size; i++) {
 				Revision newRevision = revisions.get(i);		
 				dates[i]=newRevision.getTimestamp();
-				DiffContainer diffContainer = cambiosContenido(oldRevision,newRevision,locale);
-				Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
+				DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
+				Map<Delimiter, Integer[]> mapRevChanges;
+				if (diffContainer==null) {
+					diffContainer = cambiosContenido(oldRevision,newRevision,locale);
+					mapRevChanges = diffContainer.getStyleChanges();
+					diffContainerService.createDiffContainer(diffContainer);
+				}
+				mapRevChanges = diffContainer.getStyleChanges();
 				for (Delimiter delimiter : mapRevChanges.keySet()) {
-					int[] array = mapStyleChanges.get(delimiter);
+					Integer[] array = mapStyleChanges.get(delimiter);
 					array[i-1]=mapRevChanges.get(delimiter)[0];
 					array[i]=mapRevChanges.get(delimiter)[1];
 					mapStyleChanges.put(delimiter, array);
@@ -105,8 +124,14 @@ public class DiffController {
 				oldRevision = newRevision;
 			}
 		}else{
-			DiffContainer diffContainer = cambiosContenido(oldRevision,null,locale);
-			Map<Delimiter, Integer[]> mapRevChanges = diffContainer.getStyleChanges();
+			DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
+			Map<Delimiter, Integer[]> mapRevChanges;
+			if (diffContainer==null) {
+				diffContainer = cambiosContenido(oldRevision,null,locale);
+				mapRevChanges = diffContainer.getStyleChanges();
+				diffContainerService.createDiffContainer(diffContainer);
+			}
+			mapRevChanges = diffContainer.getStyleChanges();
 			for (Delimiter delimiter : mapRevChanges.keySet()) {
 				mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
 			}
@@ -114,10 +139,17 @@ public class DiffController {
 		//vaciar los que sumen 0
 		LinkedList<Delimiter> remove = new LinkedList<Delimiter>();
 		for (Delimiter delimiter : mapStyleChanges.keySet()) {
-			int[] values = mapStyleChanges.get(delimiter);
+			Integer[] values = mapStyleChanges.get(delimiter);
 			int sum=0;
 			for (int i = 0; i < values.length; i++) {
-				int integer = values[i];
+				int integer;
+				if (values[i]==null) {
+					integer = 0;
+					values[i]=0;
+				}else{
+					integer = values[i];
+				}
+				
 				sum+=integer;
 //				if (integer>0) {
 //					break;

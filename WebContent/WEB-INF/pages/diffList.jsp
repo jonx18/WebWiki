@@ -37,10 +37,10 @@
 							<div class="row">
 
 								<div class="col-md-6">
-									<c:if test="${listDiff.change}">
+									<c:if test="${listDiff.ischange}">
 										<li class="list-group-item list-group-item-danger">
 									</c:if>
-									<c:if test="${not listDiff.change}">
+									<c:if test="${not listDiff.ischange}">
 										<li class="list-group-item list-group-item-info">
 									</c:if>
 									<c:forEach items="${listDiff.diffs}" var="diff">
@@ -59,10 +59,10 @@
 									</li>
 								</div>
 								<div class="col-md-6">
-									<c:if test="${listDiff.change}">
+									<c:if test="${listDiff.ischange}">
 										<li class="list-group-item list-group-item-success">
 									</c:if>
-									<c:if test="${not listDiff.change}">
+									<c:if test="${not listDiff.ischange}">
 										<li class="list-group-item list-group-item-info">
 									</c:if>
 									<c:forEach items="${listDiff.diffs}" var="diff">
