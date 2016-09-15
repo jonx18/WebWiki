@@ -27,9 +27,11 @@ import wikiAnalicis.entity.diffAndStyles.Delimiter;
 import wikiAnalicis.entity.diffAndStyles.Diff;
 import wikiAnalicis.entity.diffAndStyles.DiffContainer;
 import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
+import wikiAnalicis.entity.statics.PageStatistics;
 import wikiAnalicis.service.DiffContainerService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.service.StatisticsService;
 import wikiAnalicis.util.diffAndStyles.ParagraphDiffer;
 import wikiAnalicis.util.diffAndStyles.StyleAnalyzer;
 
@@ -42,6 +44,8 @@ public class DiffController {
 	private PageService pageService;
 	@Autowired
 	private DiffContainerService diffContainerService;
+	@Autowired
+	private StatisticsService statisticsService;
 	@Autowired
 	private MessageSource messageSource;
 	@Autowired
@@ -89,79 +93,100 @@ public class DiffController {
 		Locale locale = localeResolver.resolveLocale(request);
 		Page page = pageService.getPage(id);
 		page = pageService.mergePage(page);
-		List<Revision> revisions = page.getRevisions();
-		int size = revisions.size();
-		List<Delimiter> delimiters = this.getDelimiters(locale);
-		Map<Delimiter, Integer[]> mapStyleChanges = new EnumMap<Delimiter, Integer[]>(Delimiter.class);
-		Date[] dates= new Date[size];
-		for (Delimiter delimiter : delimiters) {
-			Integer[] array= new Integer[size];
-			mapStyleChanges.put(delimiter, array);
-		}
-		Revision oldRevision = revisions.get(0);
-		dates[0]=oldRevision.getTimestamp();
-		if (size>1) {
-			for (int i = 1; i < size; i++) {
-				Revision newRevision = revisions.get(i);		
-				dates[i]=newRevision.getTimestamp();
+		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+		Map<Delimiter, Integer[]> mapStyleChanges=null;
+		Date[] dates=null;
+		if (pageStatistics==null||pageStatistics.getDates().isEmpty()) {
+			List<Revision> revisions = page.getRevisions();
+			int size = revisions.size();
+			List<Delimiter> delimiters = this.getDelimiters(locale);
+			mapStyleChanges = new EnumMap<Delimiter, Integer[]>(Delimiter.class);
+			dates= new Date[size];
+			for (Delimiter delimiter : delimiters) {
+				Integer[] array= new Integer[size];
+				mapStyleChanges.put(delimiter, array);
+			}
+			Revision oldRevision = revisions.get(0);
+			dates[0]=oldRevision.getTimestamp();
+			if (size>1) {
+				for (int i = 1; i < size; i++) {
+					Revision newRevision = revisions.get(i);		
+					dates[i]=newRevision.getTimestamp();
+					DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
+					Map<Delimiter, Integer[]> mapRevChanges;
+					if (diffContainer==null) {
+						diffContainer = cambiosContenido(oldRevision,newRevision,locale);
+						mapRevChanges = diffContainer.getStyleChanges();
+						diffContainerService.createDiffContainer(diffContainer);
+					}
+					mapRevChanges = diffContainer.getStyleChanges();
+					for (Delimiter delimiter : mapRevChanges.keySet()) {
+						Integer[] array = mapStyleChanges.get(delimiter);
+						array[i-1]=mapRevChanges.get(delimiter)[0];
+						array[i]=mapRevChanges.get(delimiter)[1];
+						mapStyleChanges.put(delimiter, array);
+					}
+					
+					
+					
+					oldRevision = newRevision;
+				}
+			}else{
 				DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
 				Map<Delimiter, Integer[]> mapRevChanges;
 				if (diffContainer==null) {
-					diffContainer = cambiosContenido(oldRevision,newRevision,locale);
+					diffContainer = cambiosContenido(oldRevision,null,locale);
 					mapRevChanges = diffContainer.getStyleChanges();
 					diffContainerService.createDiffContainer(diffContainer);
 				}
 				mapRevChanges = diffContainer.getStyleChanges();
 				for (Delimiter delimiter : mapRevChanges.keySet()) {
-					Integer[] array = mapStyleChanges.get(delimiter);
-					array[i-1]=mapRevChanges.get(delimiter)[0];
-					array[i]=mapRevChanges.get(delimiter)[1];
-					mapStyleChanges.put(delimiter, array);
+					mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
 				}
-				
-				
-				
-				oldRevision = newRevision;
 			}
-		}else{
-			DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
-			Map<Delimiter, Integer[]> mapRevChanges;
-			if (diffContainer==null) {
-				diffContainer = cambiosContenido(oldRevision,null,locale);
-				mapRevChanges = diffContainer.getStyleChanges();
-				diffContainerService.createDiffContainer(diffContainer);
-			}
-			mapRevChanges = diffContainer.getStyleChanges();
-			for (Delimiter delimiter : mapRevChanges.keySet()) {
-				mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
-			}
-		}
-		//vaciar los que sumen 0
-		LinkedList<Delimiter> remove = new LinkedList<Delimiter>();
-		for (Delimiter delimiter : mapStyleChanges.keySet()) {
-			Integer[] values = mapStyleChanges.get(delimiter);
-			int sum=0;
-			for (int i = 0; i < values.length; i++) {
-				int integer;
-				if (values[i]==null) {
-					integer = 0;
-					values[i]=0;
-				}else{
-					integer = values[i];
+			//vaciar los que sumen 0
+			LinkedList<Delimiter> remove = new LinkedList<Delimiter>();
+			for (Delimiter delimiter : mapStyleChanges.keySet()) {
+				Integer[] values = mapStyleChanges.get(delimiter);
+				int sum=0;
+				for (int i = 0; i < values.length; i++) {
+					int integer;
+					if (values[i]==null) {
+						integer = 0;
+						values[i]=0;
+					}else{
+						integer = values[i];
+					}
+					
+					sum+=integer;
+//					if (integer>0) {
+//						break;
+//					}
 				}
-				
-				sum+=integer;
-//				if (integer>0) {
-//					break;
-//				}
+				if(sum==0){
+					remove.add(delimiter);
+				}
 			}
-			if(sum==0){
-				remove.add(delimiter);
+			for (Delimiter delimiter : remove) {
+				mapStyleChanges.remove(delimiter);
 			}
+			if (pageStatistics==null){
+				pageStatistics= new PageStatistics();
+				pageStatistics.setPage(page);
+				statisticsService.createPageStatistics(pageStatistics);
+			} 
+			pageStatistics.setDates(Arrays.asList(dates));
+			pageStatistics.setMapStyleChanges(mapStyleChanges);
+			//pageStatistics.setTotalRevisiones(new Long(size));
+			statisticsService.mergePageStatistics(pageStatistics);
+		} else {
+			System.out.println("cargado de base");
+			dates = pageStatistics.getDatesArray();
+			mapStyleChanges = pageStatistics.getMapStyleChanges();
 		}
-		for (Delimiter delimiter : remove) {
-			mapStyleChanges.remove(delimiter);
-		}
+		
+		
+
 		Gson gson = new Gson();
 		String json = gson.toJson(mapStyleChanges, mapStyleChanges.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);

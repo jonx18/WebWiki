@@ -1,5 +1,6 @@
 package wikiAnalicis.controller;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +10,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
@@ -19,13 +21,18 @@ import com.google.gson.Gson;
 
 import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.entity.Revision;
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+import wikiAnalicis.entity.statics.PageStatistics;
 import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.service.StatisticsService;
 
 @Controller
 public class PageController {
+	private static final Logger LOGGER = Logger.getLogger(Revision.class);
 	@Autowired
 	private PageService pageService;
 	@Autowired
@@ -34,6 +41,8 @@ public class PageController {
 	private InCategoryService inCategoryService;
 	@Autowired
 	private MediawikiService mediawikiService;
+	@Autowired
+	private StatisticsService statisticsService;
 	
 	public PageController() {
 		// TODO Auto-generated constructor stub
@@ -46,36 +55,66 @@ public class PageController {
 		Page page = pageService.getPage(parentId);
 		model.addObject("page", page);
 		//---------------------------------------------------------------------------------------
-		Long totalRevisiones = revisionService.count(page);
-		model.addObject("totalRevisiones", totalRevisiones);
+		Long totalRevisiones = null;
+		Map<String, Long> distribucionDeAporte = null;
+		Map<Date,Long> revisionesDia = null;
+		Map<Date,Long> contenidoDia = null;
+		List<InCategory> categories = null;
+		//---------------------------------------------------------------------------------------
+		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+		if (pageStatistics==null||pageStatistics.getTotalRevisiones()==0) {
+		//----------------------------------------------------------------------------------------
+		totalRevisiones = revisionService.count(page);
 		// ---------------------------------------------------------------------------------------
-		Map<String, Long> distribucionDeAporte = pageService.countColaboratorRevisionsInPage(page,locale);
-		LinkedList<Object[]> toJS = new LinkedList<Object[]>();
-		for (String key : distribucionDeAporte.keySet()) {
-			toJS.add(new Object[] { key, distribucionDeAporte.get(key) });
-		}
-		Gson gson = new Gson();
-		model.addObject("distribucionDeAporte", gson.toJson(toJS));
+		distribucionDeAporte = pageService.countColaboratorRevisionsInPage(page,locale);
 		//---------------------------------------------------------------------------------------
-		Map<Date,Long> 	revisionesDia= pageService.revisionInDaysOf(page);
-		toJS= new LinkedList<Object[]>();
-//		toJS.add(new Object[]{"Tiempo","Nº de Revisiones"});
-		for (Date key : revisionesDia.keySet()) {
-			toJS.add(new Object[]{key,revisionesDia.get(key)});
-		}	
-		gson = new Gson();
-		model.addObject("revisionesDia", gson.toJson(toJS));
+		revisionesDia = pageService.revisionInDaysOf(page);
 		//---------------------------------------------------------------------------------------
-		Map<Date,Long> 	contenidoDia= pageService.contentInDaysOf(page);
-		toJS= new LinkedList<Object[]>();
-//		toJS.add(new Object[]{"Tiempo","Nº de Revisiones"});
-		for (Date key : contenidoDia.keySet()) {
-			toJS.add(new Object[]{key,contenidoDia.get(key)});
-		}	
-		gson = new Gson();
-		model.addObject("contenidoDia", gson.toJson(toJS));
+		contenidoDia= pageService.contentInDaysOf(page);
 		//------------------InCategorys-----------------------
-		List<InCategory> categories = inCategoryService.getAllInCategorysOfPage(page);
+		categories = inCategoryService.getAllInCategorysOfPage(page);
+		//---------------------------------------------------------------------------------------------
+		if (pageStatistics==null){
+			pageStatistics= new PageStatistics();
+			pageStatistics.setPage(page);
+			statisticsService.createPageStatistics(pageStatistics);
+		} 
+		pageStatistics.setTotalRevisiones(totalRevisiones);
+		pageStatistics.setDistribucionDeAporte(distribucionDeAporte);
+		pageStatistics.setRevisionesDia(revisionesDia);
+		pageStatistics.setContenidoDia(contenidoDia);
+		pageStatistics.setCategories(categories);
+		statisticsService.mergePageStatistics(pageStatistics);
+		}else{
+			totalRevisiones = pageStatistics.getTotalRevisiones();
+			distribucionDeAporte = pageStatistics.getDistribucionDeAporte();
+			revisionesDia = pageStatistics.getRevisionesDia();
+			contenidoDia = pageStatistics.getContenidoDia();
+			categories = pageStatistics.getCategories();
+			System.out.println("cargado de base");
+		}
+		//----------------------------------------------------------------------------------------------
+		LinkedList<Object[]> distribucionDeAportetoJS = new LinkedList<Object[]>();
+		for (String key : distribucionDeAporte.keySet()) {
+			distribucionDeAportetoJS.add(new Object[] { key, distribucionDeAporte.get(key) });
+		}
+		LinkedList<Object[]> revisionesDiatoJS= new LinkedList<Object[]>();
+		for (Date key : revisionesDia.keySet()) {
+			revisionesDiatoJS.add(new Object[]{key,revisionesDia.get(key)});
+		}	
+		LinkedList<Object[]> contenidoDiatoJS= new LinkedList<Object[]>();
+		for (Date key : contenidoDia.keySet()) {
+			contenidoDiatoJS.add(new Object[]{key,contenidoDia.get(key)});
+		}	
+		//----------------------------------------------------------------------------------------
+		model.addObject("totalRevisiones", totalRevisiones);
+		Gson gson = new Gson();
+		model.addObject("distribucionDeAporte", gson.toJson(distribucionDeAportetoJS));
+		LOGGER.info("Mostrando Diff. Data : " + gson.toJson(distribucionDeAportetoJS));
+		model.addObject("revisionesDia", gson.toJson(revisionesDiatoJS));
+		LOGGER.info("Mostrando Diff. Data : " + gson.toJson(revisionesDiatoJS));
+		model.addObject("contenidoDia", gson.toJson(contenidoDiatoJS));
+		LOGGER.info("Mostrando Diff. Data : " + gson.toJson(contenidoDiatoJS));
 		model.addObject("categories", categories);
 		return model;
 	}

@@ -27,7 +27,7 @@ public class Diff {
 	/**
 	 * The text associated with this diff operation.
 	 */
-	@Column(name = "text")
+	@Column(columnDefinition="LONGBLOB",name="text")
 	public String text;
 
 	public Diff() {
