@@ -1,6 +1,9 @@
 package wikiAnalicis.controller;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -9,6 +12,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +29,7 @@ import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.diffAndStyles.Delimiter;
 import wikiAnalicis.entity.statics.PageStatistics;
+import wikiAnalicis.service.EmailService;
 import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
@@ -43,6 +49,8 @@ public class PageController {
 	private MediawikiService mediawikiService;
 	@Autowired
 	private StatisticsService statisticsService;
+	@Autowired
+	private EmailService emailService;
 	
 	public PageController() {
 		// TODO Auto-generated constructor stub
@@ -195,5 +203,47 @@ public class PageController {
 
 		return model;
 	}
-
+	@RequestMapping(value = "statisticsPageOfWithRedirection")
+	public String statisticsPageOfWithRedirection(Long id,HttpServletRequest request) {
+		String userpc = System.getProperty("user.name");
+		String hostname = "Unknown";
+		try
+		{
+		    InetAddress addr;
+		    addr = InetAddress.getLocalHost();
+		    hostname = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+		    System.out.println("Hostname can not be resolved");
+		}
+		long startTimeFull = System.currentTimeMillis();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(startTimeFull);
+		String fuente = "wikianalisis@gmail.com";
+		String destino = "jonamar10@hotmail.com";
+		String asunto = "Comienzo de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
+		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
+		emailService.enviar(fuente, destino, asunto, mensaje);
+		//-------------------------------------------------------------------------
+		System.out.println("statisticsPageOfWithRedirection");
+		System.out.println(id);
+		id=new Long(request.getAttribute("id").toString());
+		System.out.println(id);
+		statisticsPageOf(id);
+		//------------------------------------------------------------------------------
+		long stopTimeFull = System.currentTimeMillis();
+		long elapsedTimeFull = stopTimeFull - startTimeFull;
+		calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(stopTimeFull);
+		fuente = "wikianalisis@gmail.com";
+		destino = "jonamar10@hotmail.com";
+		asunto = "Finalizacion de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
+		mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
+				+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
+		emailService.enviar(fuente, destino, asunto, mensaje);
+		
+		
+		return"forward:/diffStatisticsOfPageWithRedirection";
+	}
 }

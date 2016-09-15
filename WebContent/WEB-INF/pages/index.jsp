@@ -42,6 +42,16 @@
 					    </form>
 					</p>
 					<p>
+						<spring:url value="/urltobd" var="urltobd" />
+						<form method="post" id="verify" action='<c:out value = "urlToBDWithRedirection" />  '>
+							<input name="pagename" type="text"/>
+						    <label for="drop"><spring:message code="index.drop" /></label><input name="drop" type="checkbox" value='<spring:message code="index.drop" />' >
+					        <c:out value = "${pagenameError}" />            
+					        <input class="btn btn-primary btn-lg" type="submit" value='<spring:message code="index.urltobd.precalculated" />'
+						role="button"/>     
+					    </form>
+					</p>
+					<p>
 						<a class="btn btn-primary btn-lg" href="wikidrop" 
 						role="button"><spring:message code="index.wikidrop" /></a>
 					</p>
@@ -59,6 +69,16 @@
 					        <input name="pagename" type="text"/>
 					        <c:out value = "${pagenameError}" />            
 					        <input class="btn btn-primary btn-lg" type="submit" value='<spring:message code="index.urltobd" />'
+						role="button"/>     
+					    </form>
+					</p>
+					<p>
+						<spring:url value="/urltobd" var="urltobd" />
+						<form method="post" id="verify" action='<c:out value = "urlToBDWithRedirection" />  '>
+							<input name="drop" type="hidden" value='<spring:message code="index.drop" />' >
+					        <input name="pagename" type="text"/>
+					        <c:out value = "${pagenameError}" />            
+					        <input class="btn btn-primary btn-lg" type="submit" value='<spring:message code="index.urltobd.precalculated" />'
 						role="button"/>     
 					    </form>
 					</p>

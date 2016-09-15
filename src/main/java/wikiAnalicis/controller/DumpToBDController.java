@@ -154,6 +154,22 @@ public class DumpToBDController {
 		dropDB();
 		return model;
 	}
+	@RequestMapping(value = "urlToBDWithRedirection", method = RequestMethod.POST)
+	public String urlToBDWithRedirection(HttpServletRequest request ) {
+		String pagename= request.getParameter("pagename");
+		this.urlToBD(request);
+		
+		Page page = pageService.getPage(pagename);
+		if (page == null) {
+			String title = pagename.replace('_', ' ');
+//			System.out.println(pagename);
+//			System.out.println(title);
+			page = pageService.getPage(title);
+		}
+		request.setAttribute("id", page.getId());
+		return "forward:/statisticsPageOfWithRedirection";
+	}
+	
 	@RequestMapping(value = "urltobd", method = RequestMethod.POST)
 	public ModelAndView urlToBD(HttpServletRequest request ) {
 		String pagename= request.getParameter("pagename");

@@ -1,6 +1,9 @@
 package wikiAnalicis.controller;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -29,6 +32,7 @@ import wikiAnalicis.entity.diffAndStyles.DiffContainer;
 import wikiAnalicis.entity.diffAndStyles.ParagraphDiff;
 import wikiAnalicis.entity.statics.PageStatistics;
 import wikiAnalicis.service.DiffContainerService;
+import wikiAnalicis.service.EmailService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
 import wikiAnalicis.service.StatisticsService;
@@ -50,6 +54,8 @@ public class DiffController {
 	private MessageSource messageSource;
 	@Autowired
 	private LocaleResolver localeResolver;
+	@Autowired
+	private EmailService emailService;
 	private Locale langSeted=null;
 	public DiffController() {
 		// TODO Auto-generated constructor stub
@@ -200,6 +206,46 @@ public class DiffController {
 //		}
 		return model;
 
+	}
+	@RequestMapping("diffStatisticsOfPageWithRedirection")
+	public String diffStatisticsOfPageWithRedirection(Long id,HttpServletRequest request) {
+		String userpc = System.getProperty("user.name");
+		String hostname = "Unknown";
+		try
+		{
+		    InetAddress addr;
+		    addr = InetAddress.getLocalHost();
+		    hostname = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+		    System.out.println("Hostname can not be resolved");
+		}
+		long startTimeFull = System.currentTimeMillis();
+		Calendar calendar = Calendar.getInstance();
+		calendar.setTimeInMillis(startTimeFull);
+		String fuente = "wikianalisis@gmail.com";
+		String destino = "jonamar10@hotmail.com";
+		String asunto = "Comienzo de proceso diffStatisticsOfPageWithRedirection en "+hostname+":"+userpc;
+		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
+		emailService.enviar(fuente, destino, asunto, mensaje);
+		//-------------------------------------------------------------------------
+		System.out.println("diffStatisticsOfPageWithRedirection");
+		id=new Long(request.getAttribute("id").toString());
+		this.diffStatisticsOfPage(id, request);
+		//------------------------------------------------------------------------------
+				long stopTimeFull = System.currentTimeMillis();
+				long elapsedTimeFull = stopTimeFull - startTimeFull;
+				calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(stopTimeFull);
+				fuente = "wikianalisis@gmail.com";
+				destino = "jonamar10@hotmail.com";
+				asunto = "Finalizacion de proceso diffStatisticsOfPageWithRedirection en "+hostname+":"+userpc;
+				mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
+						+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
+				emailService.enviar(fuente, destino, asunto, mensaje);
+		
+		return"forward:/index";
 	}
 
 	private DiffContainer cambiosContenido(Revision oldRevision,Revision newRevision,Locale locale) {
