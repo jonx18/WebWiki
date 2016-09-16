@@ -52,18 +52,18 @@ public class PageStatistics {
 	@Column(name = "totalrevisiones")
 	private long totalRevisiones;
 	@ElementCollection(fetch = FetchType.EAGER,targetClass = Long.class)
-	@JoinTable(name = "distribucionDeAporte")
+	@JoinTable(name = "distribuciondeaporte")
 	@MapKeyColumn(name="nombre")
     @Column(name="cantidad")
 	@Cascade(CascadeType.ALL)
 	private Map<String, Long> distribucionDeAporte;
 	@ElementCollection(fetch = FetchType.EAGER)
-	@JoinTable(name = "revisionesDia")
+	@JoinTable(name = "revisionesdia")
 	@MapKeyTemporal(TemporalType.TIMESTAMP)
 	@Cascade(CascadeType.ALL)
-	private Map<Date,Long> 	revisionesDia;
+	private Map<Date,Long> 	revisionesdia;
 	@ElementCollection(fetch = FetchType.EAGER)
-	@JoinTable(name = "contenidoDia")
+	@JoinTable(name = "contenidodia")
 	@MapKeyTemporal(TemporalType.TIMESTAMP)
 	@Cascade(CascadeType.ALL)
 	private Map<Date,Long> 	contenidoDia;
@@ -113,10 +113,10 @@ public class PageStatistics {
 //		this.distribucionDeAporte = distribucionDeAporte;
 //	}
 	public Map<Date, Long> getRevisionesDia() {
-		return new TreeMap<Date, Long>(revisionesDia);
+		return new TreeMap<Date, Long>(revisionesdia);
 	}
 	public void setRevisionesDia(Map<Date, Long> revisionesDia) {
-		this.revisionesDia = revisionesDia;
+		this.revisionesdia = revisionesDia;
 	}
 	public Map<Date, Long> getContenidoDia() {
 		return new TreeMap<Date, Long>(this.contenidoDia);
