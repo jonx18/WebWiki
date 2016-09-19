@@ -120,7 +120,7 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 	        query.executeUpdate();
 			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `pagestatics_categories`");
 	        query.executeUpdate();
-			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `pagestatistics_dates`");
+			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `pagestatistics_date`");
 	        query.executeUpdate();
 			query = util.getSessionFactory().getCurrentSession().createSQLQuery("TRUNCATE `paragraphcontainer`");
 	        query.executeUpdate();

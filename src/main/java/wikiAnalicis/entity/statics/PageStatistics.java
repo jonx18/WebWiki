@@ -81,6 +81,11 @@ public class PageStatistics {
 	@BatchSize(size = 5)
 	private List<InCategory> categories; 
 	@ElementCollection(fetch = FetchType.EAGER)
+	@JoinTable(
+	        name = "pagestatistics_date",
+	    	        joinColumns = @JoinColumn(
+	    		            name = "pagestatics_id", 
+	    		            referencedColumnName = "id"))
 	@Temporal(TemporalType.TIMESTAMP)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
