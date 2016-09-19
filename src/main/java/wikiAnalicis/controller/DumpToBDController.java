@@ -8,6 +8,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
@@ -156,6 +158,20 @@ public class DumpToBDController {
 	}
 	@RequestMapping(value = "urlToBDWithRedirection", method = RequestMethod.POST)
 	public String urlToBDWithRedirection(HttpServletRequest request ) {
+		String userpc = System.getProperty("user.name");
+		String hostname = "Unknown";
+		try
+		{
+		    InetAddress addr;
+		    addr = InetAddress.getLocalHost();
+		    hostname = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+		    System.out.println("Hostname can not be resolved");
+		}
+		long startTimeFull = System.currentTimeMillis();
+		try{
 		String pagename= request.getParameter("pagename");
 		this.urlToBD(request);
 		
@@ -167,6 +183,22 @@ public class DumpToBDController {
 			page = pageService.getPage(title);
 		}
 		request.setAttribute("id", page.getId());
+		} catch (Exception e) {
+			long stopTimeFull = System.currentTimeMillis();
+			long elapsedTimeFull = stopTimeFull - startTimeFull;
+			Calendar calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(stopTimeFull);
+			String fuente = "wikianalisis@gmail.com";
+			String destino = "jonamar10@hotmail.com";
+			String asunto = "ERROR de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			String mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
+					+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
+			emailService.enviar(fuente, destino, asunto, mensaje);
+			return"forward:/index";
+		}
 		return "forward:/statisticsPageOfWithRedirection";
 	}
 	

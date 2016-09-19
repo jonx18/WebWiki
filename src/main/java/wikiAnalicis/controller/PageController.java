@@ -1,5 +1,7 @@
 package wikiAnalicis.controller;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Arrays;
@@ -226,23 +228,39 @@ public class PageController {
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
-		System.out.println("statisticsPageOfWithRedirection");
-		System.out.println(id);
-		id=new Long(request.getAttribute("id").toString());
-		System.out.println(id);
-		statisticsPageOf(id);
-		//------------------------------------------------------------------------------
-		long stopTimeFull = System.currentTimeMillis();
-		long elapsedTimeFull = stopTimeFull - startTimeFull;
-		calendar = Calendar.getInstance();
-		calendar.setTimeInMillis(stopTimeFull);
-		fuente = "wikianalisis@gmail.com";
-		destino = "jonamar10@hotmail.com";
-		asunto = "Finalizacion de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
-		mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
-				+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
-		emailService.enviar(fuente, destino, asunto, mensaje);
-		
+		try {
+			System.out.println("statisticsPageOfWithRedirection");
+			System.out.println(id);
+			id=new Long(request.getAttribute("id").toString());
+			System.out.println(id);
+			statisticsPageOf(id);
+			//------------------------------------------------------------------------------
+			long stopTimeFull = System.currentTimeMillis();
+			long elapsedTimeFull = stopTimeFull - startTimeFull;
+			calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(stopTimeFull);
+			fuente = "wikianalisis@gmail.com";
+			destino = "jonamar10@hotmail.com";
+			asunto = "Finalizacion de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
+			mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
+					+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
+			emailService.enviar(fuente, destino, asunto, mensaje);
+		} catch (Exception e) {
+			long stopTimeFull = System.currentTimeMillis();
+			long elapsedTimeFull = stopTimeFull - startTimeFull;
+			calendar = Calendar.getInstance();
+			calendar.setTimeInMillis(stopTimeFull);
+			fuente = "wikianalisis@gmail.com";
+			destino = "jonamar10@hotmail.com";
+			asunto = "ERROR de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
+			StringWriter sw = new StringWriter();
+			PrintWriter pw = new PrintWriter(sw);
+			e.printStackTrace(pw);
+			mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
+					+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
+			emailService.enviar(fuente, destino, asunto, mensaje);
+			return"forward:/index";
+		}
 		
 		return"forward:/diffStatisticsOfPageWithRedirection";
 	}
