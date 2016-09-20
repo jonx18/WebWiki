@@ -72,7 +72,10 @@ public class DiffContainerServiceImpl implements DiffContainerService {
 	public List<DiffContainer> getAllDiffContainersOfPage(Page page) {
 		return containerDAO.getAllDiffContainersOfPage(page);
 	}
-
+@Override
+public DiffContainer loadParagraphOfDiffContainer(DiffContainer diffContainer) {
+	return containerDAO.loadParagraphOfDiffContainer(diffContainer);
+}
 
 
 }

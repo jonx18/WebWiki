@@ -48,7 +48,7 @@ public class DiffContainer {
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	Revision newRevision;
-	@OneToMany(targetEntity = ParagraphContainer.class, fetch = FetchType.EAGER)
+	@OneToMany(targetEntity = ParagraphContainer.class, fetch = FetchType.LAZY)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)

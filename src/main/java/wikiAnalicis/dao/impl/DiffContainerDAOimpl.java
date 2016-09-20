@@ -49,7 +49,11 @@ public class DiffContainerDAOimpl implements DiffContainerDAO {
 		DiffContainer p = (DiffContainer) util.getSessionFactory().getCurrentSession().merge(diffContainer);
 		return p;
 	}
-
+	public DiffContainer loadParagraphOfDiffContainer(DiffContainer diffContainer) {
+		DiffContainer p = (DiffContainer) util.getSessionFactory().getCurrentSession().merge(diffContainer);
+		p.getParagraphs().size();
+		return p;
+	}
 	@Override
 	public DiffContainer updateDiffContainer(DiffContainer diffContainer) {
 		return util.update(diffContainer);

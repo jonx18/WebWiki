@@ -82,6 +82,9 @@ public class DiffController {
 			mapStyleChanges = diffContainer.getStyleChanges();
 			diffContainerService.createDiffContainer(diffContainer);
 		}
+		else{
+			diffContainerService.loadParagraphOfDiffContainer(diffContainer);
+		}
 		listListDiff = diffContainer.getParagraphDiffs();
 		mapStyleChanges = diffContainer.getStyleChanges();
 //		String json = gson.toJson(listListDiff, listListDiff.getClass());
@@ -119,6 +122,7 @@ public class DiffController {
 			dates[0]=oldRevision.getTimestamp();
 			if (size>1) {
 				for (int i = 1; i < size; i++) {
+					System.out.println(i+"- Revision: "+oldRevision.getId());
 					Revision newRevision = revisions.get(i);		
 					dates[i]=newRevision.getTimestamp();
 					DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
@@ -292,7 +296,7 @@ public class DiffController {
 		}
 		List<Delimiter> delimiters = Arrays.asList(Delimiter.values());
 ////		String[] openIndicator ={"<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",
-////				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIÓN [[","[http://","[https://","[["};
+////				"<ref","=====","====","===","==","'''''","'''","''","#REDIRECCIï¿½N [[","[http://","[https://","[["};
 ////		String[] closeIndicator ={"</nowiki>","</big>","</small>","</sup>","</sub>","</s>","</blockquote>","</includeonly>",
 ////				"</ref>","=====","====","===","==","'''''","'''","''","]]","]","]","]]"};
 //		String[] openIndicator ={"","<nowiki>","<big>","<small>","<sup>","<sub>","<s>","<blockquote>","<includeonly>",

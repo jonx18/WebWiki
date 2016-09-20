@@ -28,7 +28,7 @@ public interface DiffContainerService {
 
 	public List<DiffContainer> list(Integer offset, Integer maxResults);
 	public List<DiffContainer> getAllDiffContainersOfPage(Page page);
-
+	public DiffContainer loadParagraphOfDiffContainer(DiffContainer diffContainer);
 
 
 }
