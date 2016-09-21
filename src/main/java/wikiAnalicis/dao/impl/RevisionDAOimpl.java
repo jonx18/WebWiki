@@ -67,7 +67,7 @@ public void createAllRevisions(List<Revision> revisions) {
 	}
 	@Override
 	public List<Revision> getAllRevisions(Page page,Integer offset, Integer maxResults) {
-		Query query = util.getSessionFactory().getCurrentSession().createQuery("from Revision as r where r.page = :page");
+		Query query = util.getSessionFactory().getCurrentSession().createQuery("from Revision as r where r.page = :page order by r.timestamp");
 		query.setParameter("page", page);
 	    query.setFirstResult( (offset!=null?offset:0));
 	    query.setMaxResults(maxResults!=null?maxResults:10);

@@ -43,7 +43,7 @@
 									<c:if test="${not listDiff.ischange}">
 										<li class="list-group-item list-group-item-info">
 									</c:if>
-									<c:forEach items="${listDiff.diffs}" var="diff">
+									<c:forEach items="${listDiff.getDiffs()}" var="diff">
 										<c:if test="${diff[0].operation == 'EQUAL'}">
 											<!--  <li class="list-group-item list-group-item-info"><c:out value="${diff[0].text}" /></li>-->
 											<c:out value="${diff[0].text}" />
@@ -65,7 +65,7 @@
 									<c:if test="${not listDiff.ischange}">
 										<li class="list-group-item list-group-item-info">
 									</c:if>
-									<c:forEach items="${listDiff.diffs}" var="diff">
+									<c:forEach items="${listDiff.getDiffs()}" var="diff">
 										<c:if test="${diff[1].operation == 'EQUAL'}">
 											<!-- <li class="list-group-item list-group-item-info"><c:out value="${diff[1].text}" /></li>-->
 											<c:out value="${diff[1].text}" />

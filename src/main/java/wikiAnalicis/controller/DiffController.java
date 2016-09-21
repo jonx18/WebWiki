@@ -83,7 +83,7 @@ public class DiffController {
 			diffContainerService.createDiffContainer(diffContainer);
 		}
 		else{
-			diffContainerService.loadParagraphOfDiffContainer(diffContainer);
+			diffContainer = diffContainerService.loadParagraphOfDiffContainer(diffContainer);
 		}
 		listListDiff = diffContainer.getParagraphDiffs();
 		mapStyleChanges = diffContainer.getStyleChanges();

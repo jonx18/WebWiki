@@ -150,8 +150,17 @@ public class ParagraphDiff {
 
 	public LinkedList<Diff[]> getDiffs() {
 		LinkedList<Diff[]> result = new LinkedList<Diff[]>();
-		for (int i = 0; i < this.oldDiffs.size(); i++) {
-			result.add(new Diff[]{this.oldDiffs.get(i),this.newDiffs.get(i)});
+		int size = this.oldDiffs.size()>= this.newDiffs.size() ? this.oldDiffs.size():this.newDiffs.size();
+		for (int i = 0; i < size; i++) {
+			Diff old =null;
+			Diff nw =null;
+			if (i<this.oldDiffs.size()) {
+				old = this.oldDiffs.get(i);
+			}
+			if (i<this.newDiffs.size()) {
+				nw = this.newDiffs.get(i);
+			}
+			result.add(new Diff[]{old,nw});
 		}
 		return result;
 	}

@@ -1,6 +1,7 @@
 package wikiAnalicis.controller;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
@@ -8,6 +9,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
@@ -245,7 +247,7 @@ public class DumpToBDController {
 		}
 //--------------------------------------------------------------------------------------------------
 		startTime = System.currentTimeMillis();
-		System.out.println("Cargando:");
+		System.out.println("Cargando: " + pagename);
 		XStream xStream = configXStream(true);
 		InputStream historyPath=null;
 		historyPath = downloadMainPage(pagename, xStream, historyPath);
@@ -399,7 +401,6 @@ public class DumpToBDController {
 		String USER_AGENT = "Mozilla/5.0";
 		HttpClient client = HttpClientBuilder.create().build();
 		HttpPost post = new HttpPost(url);
-
 		// add header
 		post.setHeader("User-Agent", USER_AGENT);
 
@@ -416,11 +417,12 @@ public class DumpToBDController {
 		//urlParameters.add(new BasicNameValuePair("wpDownload", "wpDownload"));
 		urlParameters.add(new BasicNameValuePair("action", "submit"));
 
-		post.setEntity(new UrlEncodedFormEntity(urlParameters));
+		post.setEntity(new UrlEncodedFormEntity(urlParameters,"UTF-8"));
 
 		HttpResponse response = client.execute(post);
 		System.out.println("\nSending 'POST' request to URL : " + url);
-		System.out.println("Post parameters : " + post.getEntity());
+		System.out.println("Post parameters : " );
+		post.getEntity().writeTo(System.out);
 		System.out.println("Response Code : " +
                                     response.getStatusLine().getStatusCode());
 
@@ -433,7 +435,7 @@ public class DumpToBDController {
 			result.append(line+"\n");
 		}
 
-		//System.out.println(result.toString());
+//		System.out.println(result.toString());
 		InputStream stream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
 
 		return stream;
