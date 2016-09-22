@@ -15,4 +15,5 @@ public interface UserContributorDAO {
 	public List<UserContributor> getAllUserContributors();
 	public UserContributor getUserContributor(long id); 
 	public UserContributor getUserContributor(String username); 
+	public Long getMinId(); 
 }

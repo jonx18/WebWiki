@@ -14,6 +14,7 @@ public interface UserContributorService {
 	public void deleteUserContributor(long id);
 	public List<UserContributor> getAllUserContributors();
 	public UserContributor getUserContributor(long id); 
-	public UserContributor getUserContributor(String username); 
+	public UserContributor getUserContributor(String username);
+	public Long getMinId(); 
 	
 }

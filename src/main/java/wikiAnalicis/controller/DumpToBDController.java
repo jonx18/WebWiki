@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.regex.Matcher;
@@ -102,6 +103,7 @@ public class DumpToBDController {
 	@Autowired
 	private Environment env;
 	private Mediawiki mediawiki;
+	
 
 	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
 	public ModelAndView dumpToBD(HttpServletRequest request) {
@@ -173,40 +175,65 @@ public class DumpToBDController {
 		    System.out.println("Hostname can not be resolved");
 		}
 		long startTimeFull = System.currentTimeMillis();
-		try{
-		String pagename= request.getParameter("pagename");
-		this.urlToBD(request);
-		
-		Page page = pageService.getPage(pagename);
-		if (page == null) {
-			String title = pagename.replace('_', ' ');
-//			System.out.println(pagename);
-//			System.out.println(title);
-			page = pageService.getPage(title);
+		Scanner scanner = new Scanner(request.getParameter("pagename"));
+		while (scanner.hasNextLine()) {
+			String pagename= scanner.nextLine().replace("\n", "").replace("\r", "");
+			if (pagename.trim().isEmpty()) {
+				System.out.println("empty");
+				continue;
+			}
+			
+			try{
+				request.setAttribute("pagename", pagename);
+				this.urlToBD(request);
+				request.setAttribute("drop", false);
+				Page page = pageService.getPage(pagename);
+				if (page == null) {
+					String title = pagename.replace('_', ' ');
+//					System.out.println(pagename);
+//					System.out.println(title);
+					page = pageService.getPage(title);
+				}
+				
+				System.out.println("atributo--------------"+request.getAttribute("id"));
+				if (request.getAttribute("id")==null) {
+					request.setAttribute("id", page.getId());
+				}else{
+					request.setAttribute("id",request.getAttribute("id")+"\n"+ page.getId());
+				}
+
+				System.out.println("atributo--------------"+request.getAttribute("id"));
+				} catch (Exception e) {
+					long stopTimeFull = System.currentTimeMillis();
+					long elapsedTimeFull = stopTimeFull - startTimeFull;
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTimeInMillis(stopTimeFull);
+					String fuente = "wikianalisis@gmail.com";
+					String destino = "jonamar10@hotmail.com";
+					String asunto = "ERROR de proceso urlToBDWithRedirection pagina: "+pagename+ " en "+hostname+":"+userpc;
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					String mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
+							+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
+					emailService.enviar(fuente, destino, asunto, mensaje);
+					
+				}
+			
 		}
-		request.setAttribute("id", page.getId());
-		} catch (Exception e) {
-			long stopTimeFull = System.currentTimeMillis();
-			long elapsedTimeFull = stopTimeFull - startTimeFull;
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(stopTimeFull);
-			String fuente = "wikianalisis@gmail.com";
-			String destino = "jonamar10@hotmail.com";
-			String asunto = "ERROR de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			String mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
-					+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
-			emailService.enviar(fuente, destino, asunto, mensaje);
-			return"forward:/index";
-		}
+
 		return "forward:/statisticsPageOfWithRedirection";
 	}
 	
 	@RequestMapping(value = "urltobd", method = RequestMethod.POST)
 	public ModelAndView urlToBD(HttpServletRequest request ) {
-		String pagename= request.getParameter("pagename");
+		String pagename;
+		if (request.getAttribute("pagename")==null) {
+			pagename= request.getParameter("pagename");
+		}else{
+			pagename= (String) request.getAttribute("pagename");
+		}
+
 		System.out.println(request.getParameter("drop"));
 		System.out.println(pagename);
 		//--------------- send an email
@@ -227,7 +254,7 @@ public class DumpToBDController {
 		calendar.setTimeInMillis(startTimeFull);
 		String fuente = "wikianalisis@gmail.com";
 		String destino = "jonamar10@hotmail.com";
-		String asunto = "Comienzo de proceso urltodb en "+hostname+":"+userpc;
+		String asunto = "Comienzo de proceso urltodb pagina: "+pagename+ " en "+hostname+":"+userpc;
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
 		
@@ -237,7 +264,11 @@ public class DumpToBDController {
 		long startTime ;
 		long stopTime;
 		long elapsedTime;
-		if (request.getParameter("drop")!=null) {
+		Boolean drop=true;
+		if (request.getAttribute("pagename")!=null) {
+			drop=false;
+		}
+		if (request.getParameter("drop")!=null&& drop) {
 		startTime = System.currentTimeMillis();
 		dropDB();
 		stopTime = System.currentTimeMillis();
@@ -290,7 +321,7 @@ public class DumpToBDController {
 		calendar.setTimeInMillis(stopTimeFull);
 		fuente = "wikianalisis@gmail.com";
 		destino = "jonamar10@hotmail.com";
-		asunto = "Finalizacion de proceso urltodb en "+hostname+":"+userpc;
+		asunto = "Finalizacion de proceso urltodb pagina: "+pagename+ " en "+hostname+":"+userpc;
 		mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
 				+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
@@ -388,6 +419,7 @@ public class DumpToBDController {
 //				System.out.println(title);
 				page = pageService.getPage(title);
 			}
+			System.out.println(pagename);
 			page = pageService.mergePage(page);
 			System.out.println("old = "+oldTimestamp+" actual = "+timestamp);
 			oldTimestamp=timestamp;

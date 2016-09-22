@@ -31,8 +31,9 @@ public class UserContributor {
     @Column(name="id")
     //es un id para desambiguar en caso de repeticion del id real.
 	private Long id;
-    @Column(nullable = false,name="realid")
+
     //representa el id del usuario en la wiki o un identificador negativo de ser anonimo
+    @Column(nullable = false,name="realid")
     private Long realId=anonimusID;
     @Column(nullable = false,unique=true,name="username")
 	private String username;

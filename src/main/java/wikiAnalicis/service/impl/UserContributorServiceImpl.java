@@ -58,5 +58,9 @@ public class UserContributorServiceImpl implements UserContributorService {
 
 		return contributorDAO.getUserContributor(username);
 	}
+	@Override
+	public Long getMinId() {
+		return contributorDAO.getMinId();
+	}
 
 }

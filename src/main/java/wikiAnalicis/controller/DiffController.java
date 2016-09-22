@@ -14,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Scanner;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -237,37 +238,46 @@ public class DiffController {
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
-		try {
-			System.out.println("diffStatisticsOfPageWithRedirection");
-			id=new Long(request.getAttribute("id").toString());
-			this.diffStatisticsOfPage(id, request);
-			//------------------------------------------------------------------------------
-					long stopTimeFull = System.currentTimeMillis();
-					long elapsedTimeFull = stopTimeFull - startTimeFull;
-					calendar = Calendar.getInstance();
-					calendar.setTimeInMillis(stopTimeFull);
-					fuente = "wikianalisis@gmail.com";
-					destino = "jonamar10@hotmail.com";
-					asunto = "Finalizacion de proceso diffStatisticsOfPageWithRedirection en "+hostname+":"+userpc;
-					mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
-							+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
-					emailService.enviar(fuente, destino, asunto, mensaje);
-		} catch (Exception e) {
-			long stopTimeFull = System.currentTimeMillis();
-			long elapsedTimeFull = stopTimeFull - startTimeFull;
-			calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(stopTimeFull);
-			fuente = "wikianalisis@gmail.com";
-			destino = "jonamar10@hotmail.com";
-			asunto = "ERROR de proceso diffStatisticsOfPageWithRedirection en "+hostname+":"+userpc;
-			StringWriter sw = new StringWriter();
-			PrintWriter pw = new PrintWriter(sw);
-			e.printStackTrace(pw);
-			 
-			mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
-					+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
-			emailService.enviar(fuente, destino, asunto, mensaje);
+		Scanner scanner = new Scanner((String)request.getAttribute("id"));
+		while (scanner.hasNextLine()) {
+			String num= scanner.nextLine().replace("\n", "").replace("\r", "");
+			if (num.trim().isEmpty()) {
+				System.out.println("empty");
+				continue;
+			}
+			try {
+				System.out.println("diffStatisticsOfPageWithRedirection");
+				id=new Long(num);
+				this.diffStatisticsOfPage(id, request);
+				//------------------------------------------------------------------------------
+						long stopTimeFull = System.currentTimeMillis();
+						long elapsedTimeFull = stopTimeFull - startTimeFull;
+						calendar = Calendar.getInstance();
+						calendar.setTimeInMillis(stopTimeFull);
+						fuente = "wikianalisis@gmail.com";
+						destino = "jonamar10@hotmail.com";
+						asunto = "Finalizacion de proceso diffStatisticsOfPageWithRedirection "+num +" en "+hostname+":"+userpc;
+						mensaje = "El proceso "+num+" termino a las: "+calendar.getTime()+"\n "
+								+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
+						emailService.enviar(fuente, destino, asunto, mensaje);
+			} catch (Exception e) {
+				long stopTimeFull = System.currentTimeMillis();
+				long elapsedTimeFull = stopTimeFull - startTimeFull;
+				calendar = Calendar.getInstance();
+				calendar.setTimeInMillis(stopTimeFull);
+				fuente = "wikianalisis@gmail.com";
+				destino = "jonamar10@hotmail.com";
+				asunto = "ERROR de proceso diffStatisticsOfPageWithRedirection "+num+" en "+hostname+":"+userpc;
+				StringWriter sw = new StringWriter();
+				PrintWriter pw = new PrintWriter(sw);
+				e.printStackTrace(pw);
+				 
+				mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
+						+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
+				emailService.enviar(fuente, destino, asunto, mensaje);
+			}
 		}
+		
 
 		
 		return"forward:/index";

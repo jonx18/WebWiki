@@ -65,5 +65,16 @@ public class UsercontributorDAOimpl implements UserContributorDAO {
 		}
 		 
 	}
+	@Override
+	public Long getMinId() {
+		// 
+		Query query = util.getSessionFactory().getCurrentSession().createQuery("select min(u.realId) from UserContributor u");
+		List<Long> list= query.list();
+		if (list.isEmpty()) {
+			return null;
+		} else {
+			return list.get(0);
+		}
+	}
 
 }
