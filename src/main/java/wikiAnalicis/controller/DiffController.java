@@ -69,7 +69,7 @@ public class DiffController {
 		Locale locale = localeResolver.resolveLocale(request);
 		Revision revText1 = revisionService.getRevision(parentId);
 		Revision revText2 = revisionService.getRevision(id);
-;
+
 		Gson gson = new Gson();
 
 		//String json = gson.toJson(result, result.getClass());
