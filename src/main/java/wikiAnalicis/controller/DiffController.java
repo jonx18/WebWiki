@@ -123,7 +123,10 @@ public class DiffController {
 			dates[0]=oldRevision.getTimestamp();
 			if (size>1) {
 				for (int i = 1; i < size; i++) {
-					System.out.println(i+"- Revision: "+oldRevision.getId());
+					if (i%100==0) {
+						System.out.println(i+"- Revision: "+oldRevision.getId());
+					}
+					
 					Revision newRevision = revisions.get(i);		
 					dates[i]=newRevision.getTimestamp();
 					DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
@@ -238,7 +241,7 @@ public class DiffController {
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
-		Scanner scanner = new Scanner((String)request.getAttribute("id"));
+		Scanner scanner = new Scanner(request.getAttribute("id").toString());
 		while (scanner.hasNextLine()) {
 			String num= scanner.nextLine().replace("\n", "").replace("\r", "");
 			if (num.trim().isEmpty()) {

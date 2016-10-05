@@ -229,7 +229,7 @@ public class PageController {
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
 		emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
-		Scanner scanner = new Scanner((String)request.getAttribute("id"));
+		Scanner scanner = new Scanner(request.getAttribute("id").toString());
 		while (scanner.hasNextLine()) {
 			String num= scanner.nextLine().replace("\n", "").replace("\r", "");
 			if (num.trim().isEmpty()) {
