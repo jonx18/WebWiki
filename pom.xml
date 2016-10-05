@@ -85,7 +85,12 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>${mysql.version}</version>
 		</dependency>
-
+		<!--H2 Connector -->
+		<dependency>
+		    <groupId>com.h2database</groupId>
+		    <artifactId>h2</artifactId>
+		    <version>1.4.192</version>
+		</dependency>
 		<!-- Servlet and JSP -->
 		<dependency>
 			<groupId>javax.servlet</groupId>

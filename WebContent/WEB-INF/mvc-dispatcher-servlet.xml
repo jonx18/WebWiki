@@ -55,6 +55,12 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		<property name="maxIdleTime" value="${connection.maxIdleTime}" />
 
 	</bean>
+	<bean id="h2Server" class="org.h2.tools.Server" factory-method="createTcpServer" init-method="start" destroy-method="stop" depends-on="h2WebServer">
+    <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9097"/>
+</bean>
+<bean id="h2WebServer" class="org.h2.tools.Server" factory-method="createWebServer" init-method="start" destroy-method="stop">
+    <constructor-arg value="-web,-webAllowOthers,-webPort,8087"/>
+</bean>
 	<!-- <!- Configuracion JPA -> <bean id="entityManagerFactoryBean" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean"> 
 		<property name="dataSource" ref="dataSource" /> <!- Esto hace que no se necesiten 
 		poner las clases en el /META-INF/persistence.xml -> <property name="packagesToScan" 

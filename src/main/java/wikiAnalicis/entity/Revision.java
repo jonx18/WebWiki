@@ -74,7 +74,7 @@ public class Revision implements Identificable{
 	private String format;
     @Column(name="deleted")
 	private Boolean deleted=false;
-	@Column(columnDefinition="LONGBLOB",name="text")
+	@Column(columnDefinition="LONGVARCHAR",name="text")
 	private String text;
     @Column(name="sha1")
 	private String sha1;
