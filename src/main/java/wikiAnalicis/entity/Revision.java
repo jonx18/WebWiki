@@ -5,7 +5,12 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -26,6 +31,10 @@ import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.GenericGenerator;
 
 import com.google.gson.Gson;
+
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+import wikiAnalicis.entity.diffAndStyles.StyleContainer;
+import wikiAnalicis.entity.diffAndStyles.TextContainer;
 
 /**
  * Esta clase representa una revision hecha por un autor en una pagina
@@ -226,5 +235,39 @@ public class Revision implements Identificable{
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
-	
+	public Map<Delimiter,Integer> textToComponents(List<Delimiter> delimiters) {
+		int[] indexValues = new int[text.length()];
+		HashMap<Delimiter, Integer> map = new HashMap<Delimiter, Integer>();
+		for (int i = 0; i < delimiters.size(); i++) {
+			indexValues = delimiters.get(i).putIdArray(i, indexValues, text);
+			map.put(delimiters.get(i), 0);
+		}
+//		StringBuilder stringBuilder = new StringBuilder();
+//		for (int i : indexValues) {
+//			stringBuilder.append("|" + i);
+//		}
+		// Aca comienzo el codigo de conseguir componetes
+		int indiceDeAvance = 0;
+		while (indiceDeAvance < indexValues.length) {
+			if (indexValues[indiceDeAvance] == 0) {
+				int indiceAnterior = indiceDeAvance;
+				while (indiceDeAvance < indexValues.length && indexValues[indiceDeAvance] == 0) {
+					indiceDeAvance++;
+				}
+				//containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
+			} else {
+				int id = indexValues[indiceDeAvance];
+				// System.out.println(id);
+				if (id < 0) {
+					id = id * -1;
+				}
+				Object[] par = delimiters.get(id).getCountsFrom(text, indexValues, indiceDeAvance,
+						new LinkedList<Delimiter>(delimiters),map);
+				map = (HashMap<Delimiter, Integer>)par[0];
+				//map.put(delimiters.get(id), map.get(delimiters.get(id))+1);
+				indiceDeAvance = (Integer) par[1];
+			}
+		}
+	return map;
+	}
 }

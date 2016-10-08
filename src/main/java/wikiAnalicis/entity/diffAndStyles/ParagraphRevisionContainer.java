@@ -64,10 +64,10 @@ public class ParagraphRevisionContainer {
 		for (int i = 0; i < delimiters.size(); i++) {
 			indexValues = delimiters.get(i).putIdArray(i, indexValues, text);
 		}
-		StringBuilder stringBuilder = new StringBuilder();
-		for (int i : indexValues) {
-			stringBuilder.append("|" + i);
-		}
+//		StringBuilder stringBuilder = new StringBuilder();
+//		for (int i : indexValues) {
+//			stringBuilder.append("|" + i);
+//		}
 		// Aca comienzo el codigo de conseguir componetes
 		int indiceDeAvance = 0;
 		while (indiceDeAvance < indexValues.length) {

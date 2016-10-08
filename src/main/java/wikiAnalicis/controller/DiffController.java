@@ -109,7 +109,7 @@ public class DiffController {
 		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
 		Map<Delimiter, Integer[]> mapStyleChanges=null;
 		Date[] dates=null;
-		if (pageStatistics==null||pageStatistics.getDates().isEmpty()) {
+		if (pageStatistics==null||pageStatistics.getDates().isEmpty()||true) {
 			List<Revision> revisions = page.getRevisions();
 			int size = revisions.size();
 			List<Delimiter> delimiters = this.getDelimiters(locale);
@@ -120,6 +120,7 @@ public class DiffController {
 				mapStyleChanges.put(delimiter, array);
 			}
 			Revision oldRevision = revisions.get(0);
+			Map<Delimiter, Integer> oldMap= oldRevision.textToComponents(delimiters);
 			dates[0]=oldRevision.getTimestamp();
 			if (size>1) {
 				for (int i = 1; i < size; i++) {
@@ -128,17 +129,24 @@ public class DiffController {
 					}
 					Revision newRevision = revisions.get(i);		
 					dates[i]=newRevision.getTimestamp();
+					Map<Delimiter, Integer> newMap= newRevision.textToComponents(delimiters);
 					DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
-					Map<Delimiter, Integer[]> mapRevChanges;
+					Map<Delimiter, Integer[]> mapRevChanges=null;
 					if (diffContainer==null) {
-						diffContainer = cambiosContenido(oldRevision,newRevision,locale);
-						mapRevChanges = diffContainer.getStyleChanges();
+						//diffContainer = cambiosContenido(oldRevision,newRevision,locale);
+						//mapRevChanges = diffContainer.getStyleChanges();
+						diffContainer = new DiffContainer(oldRevision, newRevision);
+						mapRevChanges = diffContainer.lazyGetStyleChanges(oldMap, newMap);
 						diffContainerService.createDiffContainer(diffContainer);
 					}
-					mapRevChanges = diffContainer.getStyleChanges();
+					if (mapRevChanges==null) {
+						mapRevChanges = diffContainer.lazyGetStyleChanges(oldMap, newMap);
+					}
 					for (Delimiter delimiter : mapRevChanges.keySet()) {
 						Integer[] array = mapStyleChanges.get(delimiter);
-						array[i-1]=mapRevChanges.get(delimiter)[0];
+						//if (i==1) {
+							array[i-1]=mapRevChanges.get(delimiter)[0];
+						//}
 						array[i]=mapRevChanges.get(delimiter)[1];
 						mapStyleChanges.put(delimiter, array);
 					}
@@ -146,16 +154,25 @@ public class DiffController {
 					
 					
 					oldRevision = newRevision;
+					oldMap=newMap;
 				}
 			}else{
 				DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
-				Map<Delimiter, Integer[]> mapRevChanges;
+				Map<Delimiter, Integer[]> mapRevChanges=null;
 				if (diffContainer==null) {
-					diffContainer = cambiosContenido(oldRevision,null,locale);
-					mapRevChanges = diffContainer.getStyleChanges();
+					//diffContainer = cambiosContenido(oldRevision,null,locale);
+					//mapRevChanges = diffContainer.getStyleChanges();
+					diffContainer = new DiffContainer(oldRevision, null);
+					Map<Delimiter, Integer> newMap= new HashMap<Delimiter, Integer>();
+					for (Delimiter delimiter : delimiters) {
+						newMap.put(delimiter, 0);
+					}
+					mapRevChanges = diffContainer.lazyGetStyleChanges(oldMap, newMap);
 					diffContainerService.createDiffContainer(diffContainer);
 				}
-				mapRevChanges = diffContainer.getStyleChanges();
+				if (mapRevChanges==null) {
+					mapRevChanges = diffContainer.getStyleChanges();
+				}
 				for (Delimiter delimiter : mapRevChanges.keySet()) {
 					mapStyleChanges.get(delimiter)[0]=mapRevChanges.get(delimiter)[0];
 				}

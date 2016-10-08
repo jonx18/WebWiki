@@ -1,5 +1,6 @@
 package wikiAnalicis.entity.diffAndStyles;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.TreeMap;
 
@@ -154,5 +155,46 @@ public enum Delimiter {
 		String minuscula = id.toLowerCase();
 		return minuscula;
 		}
+
+	public Object[] getCountsFrom(String text, int[] indexValues, int indiceDeAvance, LinkedList<Delimiter> delimiters,
+			HashMap<Delimiter, Integer> map) {
+		int myId = indexValues[indiceDeAvance];
+
+		indiceDeAvance+= this.getOpenIndicator().length();
+		int fin=indexValues.length;
+		if (!this.getIsFullParagraph()) {
+			if (!this.getOpenIndicator().equalsIgnoreCase(this.getCloseIndicator())) {
+				myId=myId*-1;
+			}
+			for (int i = indiceDeAvance; i < indexValues.length; i++) {
+				if (indexValues[i]==myId) {
+					fin=i;
+					break;
+				}
+			}
+		}
+		while(indiceDeAvance<fin){
+			if (indexValues[indiceDeAvance]==0) {
+				int indiceAnterior= indiceDeAvance;
+				while (indiceDeAvance<fin && indexValues[indiceDeAvance]==0){
+					indiceDeAvance++;
+				}
+				//containers.add(new TextContainer(text.substring(indiceAnterior, indiceDeAvance)));
+			} else {
+				int id = indexValues[indiceDeAvance];
+				if (id<0) {
+					id=id*-1;
+				}
+				Object[] par = delimiters.get(id).getCountsFrom(text,indexValues,indiceDeAvance,delimiters,map);
+				map = (HashMap<Delimiter, Integer>)par[0];
+			//	map.put(delimiters.get(id), map.get(delimiters.get(id))+1);
+				indiceDeAvance=(Integer)par[1];
+			}
+		}
+		indiceDeAvance+= this.getCloseIndicator().length();
+		map.put(this, map.get(this)+1);
+		Object[] result = {map,indiceDeAvance};
+		return result;
+	}
 	
 }

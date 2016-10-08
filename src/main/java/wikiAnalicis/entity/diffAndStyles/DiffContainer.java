@@ -61,7 +61,10 @@ public class DiffContainer {
 	public DiffContainer() {
 		// TODO Auto-generated constructor stub
 	}
-
+	public DiffContainer(Revision oldRevision, Revision newRevision) {
+		this.oldRevision = oldRevision;
+		this.newRevision = newRevision;
+	}
 	public DiffContainer(Revision oldRevision, Revision newRevision, List<Delimiter> delimiters) {
 		this.oldRevision = oldRevision;
 		this.newRevision = newRevision;
@@ -96,6 +99,23 @@ public class DiffContainer {
 
 	}
 
+	public Map<Delimiter, Integer[]> lazyGetStyleChanges(Map<Delimiter,Integer> oldR, Map<Delimiter,Integer> newR) {
+		this.map = new EnumMap<Delimiter, Integer[]>(Delimiter.class);
+		for (Delimiter delimiter : oldR.keySet()) {
+			int oldStylesSize = oldR.get(delimiter);
+			int newStylesSize = newR.get(delimiter);
+			int abs = Math.abs(newStylesSize - oldStylesSize);
+//			if (this.map.containsKey(delimiter)) {
+//				Integer[] array = this.map.get(delimiter);
+//				oldStylesSize += array[0];
+//				newStylesSize += array[1];
+//				abs = Math.abs(newStylesSize - oldStylesSize);
+//			}
+			this.map.put(delimiter, new Integer[] { oldStylesSize, newStylesSize, abs });
+		}
+		return this.map;
+	}
+	
 	/**
 	 * Calcula los estilos dentro de dos reviciones. Retorna un mapa por
 	 * delimitador que contiene un array de enteros con [valor antiguo,valor
