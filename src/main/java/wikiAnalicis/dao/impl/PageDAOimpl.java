@@ -213,7 +213,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 	@Override
 	public Map<Date, Long> revisionInDaysOf(Page page) {
-		String q = "select  r.timestamp,count(r) from Page p join p.revisions r where p = :page group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
+		String q = "select  cast(r.timestamp as date),count(r) from Page p join p.revisions r where p = :page group by cast(r.timestamp as date)";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
 		query.setParameter("page", page);
 		List<Object[]> list = query.list();
