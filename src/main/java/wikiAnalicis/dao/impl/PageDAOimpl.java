@@ -45,6 +45,7 @@ public class PageDAOimpl implements PageDAO {
 	public Page mergePage(Page page) {
 		Page p = (Page) util.getSessionFactory().getCurrentSession().merge(page);
 		p.getRevisions().size();
+		util.getSessionFactory().getCurrentSession().flush();
 		return p;
 	}
 
