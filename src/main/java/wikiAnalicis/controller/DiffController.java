@@ -28,6 +28,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.Gson;
 
+import wikiAnalicis.entity.InCategory;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.diffAndStyles.Delimiter;
@@ -109,7 +110,7 @@ public class DiffController {
 		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
 		Map<Delimiter, Integer[]> mapStyleChanges=null;
 		Date[] dates=null;
-		if (pageStatistics==null||pageStatistics.getDates().isEmpty()||true) {
+		if (pageStatistics==null||pageStatistics.getDates().isEmpty()) {
 			List<Revision> revisions = page.getRevisions();
 			int size = revisions.size();
 			List<Delimiter> delimiters = this.getDelimiters(locale);
@@ -225,6 +226,7 @@ public class DiffController {
 		LOGGER.info("Mostrando Diff. Data : " + json);
 		json = gson.toJson(dates, dates.getClass());
 		LOGGER.info("Mostrando Diff. Data : " + json);
+
 		ModelAndView model = new ModelAndView("diffStatisticsOfPage");
 		model.addObject("mapStyleChanges", mapStyleChanges);
 		model.addObject("dates", dates);

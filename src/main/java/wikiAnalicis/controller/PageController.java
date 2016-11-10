@@ -95,11 +95,12 @@ public class PageController {
 		pageStatistics.setRevisionesDia(revisionesDia);
 		pageStatistics.setContenidoDia(contenidoDia);
 		pageStatistics.setCategories(categories);
-		//statisticsService.mergePageStatistics(pageStatistics);
+		statisticsService.mergePageStatistics(pageStatistics);
 		}else{
 			totalRevisiones = pageStatistics.getTotalRevisiones();
 			distribucionDeAporte = pageStatistics.getDistribucionDeAporte();
 			revisionesDia = pageStatistics.getRevisionesDia();
+			System.out.println("Revisiones"+revisionesDia.size());
 			contenidoDia = pageStatistics.getContenidoDia();
 			categories = pageStatistics.getCategories();
 			System.out.println("cargado de base");

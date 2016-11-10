@@ -241,7 +241,8 @@ public class PageDAOimpl implements PageDAO {
 		List<Object[]> list = query.list();
 		Map<Date,Long> result = new TreeMap<Date, Long>();
         for(Object[] arr : list){
-    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+//    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.getDefault());
     		Date date = null;
     		try {
     			date = format.parse(arr[0].toString());
@@ -250,7 +251,7 @@ public class PageDAOimpl implements PageDAO {
     			e.printStackTrace();
     		}
         	result.put(date, new Long(arr[1].toString()));
-//            System.out.println(Arrays.toString(arr));
+//            System.out.println(Arrays.toString(arr));  
         }
 		return result;
 	}

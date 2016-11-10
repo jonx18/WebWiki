@@ -16,8 +16,14 @@ import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -54,6 +60,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.StaxDriver;
 
@@ -69,6 +77,8 @@ import wikiAnalicis.entity.Namespace;
 import wikiAnalicis.entity.Page;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
+import wikiAnalicis.entity.diffAndStyles.Delimiter;
+import wikiAnalicis.entity.statics.PageStatistics;
 import wikiAnalicis.service.CargaDumpService;
 import wikiAnalicis.service.CategoryService;
 import wikiAnalicis.service.EmailService;
@@ -76,6 +86,7 @@ import wikiAnalicis.service.InCategoryService;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 import wikiAnalicis.service.RevisionService;
+import wikiAnalicis.service.StatisticsService;
 import wikiAnalicis.service.UserContributorService;
 
 @Controller
@@ -102,8 +113,146 @@ public class DumpToBDController {
 	private EmailService emailService;
 	@Autowired
 	private Environment env;
+	@Autowired
+	private StatisticsService statisticsService;
 	private Mediawiki mediawiki;
 	
+	@RequestMapping(value = "export", method = RequestMethod.GET)
+	public String export(Long id,HttpServletRequest request) {
+		Page page = pageService.getPage(id);
+		page = pageService.mergePage(page);
+		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+		Map<Delimiter, Integer[]> mapStyleChanges=pageStatistics.getMapStyleChanges();
+		Date[] dates=pageStatistics.getDatesArray();
+		Long totalRevisiones = pageStatistics.getTotalRevisiones();
+		Map<String, Long> distribucionDeAporte = pageStatistics.getDistribucionDeAporte();
+		Map<Date, Long> revisionesDia = pageStatistics.getRevisionesDia();
+		Map<Date, Long> contenidoDia = pageStatistics.getContenidoDia();
+		List<InCategory> categories = pageStatistics.getCategories();
+		Gson gson = new Gson();
+		String sdates = gson.toJson(dates, dates.getClass());
+		String smapStyleChanges = gson.toJson(mapStyleChanges, mapStyleChanges.getClass());
+		String stotalRevisiones = gson.toJson(totalRevisiones, totalRevisiones.getClass());
+		String sdistribucionDeAporte = gson.toJson(distribucionDeAporte, distribucionDeAporte.getClass());
+		String srevisionesDia = gson.toJson(revisionesDia, revisionesDia.getClass());
+		String scontenidoDia = gson.toJson(contenidoDia, contenidoDia.getClass());
+		String scategories = gson.toJson(categories, categories.getClass());
+		try{
+		    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+id+".txt", "UTF-8");
+		    writer.println(sdates);
+		    writer.println(smapStyleChanges);
+		    writer.println(stotalRevisiones);
+		    writer.println(sdistribucionDeAporte);
+		    writer.println(srevisionesDia);
+		    writer.println(scontenidoDia);
+		    writer.println(scategories);
+		    writer.close();
+		} catch (Exception e) {
+		   // do something
+		}
+
+
+		return "forward:/index";
+	}
+	@RequestMapping(value = "importPage", method = RequestMethod.GET)
+	public String importPage(Long id,HttpServletRequest request) {
+		BufferedReader in = null;
+		try {
+			in = new BufferedReader(
+					   new InputStreamReader(
+			                      new FileInputStream("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+id+".txt"), "UTF-8"));
+		} catch (UnsupportedEncodingException | FileNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		Page page = pageService.getPage(id);
+		page = pageService.mergePage(page);
+		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+		if (pageStatistics==null) {
+			pageStatistics= new PageStatistics();
+			pageStatistics.setPage(page);
+			statisticsService.createPageStatistics(pageStatistics);
+		}
+		Gson gson = new Gson();
+		Date[] dates = new Date[1];
+		Map<Delimiter, Integer[]> mapStyleChanges=new HashMap<Delimiter, Integer[]>();
+		Long totalRevisiones = new Long(0);
+		Map<String, Long> distribucionDeAporte = new HashMap<String, Long>();
+		Map<Date, Long> revisionesDia = new HashMap<Date, Long>();
+		Map<Date, Long> contenidoDia = new HashMap<Date, Long>();
+		List<InCategory> categories = new LinkedList<InCategory>();
+		try {
+			dates = gson.fromJson(in.readLine(), dates.getClass());
+			
+			Map<String, ArrayList<Double>> mapStyleChanges2= gson.fromJson(in.readLine(), mapStyleChanges.getClass());
+			for (String key : mapStyleChanges2.keySet()) {
+				Integer[] integers= new Integer[mapStyleChanges2.get(key).size()];
+				for (int i = 0; i < integers.length; i++) {
+		    		Integer numero =mapStyleChanges2.get(key).get(i).intValue();
+					integers[i] = numero ;
+					
+				}
+	    		mapStyleChanges.put(Delimiter.valueOf(key.toUpperCase()), integers);
+			}
+			totalRevisiones = gson.fromJson(in.readLine(), totalRevisiones.getClass());
+			Map<String, Double> temporalParaFechas = gson.fromJson(in.readLine(), distribucionDeAporte.getClass());
+			for (String key : temporalParaFechas.keySet()) {
+	    		Long numero =new Long (temporalParaFechas.get(key).intValue());
+	    		distribucionDeAporte.put(key, numero);
+			}
+			temporalParaFechas = gson.fromJson(in.readLine(), revisionesDia.getClass());
+			for (String key : temporalParaFechas.keySet()) {
+	    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.getDefault());
+	    		Date date = null;
+	    		try {
+	    			date = format.parse(key.toString());
+	    		} catch (ParseException e) {
+	    			// TODO Auto-generated catch block
+	    			e.printStackTrace();
+	    		}
+	    		
+	    		Long numero =new Long (temporalParaFechas.get(key).intValue());
+				revisionesDia.put(date, numero);
+			}
+			 
+			temporalParaFechas = gson.fromJson(in.readLine(), contenidoDia.getClass());
+			for (String key : temporalParaFechas.keySet()) {
+	    		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.getDefault());
+	    		Date date = null;
+	    		try {
+	    			date = format.parse(key.toString());
+	    		} catch (ParseException e) {
+	    			// TODO Auto-generated catch block
+	    			e.printStackTrace();
+	    		}
+	    		Long numero =new Long (temporalParaFechas.get(key).intValue());
+	    		contenidoDia.put(date, numero);
+			}
+			categories = gson.fromJson(in.readLine(), categories.getClass());
+
+		} catch (JsonSyntaxException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		pageStatistics.setDates(Arrays.asList(dates));
+		
+		pageStatistics.setMapStyleChanges(mapStyleChanges);
+		pageStatistics.setTotalRevisiones(totalRevisiones);
+		pageStatistics.setDistribucionDeAporte(distribucionDeAporte);
+		pageStatistics.setRevisionesDia(revisionesDia);
+		pageStatistics.setContenidoDia(contenidoDia);
+		pageStatistics.setCategories(categories);
+		LOGGER.info("Mostrando Diff. Data : " + gson.toJson(pageStatistics.getRevisionesDia()));
+		//LOGGER.info("Mostrando Diff. Data : " + gson.toJson(pageStatistics.getContenidoDia()));
+		statisticsService.mergePageStatistics(pageStatistics);
+		
+
+		
+
+
+
+		return "forward:/index";
+	}
 
 	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
 	public ModelAndView dumpToBD(HttpServletRequest request) {

@@ -83,7 +83,8 @@
 			var data = new google.visualization.DataTable();
 			data.addColumn('date', '<spring:message code="diffstatisticsofpage.estilosEnElTiempo.colum1" />');
 			<c:forEach var="result" items="${mapStyleChanges}">   
-				data.addColumn('number', '${result.key.getName()}');
+				//alert('${result.key.getName()}');
+				data.addColumn('number', '${result.key}');
 		    </c:forEach>
 		    <c:forEach begin="1" end="${fn:length(dates)}" var="val">
 		    	var row = [new Date("<c:out value='${dates[val-1]}'/>")];
