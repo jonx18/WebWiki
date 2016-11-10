@@ -165,8 +165,16 @@ public class DumpToBDController {
 			e1.printStackTrace();
 		}
 		Page page = pageService.getPage(id);
-		page = pageService.mergePage(page);
-		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+		PageStatistics pageStatistics = null;
+		if (page!=null) {
+			page = pageService.mergePage(page);
+			pageStatistics = statisticsService.getPageStatistics(page);
+		}else{
+			page= new Page();
+			page.setId(id);
+			pageService.createPage(page);
+		}
+
 		if (pageStatistics==null) {
 			pageStatistics= new PageStatistics();
 			pageStatistics.setPage(page);
