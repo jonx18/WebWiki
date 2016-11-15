@@ -501,6 +501,7 @@ public class DumpToBDController {
 		List<Revision> revisions = page.getRevisions();
 		for (Revision revision : revisions) {
 			List<String> categoriesNames = this.categoriesNamesFromText(revision.getText());
+			revision.setCategoryNames(categoriesNames);
 			List<String> newsCategories = new LinkedList<String>(); 
 			for (String string : categoriesNames) {
 				Category category = categoryService.getCategory(string);

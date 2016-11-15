@@ -13,6 +13,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -20,6 +21,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
@@ -87,6 +89,9 @@ public class Revision implements Identificable{
 	private String text;
     @Column(name="sha1")
 	private String sha1;
+    @ElementCollection(fetch = FetchType.EAGER)
+	@Cascade(CascadeType.ALL)
+    private List<String> categoryNames;
 	
 	public Revision() {
 		// TODO Auto-generated constructor stub
@@ -270,4 +275,12 @@ public class Revision implements Identificable{
 		}
 	return map;
 	}
+	public List<String> getCategoryNames() {
+		return categoryNames;
+	}
+	public void setCategoryNames(List<String> categoryNames) {
+		this.categoryNames = categoryNames;
+	}
+	
+	
 }

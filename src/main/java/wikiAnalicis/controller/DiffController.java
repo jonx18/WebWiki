@@ -201,9 +201,9 @@ public class DiffController {
 					remove.add(delimiter);
 				}
 			}
-			for (Delimiter delimiter : remove) {
-				mapStyleChanges.remove(delimiter);
-			}
+//			for (Delimiter delimiter : remove) {
+//				mapStyleChanges.remove(delimiter);
+//			}
 			if (pageStatistics==null){
 				pageStatistics= new PageStatistics();
 				pageStatistics.setPage(page);
