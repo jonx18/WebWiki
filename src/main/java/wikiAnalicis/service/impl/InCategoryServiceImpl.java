@@ -78,5 +78,9 @@ public List<InCategory> getAllInCategorysOfPage(Page page) {
 	// TODO Auto-generated method stub
 	return inInCategoryDAO.getAllInCategorysOfPage(page);
 }
+@Override
+public Map<Date, String[]> getCategoriesNamesOfPage(Page page) {
+	return inInCategoryDAO.getCategoriesNamesOfPage(page);
+}
 
 }

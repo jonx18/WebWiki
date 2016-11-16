@@ -17,8 +17,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -128,7 +130,7 @@ public class DumpToBDController {
 		Map<String, Long> distribucionDeAporte = pageStatistics.getDistribucionDeAporte();
 		Map<Date, Long> revisionesDia = pageStatistics.getRevisionesDia();
 		Map<Date, Long> contenidoDia = pageStatistics.getContenidoDia();
-		List<InCategory> categories = pageStatistics.getCategories();
+		Map<Date, String[]> categoriesNames = pageStatistics.getCategoriesNames();
 		Gson gson = new Gson();
 		String sdates = gson.toJson(dates, dates.getClass());
 		String smapStyleChanges = gson.toJson(mapStyleChanges, mapStyleChanges.getClass());
@@ -136,7 +138,7 @@ public class DumpToBDController {
 		String sdistribucionDeAporte = gson.toJson(distribucionDeAporte, distribucionDeAporte.getClass());
 		String srevisionesDia = gson.toJson(revisionesDia, revisionesDia.getClass());
 		String scontenidoDia = gson.toJson(contenidoDia, contenidoDia.getClass());
-		String scategories = gson.toJson(categories, categories.getClass());
+		String scategories = gson.toJson(categoriesNames, categoriesNames.getClass());
 		try{
 		    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+id+".txt", "UTF-8");
 		    writer.println(sdates);
@@ -342,6 +344,10 @@ public class DumpToBDController {
 //					System.out.println(pagename);
 //					System.out.println(title);
 					page = pageService.getPage(title);
+					if (page == null) {
+						title = this.removeAccents(title);
+						page = pageService.getPage(title);
+					}
 				}
 				
 				System.out.println("atributo--------------"+request.getAttribute("id"));
@@ -496,12 +502,19 @@ public class DumpToBDController {
 //			System.out.println(pagename);
 //			System.out.println(title);
 			page = pageService.getPage(title);
+			if (page == null) {
+				title = this.removeAccents(title);
+				page = pageService.getPage(title);
+			}
 		}
 		page = pageService.mergePage(page);
 		List<Revision> revisions = page.getRevisions();
 		for (Revision revision : revisions) {
 			List<String> categoriesNames = this.categoriesNamesFromText(revision.getText());
-			revision.setCategoryNames(categoriesNames);
+			String[] names = new String[categoriesNames.size()];
+			names= categoriesNames.toArray(names);
+			revision.setCategoryNames(names);
+			revisionService.updateRevision(revision);
 			List<String> newsCategories = new LinkedList<String>(); 
 			for (String string : categoriesNames) {
 				Category category = categoryService.getCategory(string);
@@ -568,6 +581,10 @@ public class DumpToBDController {
 //				System.out.println(pagename);
 //				System.out.println(title);
 				page = pageService.getPage(title);
+				if (page == null) {
+					title = this.removeAccents(title);
+					page = pageService.getPage(title);
+				}
 			}
 			System.out.println(pagename);
 			page = pageService.mergePage(page);
@@ -865,6 +882,11 @@ public class DumpToBDController {
 		}
 
 		return xStream;
+	}
+	public String removeAccents(String text) {
+	    return text == null ? null :
+	        Normalizer.normalize(text, Form.NFD)
+	            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
 
 }

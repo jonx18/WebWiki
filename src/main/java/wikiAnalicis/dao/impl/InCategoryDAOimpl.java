@@ -108,4 +108,26 @@ public List<Page> getAllCategorysedPages() {
 	list.addAll(set);
 	return list;
 }
+@Override
+public Map<Date, String[]> getCategoriesNamesOfPage(Page page) {//ordenar
+	String q = "select  r.timestamp,r.categoryNames from Page p join p.revisions r where p = :page ";
+	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
+	query.setParameter("page", page);
+	List<Object[]> list = query.list();
+	Map<Date,String[]> result = new TreeMap<Date, String[]>();
+    for(Object[] arr : list){
+//		DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+		DateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.S", Locale.getDefault());
+		Date date = null;
+		try {
+			date = format.parse(arr[0].toString());
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	result.put(date, (String[])arr[1]);
+//        System.out.println(Arrays.toString(arr));  
+    }
+	return result;
+}
 }

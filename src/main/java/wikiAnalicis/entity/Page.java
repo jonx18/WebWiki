@@ -1,5 +1,7 @@
 package wikiAnalicis.entity;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -102,6 +104,13 @@ public class Page implements Identificable{
  * @return List<Revision>
  */
 	public List<Revision> getRevisions() {
+		Collections.sort(revisions, new Comparator<Revision>() {
+			@Override
+			public int compare(Revision o1, Revision o2) {
+				// TODO Auto-generated method stub
+				return o1.getId().compareTo(o2.getId());
+			}
+		});
 		return revisions;
 	}
 

@@ -84,6 +84,7 @@ public class PageController {
 		contenidoDia= pageService.contentInDaysOf(page);
 		//------------------InCategorys-----------------------
 		categories = inCategoryService.getAllInCategorysOfPage(page);
+		Map<Date, String[]> categoriesNames = inCategoryService.getCategoriesNamesOfPage(page);
 		//---------------------------------------------------------------------------------------------
 		if (pageStatistics==null){
 			pageStatistics= new PageStatistics();
@@ -95,6 +96,7 @@ public class PageController {
 		pageStatistics.setRevisionesDia(revisionesDia);
 		pageStatistics.setContenidoDia(contenidoDia);
 		pageStatistics.setCategories(categories);
+		pageStatistics.setCategoriesNames(categoriesNames);
 		statisticsService.mergePageStatistics(pageStatistics);
 		}else{
 			totalRevisiones = pageStatistics.getTotalRevisiones();

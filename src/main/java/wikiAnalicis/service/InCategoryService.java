@@ -32,4 +32,6 @@ public interface InCategoryService {
 
 	public List<Page> getAllCategorysedPages();
 
+	public Map<Date, String[]> getCategoriesNamesOfPage(Page page);
+
 }

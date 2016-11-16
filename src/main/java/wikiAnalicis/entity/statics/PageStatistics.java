@@ -96,6 +96,12 @@ public class PageStatistics {
 	@Cascade(CascadeType.ALL)
 	@Column(columnDefinition="LONGBLOB",name="valores")
 	private Map<Delimiter, Integer[]> mapStyleChanges;
+	@ElementCollection(fetch = FetchType.EAGER)
+	@JoinTable(name = "categoriesnames")
+	@MapKeyTemporal(TemporalType.TIMESTAMP)
+	@Cascade(CascadeType.ALL)
+	@Column(columnDefinition="LONGBLOB",name="names")
+	private Map<Date, String[]> categoriesNames;
 	public PageStatistics() {
 		// TODO Auto-generated constructor stub
 	}
@@ -161,6 +167,12 @@ public class PageStatistics {
 	}
 	public void setMapStyleChanges(Map<Delimiter, Integer[]> mapStyleChanges) {
 		this.mapStyleChanges = mapStyleChanges;
+	}
+	public Map<Date, String[]> getCategoriesNames() {
+		return new TreeMap<Date, String[]>(this.categoriesNames);
+	}
+	public void setCategoriesNames(Map<Date, String[]> categoriesNames) {
+		this.categoriesNames = categoriesNames;
 	}
 	
 }

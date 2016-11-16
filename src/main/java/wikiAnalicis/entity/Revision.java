@@ -23,6 +23,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
 import org.hibernate.annotations.BatchSize;
@@ -89,9 +90,9 @@ public class Revision implements Identificable{
 	private String text;
     @Column(name="sha1")
 	private String sha1;
-    @ElementCollection(fetch = FetchType.EAGER)
+	@Column(columnDefinition="LONGBLOB",name="names")
 	@Cascade(CascadeType.ALL)
-    private List<String> categoryNames;
+    private String[] categoryNames;
 	
 	public Revision() {
 		// TODO Auto-generated constructor stub
@@ -275,10 +276,10 @@ public class Revision implements Identificable{
 		}
 	return map;
 	}
-	public List<String> getCategoryNames() {
+	public String[] getCategoryNames() {
 		return categoryNames;
 	}
-	public void setCategoryNames(List<String> categoryNames) {
+	public void setCategoryNames(String[] categoryNames) {
 		this.categoryNames = categoryNames;
 	}
 	

@@ -1,6 +1,8 @@
 package wikiAnalicis.dao;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import wikiAnalicis.entity.Category;
 import wikiAnalicis.entity.InCategory;
@@ -28,5 +30,6 @@ public interface InCategoryDAO {
 	public Long count();
 
 	public List<Page> getAllCategorysedPages();
+	public Map<Date, String[]> getCategoriesNamesOfPage(Page page);
 
 }
