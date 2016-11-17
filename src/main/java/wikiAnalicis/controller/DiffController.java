@@ -121,7 +121,9 @@ public class DiffController {
 				mapStyleChanges.put(delimiter, array);
 			}
 			Revision oldRevision = revisions.get(0);
-			Map<Delimiter, Integer> oldMap= oldRevision.textToComponents(delimiters);
+			//Map<Delimiter, Integer> oldMap= oldRevision.textToComponents(delimiters);
+			Map<Delimiter, Integer> oldMap= oldRevision.enumerateComponents();
+			//System.out.println("enumerado: "+oldMap.get(Delimiter.NUMBEREDELEMENT)+"listado: "+oldMap.get(Delimiter.BULLETEDELEMENT));
 			dates[0]=oldRevision.getTimestamp();
 			if (size>1) {
 				for (int i = 1; i < size; i++) {
@@ -130,7 +132,9 @@ public class DiffController {
 					}
 					Revision newRevision = revisions.get(i);		
 					dates[i]=newRevision.getTimestamp();
-					Map<Delimiter, Integer> newMap= newRevision.textToComponents(delimiters);
+					//Map<Delimiter, Integer> newMap= newRevision.textToComponents(delimiters);
+					Map<Delimiter, Integer> newMap= newRevision.enumerateComponents();
+					//System.out.println("enumerado: "+newMap.get(Delimiter.NUMBEREDELEMENT)+"listado: "+newMap.get(Delimiter.BULLETEDELEMENT));
 					DiffContainer diffContainer = diffContainerService.getDiffContainer(oldRevision);
 					Map<Delimiter, Integer[]> mapRevChanges=null;
 					if (diffContainer==null) {
@@ -201,9 +205,9 @@ public class DiffController {
 					remove.add(delimiter);
 				}
 			}
-			for (Delimiter delimiter : remove) {
-				mapStyleChanges.remove(delimiter);
-			}
+//			for (Delimiter delimiter : remove) {
+//				mapStyleChanges.remove(delimiter);
+//			}
 			if (pageStatistics==null){
 				pageStatistics= new PageStatistics();
 				pageStatistics.setPage(page);
@@ -315,6 +319,7 @@ public class DiffController {
 	private List<Delimiter> getDelimiters(Locale locale) {
 		if (langSeted==null || langSeted != locale) {
 			langSeted=locale;
+			System.out.println("entro y el lenguaje es: "+langSeted);
 			for (Delimiter delimiter : Delimiter.values()) {
 				if (delimiter==Delimiter.NONE) {
 					continue;

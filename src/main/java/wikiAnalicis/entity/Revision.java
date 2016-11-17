@@ -3,7 +3,11 @@ package wikiAnalicis.entity;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -26,6 +30,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 
+import org.apache.commons.lang3.StringUtils;
 import org.hibernate.annotations.BatchSize;
 import org.hibernate.annotations.Cascade;
 import org.hibernate.annotations.CascadeType;
@@ -241,11 +246,50 @@ public class Revision implements Identificable{
 	public void setDeleted(Boolean deleted) {
 		this.deleted = deleted;
 	}
+	
+	public Map<Delimiter,Integer> enumerateComponents() {
+		HashMap<Delimiter, Integer> map = new HashMap<Delimiter, Integer>();
+		StringBuilder texto = new StringBuilder(text);
+		List<Delimiter> delimiters = Arrays.asList(Delimiter.values());
+		Collections.sort(delimiters, new Comparator<Delimiter>() {
+			@Override
+			public int compare(Delimiter o1, Delimiter o2) {
+				// TODO Auto-generated method stub
+				return o1.getPriority().compareTo(o2.getPriority());
+			}
+		});
+		for (Delimiter delimiter : delimiters) {
+			int open = StringUtils.countMatches(texto, delimiter.getOpenIndicator());
+			int close = StringUtils.countMatches(texto, delimiter.getCloseIndicator());
+			if (delimiter.getIsFullParagraph()) {
+				map.put(delimiter, open);
+			}
+			else {
+				if (delimiter.getOpenIndicator().compareToIgnoreCase(delimiter.getCloseIndicator())!=0) {
+					map.put(delimiter, open-(open-close));
+				}
+				else {
+					map.put(delimiter, open/2);
+				}
+			}
+			texto = new StringBuilder(StringUtils.remove(texto.toString(), delimiter.getOpenIndicator()));
+			texto = new StringBuilder(StringUtils.remove(texto.toString(), delimiter.getCloseIndicator()));
+		}
+		return map;
+	}
+
+	
 	public Map<Delimiter,Integer> textToComponents(List<Delimiter> delimiters) {
 		int[] indexValues = new int[text.length()];
 		HashMap<Delimiter, Integer> map = new HashMap<Delimiter, Integer>();
 		for (int i = 0; i < delimiters.size(); i++) {
 			indexValues = delimiters.get(i).putIdArray(i, indexValues, text);
+//			if (delimiters.get(i).equals(Delimiter.BULLETEDELEMENT)) {
+//				System.out.println(i);
+//			}
+//			if (delimiters.get(i).equals(Delimiter.NUMBEREDELEMENT)) {
+//				System.out.println(i);
+//			}
 			map.put(delimiters.get(i), 0);
 		}
 //		StringBuilder stringBuilder = new StringBuilder();

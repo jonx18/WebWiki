@@ -7,39 +7,45 @@ import java.util.TreeMap;
 import org.apache.commons.lang3.StringUtils;
 
 public enum Delimiter {
-	NONE("","","",false),
-	NOWIKI("<nowiki>","<nowiki>","",false),
-	BIG("<big>","<big>","",false),
-	SMALL("<small>","<small>","",false),
-	SUP("<sup>","<sup>","",false),
-	SUB("<sub>","<sub>","",false),
-	S("<s>","<s>","",false),
-	BLOCKQUOTE("<blockquote>","<blockquote>","",false),
-	INCLUDEONLY("<includeonly>","</includeonly>","",false),
-	REFERENCE("<ref","</ref>","",false),
-	HEADING2("==","==","",false),
-	HEADING3("===","===","",false),
-	HEADING4("====","====","",false),
-	HEADING5("=====","=====","",false),
-	ITALIC("''","''","",false),
-	BLOD("'''","'''","",false),
-	ITALICBLOD("'''''","'''''","",false),
-	EXTERNAL("[","]","",false),
-	INTERNAL("[[","]]","",false),
-	NUMBEREDELEMENT("#","","",true),
-	REDIRECTION("redirection","","",true),
-	BULLETEDELEMENT("*","","",true),
-	INDENT2("::","","",true),
-	INDENT1(":","","",true);
+	NONE("","","",false,Integer.MAX_VALUE),
+	NOWIKI("<nowiki>","</nowiki>","",false,23),
+	BIG("<big>","</big>","",false,22),
+	SMALL("<small>","</small>","",false,21),
+	SUP("<sup>","</sup>","",false,20),
+	SUB("<sub>","</sub>","",false,19),
+	S("<s>","</s>","",false,18),
+	BLOCKQUOTE("<blockquote>","</blockquote>","",false,17),
+	INCLUDEONLY("<includeonly>","</includeonly>","",false,16),
+	REFERENCE("<ref","</ref>","",false,15),
+	HEADING2("==","==","",false,4),
+	HEADING3("===","===","",false,3),
+	HEADING4("====","====","",false,2),
+	HEADING5("=====","=====","",false,1),
+	ITALIC("''","''","",false,7),
+	BLOD("'''","'''","",false,6),
+	ITALICBLOD("'''''","'''''","",false,5),
+	EXTERNAL("[","]","",false,10),
+	INTERNAL("[[","]]","",false,9),
+	FILE("[[File","","",true,8),
+	NUMBEREDELEMENT("#","","",true,12),
+	REDIRECTION("redirection","","",true,11),
+	BULLETEDELEMENT("*","","",true,13),
+	INDENT2("::","","",true,14),
+	INDENT1(":","","",true,15),
+	INFOBOX("{{Infobox","","",true,24),
+	WIKITABLE("{| class=\"wikitable","","",true,25),
+	CITE("{{cite","","",true,26);
 	private String openIndicator;
 	private String closeIndicator;
 	private String name;
 	private Boolean isFullParagraph;
-	private Delimiter(String openIndicator, String closeIndicator, String name, Boolean isFullParagraph) {
+	private Integer priority;
+	private Delimiter(String openIndicator, String closeIndicator, String name, Boolean isFullParagraph,Integer priority) {
 		this.openIndicator = openIndicator;
 		this.closeIndicator = closeIndicator;
 		this.name = name;
 		this.isFullParagraph = isFullParagraph;
+		this.priority=priority;
 	} 
 	
 	public Boolean getIsFullParagraph() {
@@ -71,8 +77,13 @@ public enum Delimiter {
 	public Boolean arePair(String openIndicator,String closeIndicator){
 		return this.openIndicator.equalsIgnoreCase(openIndicator) && this.closeIndicator.equalsIgnoreCase(closeIndicator);
 	}
+	public Integer getPriority() {
+		return priority;
+	}
+	public void setPriority(Integer priority) {
+		this.priority = priority;
+	}
 	public int[] putIdArray(int id, int[] indexValues, String text) {
-		TreeMap<Integer, String> map = new TreeMap<Integer,String>();
 		StringBuilder textBuilder = new StringBuilder(text);
 		int o = StringUtils.countMatches(textBuilder, this.getOpenIndicator());
 		int c = StringUtils.countMatches(textBuilder, this.getCloseIndicator());
