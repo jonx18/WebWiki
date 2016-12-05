@@ -2,6 +2,7 @@ package wikiAnalicis.converter;
 
 import java.text.Normalizer;
 import java.text.Normalizer.Form;
+import java.util.List;
 
 import com.thoughtworks.xstream.converters.ConversionException;
 import com.thoughtworks.xstream.converters.Converter;
@@ -10,12 +11,17 @@ import com.thoughtworks.xstream.converters.UnmarshallingContext;
 import com.thoughtworks.xstream.io.HierarchicalStreamReader;
 import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
+import wikiAnalicis.controller.DumpToBDController;
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
 import wikiAnalicis.entity.UserContributor;
 
 public class RevisionConverter implements Converter {
+	DumpToBDController dumpToBDController;
+	public RevisionConverter(DumpToBDController dumpToBDController) {
+		this.dumpToBDController = dumpToBDController;
+	}
 
 	@Override
 	public boolean canConvert(Class arg0) {
@@ -92,11 +98,19 @@ public class RevisionConverter implements Converter {
 				System.out.println(revision.getStringTimestamp());
 				System.out.println(revision.getId());
 			}
-			
-			text = removeAccents(text);
-			revision.setText(text);
+
 			reader.moveUp();
 			reader.moveDown();
+			text = removeAccents(text.toString());
+			revision.setText(text);
+			if (revision.getText()!=null) {
+				List<String> categoriesNames = dumpToBDController.categoriesNamesFromText(revision.getText());
+				String[] names = new String[categoriesNames.size()];
+				names= categoriesNames.toArray(names);
+				revision.setCategoryNames(names);
+			}
+
+
 		}
 
 		if ("sha1".equalsIgnoreCase(reader.getNodeName())) {

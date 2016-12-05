@@ -128,4 +128,9 @@ public class PageServiceImpl implements PageService {
 		// TODO Auto-generated method stub
 		return pageDAO.getAllPagesInNamespace(ns);
 	}
+	@Override
+	public void createAllPages(List<Page> pages) {
+		// TODO Auto-generated method stub
+		pageDAO.createAllPages(pages);
+	}
 }

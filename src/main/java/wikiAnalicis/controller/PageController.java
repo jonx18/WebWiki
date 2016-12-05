@@ -209,6 +209,20 @@ public class PageController {
 
 		return model;
 	}
+	@RequestMapping(value = "statisticsPageOfAll")
+	public String statisticsPageOfAll(Long id,HttpServletRequest request) {
+		List<Page> pages = pageService.getAllPages();
+		for (Page page : pages) {
+			if (request.getAttribute("id")==null) {
+				request.setAttribute("id", page.getId());
+			}else{
+				request.setAttribute("id",request.getAttribute("id")+"\n"+ page.getId());
+			}
+		}
+
+		
+		return"forward:/statisticsPageOfWithRedirection";
+	}
 	@RequestMapping(value = "statisticsPageOfWithRedirection")
 	public String statisticsPageOfWithRedirection(Long id,HttpServletRequest request) {
 		String userpc = System.getProperty("user.name");

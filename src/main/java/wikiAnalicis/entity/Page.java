@@ -14,6 +14,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
@@ -59,7 +61,12 @@ public class Page implements Identificable{
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<Revision> revisions=new LinkedList<Revision>();
-
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name = "mediawiki_id")
+	@Fetch(FetchMode.SELECT)
+	@BatchSize(size = 5)
+	private Mediawiki mediawiki;
+	
 	public Page() {
 		// TODO Auto-generated constructor stub
 	}
@@ -173,4 +180,12 @@ public int hashCode() {
             toHashCode();
 
 }
+public Mediawiki getMediawiki() {
+	return mediawiki;
+}
+public void setMediawiki(Mediawiki mediawiki) {
+	this.mediawiki = mediawiki;
+}
+
+
 }

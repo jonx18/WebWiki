@@ -41,20 +41,6 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
         </bean>
     </mvc:interceptors>
 
-	<!-- DataSource -->
-	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
-		destroy-method="close">
-		<property name="driverClass" value="${database.driverClass}" />
-		<property name="jdbcUrl" value="${database.url}" />
-		<property name="user" value="${database.username}" />
-		<property name="password" value="${database.password}" />
-
-		<property name="acquireIncrement" value="${connection.acquireIncrement}" />
-		<property name="minPoolSize" value="${connection.minPoolSize}" />
-		<property name="maxPoolSize" value="${connection.maxPoolSize}" />
-		<property name="maxIdleTime" value="${connection.maxIdleTime}" />
-
-	</bean>
 <!--  	<bean id="h2Server" class="org.h2.tools.Server" factory-method="createTcpServer" init-method="start" destroy-method="stop" depends-on="h2WebServer">
     <constructor-arg value="-tcp,-tcpAllowOthers,-tcpPort,9097"/>
 </bean>
@@ -75,20 +61,49 @@ http://www.springframework.org/schema/context http://www.springframework.org/sch
 		class="org.springframework.orm.jpa.JpaTransactionManager"> <property name="entityManagerFactory" 
 		ref="entityManagerFactoryBean" /> </bean> <tx:annotation-driven transaction-manager="transactionManager"/> -->
 
+
+	<!-- DataSource 
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+		destroy-method="close">
+		<property name="driverClass" value="${database.driverClass}" />
+		<property name="jdbcUrl" value="${database.url}" />
+		<property name="user" value="${database.username}" />
+		<property name="password" value="${database.password}" />
+
+		<property name="acquireIncrement" value="${connection.acquireIncrement}" />
+		<property name="minPoolSize" value="${connection.minPoolSize}" />
+		<property name="maxPoolSize" value="${connection.maxPoolSize}" />
+		<property name="maxIdleTime" value="${connection.maxIdleTime}" />
+	</bean>-->
 	<!-- Hibernate SessionFactory -->
 	<bean id="sessionFactory"
 		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="dataSource" ref="dataSource"></property>
+	 <!--	<property name="dataSource" ref="dataSource"></property>-->
 		<property name="hibernateProperties">
 			<props>
-				<prop key="connection.url">jdbc:mysql://localhost/openmeetings?autoReconnect=true&amp;useUnicode=true&amp;createDatabaseIfNotExist=true&amp;characterEncoding=utf-8</prop> 
+
+            
+
+				<prop key="hibernate.connection.driver_class">${database.driverClass}</prop>
+				<prop key="hibernate.connection.url">${database.url}</prop> 
+				     <prop key="hibernate.connection.user">${database.username}</prop>
+            <prop key="hibernate.connection.password">${database.password}</prop>
 				<prop key="hibernate.connection.useUnicode">true</prop>
 				<prop key="hibernate.connection.characterEncoding">UTF-8</prop>
 				<prop key="hibernate.connection.charSet">UTF-8</prop>
 				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+
 				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
 				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
 				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.cglib.use_reflection_optimizer">false</prop>
+				<prop key="hibernate.jdbc.batch_size">0</prop>
+				<prop key="hibernate.c3p0.min_size"  >2</prop>
+           		<prop key="hibernate.c3p0.max_size"  >5</prop>
+            	<prop key="hibernate.c3p0.timeout"  >600</prop>
+            	<prop key="hibernate.c3p0.max_statements"  >0</prop>
+            	<prop key="hibernate.c3p0.idle_test_period">300</prop>
+            	<prop key="hibernate.c3p0.acquire_increment" >1</prop>
 				<prop key="hibernate.event.merge.entity_copy_observer">allow</prop>
 			</props>
 		</property>

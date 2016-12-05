@@ -30,4 +30,5 @@ public interface PageService {
 	public Map<Date, Long> contentInDaysOf(Page page);
 	public Map<String, Long> countColaboratorRevisionsInPage(Page page,Locale locale) ;
 	public List<Page> getAllPagesInNamespace(Integer ns);
+	public void createAllPages(List<Page> pages);
 }

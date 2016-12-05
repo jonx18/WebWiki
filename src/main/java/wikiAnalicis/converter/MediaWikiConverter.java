@@ -15,19 +15,34 @@ import com.thoughtworks.xstream.io.HierarchicalStreamWriter;
 
 import wikiAnalicis.entity.Mediawiki;
 import wikiAnalicis.entity.Page;
+import wikiAnalicis.entity.Revision;
 import wikiAnalicis.entity.Siteinfo;
 import wikiAnalicis.service.MediawikiService;
 import wikiAnalicis.service.PageService;
 
 public class MediaWikiConverter implements Converter {
-
+	private PageService pageService;
 	private MediawikiService mediawikiService;
+	private Integer namespace = null;
 	private Locale lang;
 	public MediaWikiConverter(MediawikiService mediawikiService) {
 		super();
 		this.mediawikiService = mediawikiService;
 	}
-
+	public MediaWikiConverter(MediawikiService mediawikiService,Integer namespace) {
+		super();
+		this.mediawikiService = mediawikiService;
+		this.namespace = namespace;
+	}
+	public MediaWikiConverter(MediawikiService mediawikiService2, PageService pageService) {
+		this.mediawikiService = mediawikiService2;
+		this.pageService = pageService;
+	}
+	public MediaWikiConverter(MediawikiService mediawikiService2, PageService pageService, Integer namespace2) {
+		this.mediawikiService = mediawikiService2;
+		this.namespace = namespace2;
+		this.pageService = pageService;
+	}
 	@Override
 	public boolean canConvert(Class arg0) {
 		// TODO Auto-generated method stub
@@ -57,6 +72,7 @@ public class MediaWikiConverter implements Converter {
 		Siteinfo siteinfo = (Siteinfo) context.convertAnother(mediawiki, Siteinfo.class);
 		mediawiki.setSiteinfo(siteinfo);
 		reader.moveUp();
+		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 		Integer pageIndex = 0;
 		List<Page> pages= new LinkedList<Page>();
 		while (reader.hasMoreChildren()) {
@@ -64,27 +80,47 @@ public class MediaWikiConverter implements Converter {
 			// System.out.println(reader.getNodeName());
 			if ("page".equals(reader.getNodeName())) {
 				pageIndex++;
-				System.out.println("Page "+pageIndex);
+//				System.out.println("Page "+pageIndex);
 				Page page = (Page) context.convertAnother(mediawiki, Page.class);
-				pages.add(page);
-			}
-			reader.moveUp();
-			if (pageIndex%100 == 0) {
-				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-				if (!mediawiki.getPages().containsAll(pages)) {
-					mediawiki.getPages().addAll(pages);
-					mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-					pages= new LinkedList<Page>();
+				if(namespace!=null){
+					//System.out.println("required namespace:"+namespace+" page namespace:"+page.getNs() );
+					if (page.getNs().compareTo(namespace)==0) {
+						System.out.println("Page "+pageIndex);
+						pages.add(page);
+					}
+				}else{
+					System.out.println("Page "+pageIndex);
+					pages.add(page);
 				}
+
 				
 			}
+			reader.moveUp();
+			if (pageIndex%50 == 0) {
+//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//				if (!mediawiki.getPages().containsAll(pages)) {
+//					mediawiki.getPages().addAll(pages);
+//					mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//					pages= new LinkedList<Page>();
+//				}
+				for (Page page : pages) {
+					page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
+//					revisionService.createRevision(revision);
+				}
+				pageService.createAllPages(pages);
+				pages= new LinkedList<Page>();
+			}
 		}
-		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-		if (!mediawiki.getPages().containsAll(pages)) {
-			mediawiki.getPages().addAll(pages);
-			mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//		if (!mediawiki.getPages().containsAll(pages)) {
+//			mediawiki.getPages().addAll(pages);
+//			mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+//		}
+		for (Page page : pages) {
+			page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
+//			revisionService.createRevision(revision);
 		}
-
+		pageService.createAllPages(pages);
 		System.out.println("fin");
 		return mediawiki;
 	}

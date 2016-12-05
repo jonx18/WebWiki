@@ -85,7 +85,7 @@ public class ParagraphDiff {
 		return makeParagraph(index);
 	}
 	private String makeParagraph(int index) {
-		StringBuilder builder = new StringBuilder();
+		StringBuffer builder = new StringBuffer();
 		List<Diff> diffs=null;
 		if (index==0) {
 			diffs = this.oldDiffs;

@@ -71,9 +71,9 @@ public class DiffContainer {
 		ParagraphDiffer differ = new ParagraphDiffer();
 		List<ParagraphDiff> paragraphDiffs = null;
 		if (newRevision == null) {
-			paragraphDiffs = differ.paragraphComparetor(oldRevision.getText(), "");
+			paragraphDiffs = differ.paragraphComparetor(oldRevision.getText().toString(), "");
 		} else {
-			paragraphDiffs = differ.paragraphComparetor(oldRevision.getText(), newRevision.getText());
+			paragraphDiffs = differ.paragraphComparetor(oldRevision.getText().toString(), newRevision.getText().toString());
 		}
 
 		for (ParagraphDiff paragraphDiff : paragraphDiffs) {

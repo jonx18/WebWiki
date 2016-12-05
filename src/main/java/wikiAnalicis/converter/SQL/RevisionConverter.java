@@ -85,7 +85,7 @@ public class RevisionConverter implements Converter {
 				revision.setDeleted(true);
 			}
 			String text = reader.getValue();
-			text = removeAccents(text);
+			text =  removeAccents(text.toString());
 			revision.setText(text);
 			reader.moveUp();
 			reader.moveDown();

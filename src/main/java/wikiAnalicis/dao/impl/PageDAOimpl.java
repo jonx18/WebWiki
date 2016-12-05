@@ -50,6 +50,15 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	public void createAllPages(List<Page> pages) {
+		for (Page page : pages) {
+			util.merge(page);
+		}
+		util.getSessionFactory().getCurrentSession().flush();
+		util.getSessionFactory().getCurrentSession().clear();
+	}
+	
+	@Override
 	public Page updatePage(Page page) {
 		return util.update(page);
 	}

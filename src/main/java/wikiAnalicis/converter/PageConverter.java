@@ -24,6 +24,7 @@ import wikiAnalicis.service.RevisionService;
 public class PageConverter implements Converter {
 	private PageService pageService;
 	private RevisionService revisionService;
+	private Integer namespace = null;
 
 	public PageConverter(PageService pageService) {
 		super();
@@ -34,6 +35,12 @@ public class PageConverter implements Converter {
 		super();
 		this.pageService = pageService;
 		this.revisionService = revisionService;
+	}
+	public PageConverter(PageService pageService, RevisionService revisionService, Integer namespace) {
+		super();
+		this.pageService = pageService;
+		this.revisionService = revisionService;
+		this.namespace = namespace;
 	}
 
 	@Override
@@ -62,6 +69,11 @@ public class PageConverter implements Converter {
 		reader.moveDown();
 		page.setId(new Long(reader.getValue()));
 		reader.moveUp();
+		if(namespace!=null){
+			if (page.getNs().compareTo(namespace)!=0) {
+				return page;
+			}
+		}
 		if (page.getNs().compareTo(14)==0) {
 			page=pageToCategory(page);
 		}

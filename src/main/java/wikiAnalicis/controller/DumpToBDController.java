@@ -118,7 +118,46 @@ public class DumpToBDController {
 	@Autowired
 	private StatisticsService statisticsService;
 	private Mediawiki mediawiki;
-	
+	@RequestMapping(value = "exportall", method = RequestMethod.GET)
+	public String exportAll(Long id,HttpServletRequest request) {
+		List<Page> pages = pageService.getAllPages();
+		for (Page page : pages) {
+			page = pageService.mergePage(page);
+			PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+			Map<Delimiter, Integer[]> mapStyleChanges=pageStatistics.getMapStyleChanges();
+			Date[] dates=pageStatistics.getDatesArray();
+			Long totalRevisiones = pageStatistics.getTotalRevisiones();
+			Map<String, Long> distribucionDeAporte = pageStatistics.getDistribucionDeAporte();
+			Map<Date, Long> revisionesDia = pageStatistics.getRevisionesDia();
+			Map<Date, Long> contenidoDia = pageStatistics.getContenidoDia();
+			Map<Date, String[]> categoriesNames = pageStatistics.getCategoriesNames();
+			Gson gson = new Gson();
+			String sdates = gson.toJson(dates, dates.getClass());
+			String smapStyleChanges = gson.toJson(mapStyleChanges, mapStyleChanges.getClass());
+			String stotalRevisiones = gson.toJson(totalRevisiones, totalRevisiones.getClass());
+			String sdistribucionDeAporte = gson.toJson(distribucionDeAporte, distribucionDeAporte.getClass());
+			String srevisionesDia = gson.toJson(revisionesDia, revisionesDia.getClass());
+			String scontenidoDia = gson.toJson(contenidoDia, contenidoDia.getClass());
+			String scategories = gson.toJson(categoriesNames, categoriesNames.getClass());
+			String name = gson.toJson(page.getTitle(), page.getTitle().getClass());
+			try{
+			    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+page.getId()+".txt", "UTF-8");
+			    writer.println(sdates);
+			    writer.println(smapStyleChanges);
+			    writer.println(stotalRevisiones);
+			    writer.println(sdistribucionDeAporte);
+			    writer.println(srevisionesDia);
+			    writer.println(scontenidoDia);
+			    writer.println(scategories);
+			    writer.println(name);
+			    writer.close();
+			} catch (Exception e) {
+			   // do something
+			}
+		}
+
+		return "forward:/index";
+	}
 	@RequestMapping(value = "export", method = RequestMethod.GET)
 	public String export(Long id,HttpServletRequest request) {
 		Page page = pageService.getPage(id);
@@ -139,6 +178,7 @@ public class DumpToBDController {
 		String srevisionesDia = gson.toJson(revisionesDia, revisionesDia.getClass());
 		String scontenidoDia = gson.toJson(contenidoDia, contenidoDia.getClass());
 		String scategories = gson.toJson(categoriesNames, categoriesNames.getClass());
+		String name = gson.toJson(page.getTitle(), page.getTitle().getClass());
 		try{
 		    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+id+".txt", "UTF-8");
 		    writer.println(sdates);
@@ -147,6 +187,7 @@ public class DumpToBDController {
 		    writer.println(sdistribucionDeAporte);
 		    writer.println(srevisionesDia);
 		    writer.println(scontenidoDia);
+		    writer.println(scategories);
 		    writer.println(scategories);
 		    writer.close();
 		} catch (Exception e) {
@@ -261,16 +302,18 @@ public class DumpToBDController {
 		Map<String, Long> times = new TreeMap<String, Long>();
 
 		long startTime = System.currentTimeMillis();
-		dropDB();
+		//dropDB();
 		long stopTime = System.currentTimeMillis();
 		long elapsedTime = stopTime - startTime;
 		times.put("1-dropDB", elapsedTime);
 
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando:");
-		System.out.println(env.getProperty("history.path.test"));
-		XStream xStream = configXStream(true);
-		String historyPath = env.getProperty("history.path.test");
+		System.setProperty("jdk.xml.entityExpansionLimit", "0");
+		System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
+		XStream xStream = configXStream(true,0);
+		String historyPath = env.getProperty("history.path.longsixty");
+		System.out.println(historyPath);
 		try {
 			mediawiki = historyXMLToDB(xStream, new FileInputStream(historyPath));
 		} catch (FileNotFoundException e) {
@@ -287,7 +330,7 @@ public class DumpToBDController {
 		// aca van masprocesamintos
 
 		startTime = System.currentTimeMillis();
-		asignacionCategorias();
+		//asignacionCategorias();
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
 		times.put("3-asignacionCategorias", elapsedTime);
@@ -434,7 +477,7 @@ public class DumpToBDController {
 //--------------------------------------------------------------------------------------------------
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando: " + pagename);
-		XStream xStream = configXStream(true);
+		XStream xStream = configXStream(true,null);
 		InputStream historyPath=null;
 		historyPath = downloadMainPage(pagename, xStream, historyPath);
 		// pagesWithoutRevisions();
@@ -510,11 +553,12 @@ public class DumpToBDController {
 		page = pageService.mergePage(page);
 		List<Revision> revisions = page.getRevisions();
 		for (Revision revision : revisions) {
-			List<String> categoriesNames = this.categoriesNamesFromText(revision.getText());
-			String[] names = new String[categoriesNames.size()];
-			names= categoriesNames.toArray(names);
-			revision.setCategoryNames(names);
-			revisionService.updateRevision(revision);
+//			List<String> categoriesNames = this.categoriesNamesFromText(revision.getText());
+//			String[] names = new String[categoriesNames.size()];
+//			names= categoriesNames.toArray(names);
+//			revision.setCategoryNames(names);
+//			revisionService.updateRevision(revision);
+			List<String> categoriesNames = Arrays.asList(revision.getCategoryNames());
 			List<String> newsCategories = new LinkedList<String>(); 
 			for (String string : categoriesNames) {
 				Category category = categoryService.getCategory(string);
@@ -769,9 +813,12 @@ public class DumpToBDController {
 		}
 		return map;
 	}
-	private List<String> categoriesNamesFromText(String text) {
+	public List<String> categoriesNamesFromText(String text) {
 		List<String> categories = new LinkedList<String>();
-		Locale locale = new Locale(mediawiki.getLang());
+		Locale locale = new Locale("EN");
+		if (mediawiki!=null) {
+			locale = new Locale(mediawiki.getLang());
+		}
 		String categoryWord = messageSource.getMessage("categoriesFromText.categoryWord", null, locale);
 		//Pattern pattern = Pattern.compile(Pattern.quote("[[Catego") + "(.*?)" + Pattern.quote("]]"));
 		Pattern pattern = Pattern.compile(Pattern.quote("[["+categoryWord+":") + "(.*?)" + Pattern.quote("]]"));
@@ -784,11 +831,15 @@ public class DumpToBDController {
 			//System.out.println(str.substring(4, str.length()));
 
 //			Category category = categoryService.getCategory("Categoria:" + str.substring(4, str.length()));
-			while(!Character.isLetterOrDigit((str.charAt(str.length()-1)))){
+			while((str.length()-1 >= 0)&&(!Character.isLetterOrDigit((str.charAt(str.length()-1))))){
 				str = str.substring(0, str.length()-1);
 			//	System.out.println(str);
 			}
-			categories.add(categoryWord+":" + str);
+			if (str.length()>0) {
+				//System.out.println(categoryWord+":" + str);
+				categories.add(categoryWord+":" + str);
+			}
+			
 		}
 
 		// categories.addAll(randomSample4(categoryService.getAllCategorys(),
@@ -851,12 +902,13 @@ public class DumpToBDController {
 
 	private Mediawiki historyXMLToDB(XStream xStream, InputStream historyPath) {
 		Mediawiki mediawiki = null;
+		
 		mediawiki = (Mediawiki) xStream.fromXML(historyPath);
 		mediawikiService.mergeMediawiki(mediawiki);
 		return mediawiki;
 	}
 
-	private XStream configXStream(Boolean saver) {
+	private XStream configXStream(Boolean saver,Integer namespace) {
 		// configuro xstream
 		XStream xStream = new XStream(new StaxDriver());
 		xStream.alias("revision", Revision.class);
@@ -872,11 +924,17 @@ public class DumpToBDController {
 //		xStream.registerConverter(new MediaWikiConverter(cargaDumpService));
 //		xStream.registerConverter(new PageConverter(cargaDumpService));
 		if (saver) {
-			MediaWikiConverter mediaWikiConverter = new MediaWikiConverter( mediawikiService);
+			MediaWikiConverter mediaWikiConverter=null;
+			if (namespace!=null) {
+				mediaWikiConverter = new MediaWikiConverter( mediawikiService,pageService,namespace);
+				xStream.registerConverter(new PageConverter(pageService,revisionService,namespace));
+			} else {
+				mediaWikiConverter = new MediaWikiConverter( mediawikiService,pageService);
+				xStream.registerConverter(new PageConverter(pageService,revisionService));
+			}
 			xStream.registerConverter(mediaWikiConverter);
-			xStream.registerConverter(new PageConverter(pageService,revisionService));
 			xStream.registerConverter(new NamespaceConverter());
-			xStream.registerConverter(new RevisionConverter());
+			xStream.registerConverter(new RevisionConverter(this));
 			xStream.registerConverter(new UserContributorConverter(userContributorService,mediaWikiConverter,messageSource));
 //			xStream.registerConverter(new UserContributorConverter(cargaDumpService));
 		}

@@ -12,6 +12,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
@@ -51,23 +52,17 @@ public class Mediawiki {
 	    )
 	@Cascade(CascadeType.ALL)
 	private Siteinfo siteinfo;
-	@OneToMany(orphanRemoval = true,fetch = FetchType.LAZY)
-	@JoinTable(
-	        name = "mediawiki_page",
-	        joinColumns = @JoinColumn(
-	            name = "mediawiki_id", 
-	            referencedColumnName = "id"),
-	        inverseJoinColumns = @JoinColumn(
-	            name = "page_id", 
-	            referencedColumnName = "id")
-	    )
+
+	
+	
+	@OneToMany(mappedBy = "mediawiki",targetEntity = Page.class,fetch = FetchType.LAZY)
 	@Cascade(CascadeType.ALL)
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
 	private List<Page> pages= new LinkedList<Page>();//no sequiere borrar
 	@Column(name="lang")
 	private String lang;
-	
+
 	public Mediawiki() {
 		// TODO Auto-generated constructor stub
 	}

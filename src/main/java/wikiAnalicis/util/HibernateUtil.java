@@ -75,7 +75,7 @@ public class HibernateUtil implements ORMUtil {
 
 	@Override
 	public <T> Long count(Class<T> entityClass) {
-		return (Long) sessionFactory.openSession().createCriteria(entityClass).setProjection(Projections.rowCount())
+		return (Long) sessionFactory.getCurrentSession().createCriteria(entityClass).setProjection(Projections.rowCount())
 				.uniqueResult();
 	}
 }
