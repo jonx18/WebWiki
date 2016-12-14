@@ -74,7 +74,7 @@ public class MediaWikiConverter implements Converter {
 		reader.moveUp();
 		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 		Integer pageIndex = 0;
-		List<Page> pages= new LinkedList<Page>();
+	//	List<Page> pages= new LinkedList<Page>();
 		while (reader.hasMoreChildren()) {
 			reader.moveDown();
 			// System.out.println(reader.getNodeName());
@@ -83,44 +83,46 @@ public class MediaWikiConverter implements Converter {
 //				System.out.println("Page "+pageIndex);
 				Page page = (Page) context.convertAnother(mediawiki, Page.class);
 				if(namespace!=null){
-					//System.out.println("required namespace:"+namespace+" page namespace:"+page.getNs() );
+//					//System.out.println("required namespace:"+namespace+" page namespace:"+page.getNs() );
 					if (page.getNs().compareTo(namespace)==0) {
-						System.out.println("Page "+pageIndex);
-						pages.add(page);
+					System.out.println("Page "+pageIndex);
+//						pages.add(page);
 					}
 				}else{
 					System.out.println("Page "+pageIndex);
-					pages.add(page);
+//					pages.add(page);
 				}
-
+				if (pageIndex.compareTo(2000)==0) {
+					break;
+				}
 				
 			}
 			reader.moveUp();
-			if (pageIndex%50 == 0) {
-//				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//				if (!mediawiki.getPages().containsAll(pages)) {
-//					mediawiki.getPages().addAll(pages);
-//					mediawiki=mediawikiService.mergeMediawiki(mediawiki);
-//					pages= new LinkedList<Page>();
+//			if (pageIndex%50 == 0) {
+////				mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+////				if (!mediawiki.getPages().containsAll(pages)) {
+////					mediawiki.getPages().addAll(pages);
+////					mediawiki=mediawikiService.mergeMediawiki(mediawiki);
+////					pages= new LinkedList<Page>();
+////				}
+//				for (Page page : pages) {
+//					page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
+////					revisionService.createRevision(revision);
 //				}
-				for (Page page : pages) {
-					page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
-//					revisionService.createRevision(revision);
-				}
-				pageService.createAllPages(pages);
-				pages= new LinkedList<Page>();
-			}
+//				pageService.createAllPages(pages);
+//				pages= new LinkedList<Page>();
+//			}
 		}
 //		mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 //		if (!mediawiki.getPages().containsAll(pages)) {
 //			mediawiki.getPages().addAll(pages);
 //			mediawiki=mediawikiService.mergeMediawiki(mediawiki);
 //		}
-		for (Page page : pages) {
-			page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
-//			revisionService.createRevision(revision);
-		}
-		pageService.createAllPages(pages);
+//		for (Page page : pages) {
+//			page.setMediawiki(mediawiki);//---------yo tendria que alcanzar
+////			revisionService.createRevision(revision);
+//		}
+//		pageService.createAllPages(pages);
 		System.out.println("fin");
 		return mediawiki;
 	}

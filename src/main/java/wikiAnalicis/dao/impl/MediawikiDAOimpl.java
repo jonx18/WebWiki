@@ -36,23 +36,28 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 		// TODO Auto-generated constructor stub
 	}
 	@Override
+	@Transactional
 	public long createMediawiki(Mediawiki mediawiki) {
 		return (Long) util.create(mediawiki);
 	}
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED)
 	public Mediawiki mergeMediawiki(Mediawiki mediawiki) {
+		util.getSessionFactory().getCurrentSession().flush();
+		util.getSessionFactory().getCurrentSession().clear();
 		Mediawiki m = (Mediawiki)util.getSessionFactory().getCurrentSession().merge(mediawiki);
 		m.getPages().size();
 		return m;
 	}
 	
 	@Override
+	@Transactional
 	public Mediawiki updateMediawiki(Mediawiki mediawiki) {
 		return util.update(mediawiki);
 	}
 
 	@Override
+	@Transactional
 	public void deleteMediawiki(long id) {
 		Mediawiki mediawiki = new Mediawiki();
 		mediawiki.setId(id);
@@ -61,11 +66,13 @@ public class MediawikiDAOimpl implements MediawikiDAO {
 	}
 
 	@Override
+	@Transactional
 	public List<Mediawiki> getAllMediawikis() {
 		return util.fetchAll(Mediawiki.class);
 	}
 
 	@Override
+	@Transactional
 	public Mediawiki getMediawiki(long id) {
 		return util.fetchById(id, Mediawiki.class);
 	}

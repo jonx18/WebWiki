@@ -36,13 +36,18 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	public long createPage(Page page) {
+		util.getSessionFactory().getCurrentSession().flush();
+		util.getSessionFactory().getCurrentSession().clear();
 		return (Long) util.create(page);
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED)
 	public Page mergePage(Page page) {
+		util.getSessionFactory().getCurrentSession().flush();
+		util.getSessionFactory().getCurrentSession().clear();
 		Page p = (Page) util.getSessionFactory().getCurrentSession().merge(page);
 		p.getRevisions().size();
 		util.getSessionFactory().getCurrentSession().flush();
@@ -50,6 +55,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	public void createAllPages(List<Page> pages) {
 		for (Page page : pages) {
 			util.merge(page);
@@ -59,11 +65,13 @@ public class PageDAOimpl implements PageDAO {
 	}
 	
 	@Override
+	@Transactional
 	public Page updatePage(Page page) {
 		return util.update(page);
 	}
 
 	@Override
+	@Transactional
 	public void deletePage(long id) {
 		Page page = getPage(id);
 //		page= mergePage(page);
@@ -71,15 +79,18 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	public List<Page> getAllPages() {
 		return util.fetchAll(Page.class);
 	}
 
 	@Override
+	@Transactional
 	public Page getPage(long id) {
 		return util.fetchById(id, Page.class);
 	}
 	@Override
+	@Transactional
 	public Page getPage(String title) {
 		String q = "from Page p where p.title = :title ";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
@@ -99,12 +110,13 @@ public class PageDAOimpl implements PageDAO {
 		}
 		return list;
 	}
-
+	@Transactional
 	public Long count() {
 		return util.count(Page.class);
 	}
 
 	@Override
+	@Transactional
 	public void addRevisionsTo(Page page, List<Revision> revisions) {
 		// EntityManager entityManager = util.getEntityManager();
 		// EntityTransaction t = entityManager.getTransaction();
@@ -127,6 +139,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	public Double averageRevisionsInAllPages() {
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(
 				"select avg(p.revisions.size), sum(p.revisions.size), max(p.revisions.size), count(p) from Page p");
@@ -138,6 +151,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	// primer Long cantidad de revisiones, segundo cantidad de pag con esa
 	// cantidad de revisiones
 	public Map<Long, Long> countPagesForNumberOfRevisions() {
@@ -153,6 +167,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	// texto del namespace, cantidad de paginas
 	public Map<String, Long> countPagesInNamespace(Locale locale) {
 		String q = "select  n.value,count(p) from Page p,Namespace n where p.ns=n.keyclave group by n.keyclave";
@@ -171,6 +186,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	// una revision sin padre es la creacion de una pag
 	public Map<Date, Long> newPagesInDays() {
 		String q = "select  r.timestamp,count(r) from Revision r where r.parentid is null group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
@@ -193,6 +209,7 @@ public class PageDAOimpl implements PageDAO {
 	}
 
 	@Override
+	@Transactional
 	// una revision sin padre es la creacion de una pag, y tengo un map de
 	// namespace con su map de dias
 	public Map<String, TreeMap<Date, Long>> newPagesForNamespacesInDays(Locale locale) {
@@ -222,6 +239,7 @@ public class PageDAOimpl implements PageDAO {
 		return result;
 	}
 	@Override
+	@Transactional
 	public Map<Date, Long> revisionInDaysOf(Page page) {
 		String q = "select  cast(r.timestamp as date),count(r) from Page p join p.revisions r where p = :page group by cast(r.timestamp as date)";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
@@ -243,6 +261,7 @@ public class PageDAOimpl implements PageDAO {
 		return result;
 	}
 	@Override
+	@Transactional
 	public Map<Date, Long> contentInDaysOf(Page page) {
 		String q = "select  r.timestamp,bit_length(r.text) from Page p join p.revisions r where p = :page ";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
@@ -265,6 +284,7 @@ public class PageDAOimpl implements PageDAO {
 		return result;
 	}
 	@Override
+	@Transactional
 	public Map<String, Long> countColaboratorRevisionsInPage(Page page,Locale locale) {
 		String q = "select  c.realId,c.username ,count(r) from Page p join p.revisions r join r.contributor c where p = :page group by c.username";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
@@ -282,6 +302,7 @@ public class PageDAOimpl implements PageDAO {
 		return result;
 	}
 @Override
+@Transactional
 public List<Page> getAllPagesInNamespace(Integer ns) {
 	String q = "from Page p where p.ns = :ns ";
 	Query query = util.getSessionFactory().getCurrentSession().createQuery(q);

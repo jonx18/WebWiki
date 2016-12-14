@@ -97,7 +97,8 @@
 			});
 
 			var options = {
-				title : '<spring:message code="statisticspageof.distribucionDeAporte.title" />'
+				title : '<spring:message code="statisticspageof.distribucionDeAporte.title" />',
+				pieHole: 0.5,
 			};
 
 			var chart = new google.visualization.PieChart(document

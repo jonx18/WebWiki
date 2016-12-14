@@ -76,7 +76,7 @@ public class Revision implements Identificable{
 	@Fetch(FetchMode.JOIN)
 	@BatchSize(size = 5)
 	private UserContributor contributor;
-	@ManyToOne(optional = false,fetch=FetchType.LAZY)
+	@ManyToOne(fetch=FetchType.LAZY)
 	@JoinColumn(name = "page_id")
 	@Fetch(FetchMode.SELECT)
 	@BatchSize(size = 5)
@@ -91,7 +91,7 @@ public class Revision implements Identificable{
 	private String format;
     @Column(name="deleted")
 	private Boolean deleted=false;
-	@Column(columnDefinition="LONGVARCHAR",name="text")
+	@Column(columnDefinition="LONGTEXT",name="text")
 	private String text;
     @Column(name="sha1")
 	private String sha1;

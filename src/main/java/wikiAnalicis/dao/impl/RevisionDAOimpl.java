@@ -15,6 +15,7 @@ import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import wikiAnalicis.dao.RevisionDAO;
 import wikiAnalicis.entity.Page;
@@ -29,23 +30,28 @@ public class RevisionDAOimpl implements RevisionDAO {
 		// TODO Auto-generated constructor stub
 	}
 	@Override
+	@Transactional
 	public long createRevision(Revision revision) {
 		return (Long) util.create(revision);
 	}
 @Override
+@Transactional
 public void createAllRevisions(List<Revision> revisions) {
+	util.getSessionFactory().getCurrentSession().flush();
+	util.getSessionFactory().getCurrentSession().clear();
 	for (Revision revision : revisions) {
 		util.merge(revision);
 	}
-	util.getSessionFactory().getCurrentSession().flush();
-	util.getSessionFactory().getCurrentSession().clear();
+
 }
 	@Override
+	@Transactional
 	public Revision updateRevision(Revision revision) {
 		return util.update(revision);
 	}
 
 	@Override
+	@Transactional
 	public void deleteRevision(long id) {
 		Revision revision = new Revision();
 		revision.setId(id);
@@ -53,19 +59,23 @@ public void createAllRevisions(List<Revision> revisions) {
 	}
 
 	@Override
+	@Transactional
 	public List<Revision> getAllRevisions() {
 		return util.fetchAll(Revision.class);
 	}
 
 	@Override
+	@Transactional
 	public Revision getRevision(long id) {
 		return util.fetchById(id, Revision.class);
 	}
 	@Override
+	@Transactional
 	public List<Revision> getAllRevisions(Integer offset, Integer maxResults) {
 		return util.listPagination(offset, maxResults, "Revision");
 	}
 	@Override
+	@Transactional
 	public List<Revision> getAllRevisions(Page page,Integer offset, Integer maxResults) {
 		Query query = util.getSessionFactory().getCurrentSession().createQuery("from Revision as r where r.page = :page order by r.timestamp");
 		query.setParameter("page", page);
@@ -75,16 +85,19 @@ public void createAllRevisions(List<Revision> revisions) {
 		return list;
 	}
 	@Override
+	@Transactional
 	 public Long count(){
 		  return util.count(Revision.class);
 		 }
 	@Override
+	@Transactional
 	 public Long count(Page page){
 		Query query = util.getSessionFactory().getCurrentSession().createQuery("from Revision as r where r.page = :page");
 		query.setParameter("page", page);
 		return new Long(query.list().size());
 		 }
 	@Override
+	@Transactional
 	 public Map<Date,Long> revisionInDays(){
 		String q = "select  r.timestamp,count(r) from Revision r group by year(r.timestamp),month(r.timestamp), day(r.timestamp)";
 		Query query = util.getSessionFactory().getCurrentSession().createQuery(q);
@@ -105,6 +118,7 @@ public void createAllRevisions(List<Revision> revisions) {
 		return result;
 		 }
 	@Override
+	@Transactional
 	// texto del namespace, cantidad de paginas
 	public Map<String, Long> countRevisionsInNamespace() {
 		String q = "select  n.value,sum(p.revisions.size) from Page p,Namespace n where p.ns=n.keyclave group by n.keyclave";

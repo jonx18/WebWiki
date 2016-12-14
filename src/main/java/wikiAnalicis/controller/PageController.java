@@ -73,7 +73,7 @@ public class PageController {
 		List<InCategory> categories = null;
 		//---------------------------------------------------------------------------------------
 		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
-		if (pageStatistics==null||pageStatistics.getTotalRevisiones()==0) {
+		if (pageStatistics==null||pageStatistics.getTotalRevisiones()==0||true) {
 		//----------------------------------------------------------------------------------------
 		totalRevisiones = revisionService.count(page);
 		// ---------------------------------------------------------------------------------------
@@ -244,7 +244,7 @@ public class PageController {
 		String destino = "jonamar10@hotmail.com";
 		String asunto = "Comienzo de proceso statisticsPageOfWithRedirection en "+hostname+":"+userpc;
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
-		emailService.enviar(fuente, destino, asunto, mensaje);
+		//emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
 		Scanner scanner = new Scanner(request.getAttribute("id").toString());
 		while (scanner.hasNextLine()) {
@@ -267,7 +267,7 @@ public class PageController {
 				asunto = "Finalizacion de proceso statisticsPageOfWithRedirection "+num +" en "+hostname+":"+userpc;
 				mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
 						+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
-				emailService.enviar(fuente, destino, asunto, mensaje);
+				//emailService.enviar(fuente, destino, asunto, mensaje);
 			} catch (Exception e) {
 				long stopTimeFull = System.currentTimeMillis();
 				long elapsedTimeFull = stopTimeFull - startTimeFull;
@@ -281,7 +281,8 @@ public class PageController {
 				e.printStackTrace(pw);
 				mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
 						+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
-				emailService.enviar(fuente, destino, asunto, mensaje);
+				LOGGER.info("error: " +asunto+" \n"+ mensaje);
+				//emailService.enviar(fuente, destino, asunto, mensaje);
 			}
 		}
 		

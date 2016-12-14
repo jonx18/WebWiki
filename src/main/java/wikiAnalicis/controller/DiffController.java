@@ -261,7 +261,7 @@ public class DiffController {
 		String destino = "jonamar10@hotmail.com";
 		String asunto = "Comienzo de proceso diffStatisticsOfPageWithRedirection en "+hostname+":"+userpc;
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
-		emailService.enviar(fuente, destino, asunto, mensaje);
+		//emailService.enviar(fuente, destino, asunto, mensaje);
 		//-------------------------------------------------------------------------
 		Scanner scanner = new Scanner(request.getAttribute("id").toString());
 		while (scanner.hasNextLine()) {
@@ -284,7 +284,7 @@ public class DiffController {
 						asunto = "Finalizacion de proceso diffStatisticsOfPageWithRedirection "+num +" en "+hostname+":"+userpc;
 						mensaje = "El proceso "+num+" termino a las: "+calendar.getTime()+"\n "
 								+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
-						emailService.enviar(fuente, destino, asunto, mensaje);
+						//emailService.enviar(fuente, destino, asunto, mensaje);
 			} catch (Exception e) {
 				long stopTimeFull = System.currentTimeMillis();
 				long elapsedTimeFull = stopTimeFull - startTimeFull;
@@ -299,7 +299,8 @@ public class DiffController {
 				 
 				mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
 						+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
-				emailService.enviar(fuente, destino, asunto, mensaje);
+				LOGGER.info("error: " +asunto+" \n"+ mensaje);
+				//emailService.enviar(fuente, destino, asunto, mensaje);
 			}
 		}
 		

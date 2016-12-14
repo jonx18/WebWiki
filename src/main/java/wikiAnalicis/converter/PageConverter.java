@@ -60,6 +60,7 @@ public class PageConverter implements Converter {
 		Page page = new Page();
 		reader.moveDown();
 		String text = reader.getValue();
+		page.setRealTitle(text);
 		text = removeAccents(text);
 		page.setTitle(text);
 		reader.moveUp();
@@ -143,6 +144,7 @@ public class PageConverter implements Converter {
 //			revisionService.createRevision(revision);
 		}
 		revisionService.createAllRevisions(revisions);
+		revisions = new LinkedList<Revision>();
 		System.gc();
 		//temporizador
 		long stopTime = System.currentTimeMillis();

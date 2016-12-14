@@ -52,6 +52,8 @@ public class Page implements Identificable{
 	protected Long id;
 	@Column(name="title")
 	private String title;
+	@Column(name="realtitle")
+	private String realTitle;
 	@Column(name="ns")
 	private Integer ns;// name space
 	@Column(name="redirect")
@@ -115,7 +117,7 @@ public class Page implements Identificable{
 			@Override
 			public int compare(Revision o1, Revision o2) {
 				// TODO Auto-generated method stub
-				return o1.getId().compareTo(o2.getId());
+				return o1.getTimestamp().compareTo(o2.getTimestamp());
 			}
 		});
 		return revisions;
@@ -186,6 +188,11 @@ public Mediawiki getMediawiki() {
 public void setMediawiki(Mediawiki mediawiki) {
 	this.mediawiki = mediawiki;
 }
-
+public String getRealTitle() {
+	return realTitle;
+}
+public void setRealTitle(String realTitle) {
+	this.realTitle = realTitle;
+}
 
 }

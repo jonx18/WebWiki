@@ -36,6 +36,7 @@ import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.logging.FileHandler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -118,12 +119,17 @@ public class DumpToBDController {
 	@Autowired
 	private StatisticsService statisticsService;
 	private Mediawiki mediawiki;
+	
+
 	@RequestMapping(value = "exportall", method = RequestMethod.GET)
 	public String exportAll(Long id,HttpServletRequest request) {
 		List<Page> pages = pageService.getAllPages();
 		for (Page page : pages) {
 			page = pageService.mergePage(page);
 			PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
+			if (pageStatistics==null) {
+				continue;
+			}
 			Map<Delimiter, Integer[]> mapStyleChanges=pageStatistics.getMapStyleChanges();
 			Date[] dates=pageStatistics.getDatesArray();
 			Long totalRevisiones = pageStatistics.getTotalRevisiones();
@@ -141,7 +147,7 @@ public class DumpToBDController {
 			String scategories = gson.toJson(categoriesNames, categoriesNames.getClass());
 			String name = gson.toJson(page.getTitle(), page.getTitle().getClass());
 			try{
-			    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\page"+page.getId()+".txt", "UTF-8");
+			    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\exports\\page"+page.getId()+".txt", "UTF-8");
 			    writer.println(sdates);
 			    writer.println(smapStyleChanges);
 			    writer.println(stotalRevisiones);
@@ -312,7 +318,7 @@ public class DumpToBDController {
 		System.setProperty("jdk.xml.entityExpansionLimit", "0");
 		System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
 		XStream xStream = configXStream(true,0);
-		String historyPath = env.getProperty("history.path.longsixty");
+		String historyPath = env.getProperty("history.path.shorlong");
 		System.out.println(historyPath);
 		try {
 			mediawiki = historyXMLToDB(xStream, new FileInputStream(historyPath));
@@ -353,6 +359,93 @@ public class DumpToBDController {
 		ModelAndView model = new ModelAndView("index");
 		dropDB();
 		return model;
+	}
+	@RequestMapping(value = "delrevisions")
+	public String delRevisions(HttpServletRequest request ) {
+		List<Page> pages = pageService.getAllPages();
+		for (Page p : pages) {
+			p=pageService.mergePage(p);
+			List<Revision> rp = p.getRevisions();
+			for (Revision revision : rp) {
+				revisionService.deleteRevision(revision.getId());
+			}
+		}
+		return "forward:/index";
+	}
+	@RequestMapping(value = "updaterevisions")
+	public String updateRevisions(HttpServletRequest request ) {
+		String userpc = System.getProperty("user.name");
+		String hostname = "Unknown";
+		try
+		{
+		    InetAddress addr;
+		    addr = InetAddress.getLocalHost();
+		    hostname = addr.getHostName();
+		}
+		catch (UnknownHostException ex)
+		{
+		    System.out.println("Hostname can not be resolved");
+		}
+		long startTimeFull = System.currentTimeMillis();
+		List<Page> pages = pageService.getAllPages();
+		for (Page p : pages) {
+//			p=pageService.mergePage(p);
+//			List<Revision> rp = p.getRevisions();
+//			for (Revision revision : rp) {
+//				revisionService.deleteRevision(revision.getId());
+//			}
+			
+			String pagename= p.getRealTitle();
+			if (pagename.trim().isEmpty()) {
+				System.out.println("empty");
+				continue;
+			}
+			
+			try{
+				request.setAttribute("pagename", pagename);
+				this.urlToBD(request);
+				request.setAttribute("drop", false);
+				Page page = pageService.getPage(pagename);
+				if (page == null) {
+					String title = pagename.replace('_', ' ');
+//					System.out.println(pagename);
+//					System.out.println(title);
+					page = pageService.getPage(title);
+					if (page == null) {
+						title = this.removeAccents(title);
+						page = pageService.getPage(title);
+					}
+				}
+				
+				System.out.println("atributo--------------"+request.getAttribute("id"));
+				if (request.getAttribute("id")==null) {
+					request.setAttribute("id", page.getId());
+				}else{
+					request.setAttribute("id",request.getAttribute("id")+"\n"+ page.getId());
+				}
+
+				System.out.println("atributo--------------"+request.getAttribute("id"));
+				} catch (Exception e) {
+					long stopTimeFull = System.currentTimeMillis();
+					long elapsedTimeFull = stopTimeFull - startTimeFull;
+					Calendar calendar = Calendar.getInstance();
+					calendar.setTimeInMillis(stopTimeFull);
+					String fuente = "wikianalisis@gmail.com";
+					String destino = "jonamar10@hotmail.com";
+					String asunto = "ERROR de proceso urlToBDWithRedirection pagina: "+pagename+ " en "+hostname+":"+userpc;
+					StringWriter sw = new StringWriter();
+					PrintWriter pw = new PrintWriter(sw);
+					e.printStackTrace(pw);
+					String mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
+							+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
+					LOGGER.info("error: " +asunto+" \n"+ mensaje);
+					//emailService.enviar(fuente, destino, asunto, mensaje);
+					
+				}
+			
+		}
+
+		return "forward:/statisticsPageOfWithRedirection";
 	}
 	@RequestMapping(value = "urlToBDWithRedirection", method = RequestMethod.POST)
 	public String urlToBDWithRedirection(HttpServletRequest request ) {
@@ -454,7 +547,7 @@ public class DumpToBDController {
 		String destino = "jonamar10@hotmail.com";
 		String asunto = "Comienzo de proceso urltodb pagina: "+pagename+ " en "+hostname+":"+userpc;
 		String mensaje = "El proceso comenzo a las: "+calendar.getTime() ;
-		emailService.enviar(fuente, destino, asunto, mensaje);
+		//emailService.enviar(fuente, destino, asunto, mensaje);
 		
 		//--------------
 		Map<String, Long> times = new TreeMap<String, Long>();
@@ -477,7 +570,7 @@ public class DumpToBDController {
 //--------------------------------------------------------------------------------------------------
 		startTime = System.currentTimeMillis();
 		System.out.println("Cargando: " + pagename);
-		XStream xStream = configXStream(true,null);
+		XStream xStream = configXStream(true,0);
 		InputStream historyPath=null;
 		historyPath = downloadMainPage(pagename, xStream, historyPath);
 		// pagesWithoutRevisions();
@@ -490,7 +583,7 @@ public class DumpToBDController {
 
 
 		startTime = System.currentTimeMillis();
-		downloadCategories(pagename, xStream, historyPath);
+		//downloadCategories(pagename, xStream, historyPath);
 		stopTime = System.currentTimeMillis();
 		elapsedTime = stopTime - startTime;
 		step++;
@@ -522,7 +615,7 @@ public class DumpToBDController {
 		asunto = "Finalizacion de proceso urltodb pagina: "+pagename+ " en "+hostname+":"+userpc;
 		mensaje = "El proceso termino a las: "+calendar.getTime()+"\n "
 				+ "Tardo:"+ elapsedTimeFull+" milisegundos" ;
-		emailService.enviar(fuente, destino, asunto, mensaje);
+		//emailService.enviar(fuente, destino, asunto, mensaje);
 
 		
 		//--------------
@@ -635,6 +728,7 @@ public class DumpToBDController {
 			System.out.println("old = "+oldTimestamp+" actual = "+timestamp);
 			oldTimestamp=timestamp;
 			timestamp=page.getRevisions().get(page.getRevisions().size()-1).getStringTimestamp();
+			
 			System.out.println("new = "+timestamp);
 		}
 		return historyPath;
@@ -678,7 +772,7 @@ public class DumpToBDController {
 			result.append(line+"\n");
 		}
 
-//		System.out.println(result.toString());
+		//System.out.println(result.toString());
 		InputStream stream = new ByteArrayInputStream(result.toString().getBytes(StandardCharsets.UTF_8));
 
 		return stream;

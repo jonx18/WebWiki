@@ -7,7 +7,7 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "textcontainer")
 public class TextContainer extends NodeContainer {
-	@Column(columnDefinition="LONGVARCHAR",name="text")
+	@Column(columnDefinition="LONGTEXT",name="text")
 	private String text;
 
 	public TextContainer() {
