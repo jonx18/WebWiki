@@ -77,7 +77,23 @@ public class PageDAOimpl implements PageDAO {
 //		page= mergePage(page);
 		util.delete(page);
 	}
+	@Override
+	@Transactional
+	public void deletePages(List<Page> pages) {
+		int index=1;
+		for (Page page : pages) {
+			util.delete(page);
+			if (index%1000==0) {
+				
+				System.out.println(index);
+				util.getSessionFactory().getCurrentSession().flush();
+				util.getSessionFactory().getCurrentSession().clear();		
+			}
+			index++;
+		}
 
+
+	}
 	@Override
 	@Transactional
 	public List<Page> getAllPages() {

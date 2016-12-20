@@ -43,9 +43,13 @@ public class PageServiceImpl implements PageService {
 	@Override
 	public void deletePage(long id) {
 		pageDAO.deletePage(id);
-		;
 	}
+	@Override
+	public void deletePages(List<Page> pages) {
+		pageDAO.deletePages(pages);
 
+
+	}
 	@Override
 	public List<Page> getAllPages() {
 		return pageDAO.getAllPages();

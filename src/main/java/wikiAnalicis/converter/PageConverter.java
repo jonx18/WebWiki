@@ -25,6 +25,7 @@ public class PageConverter implements Converter {
 	private PageService pageService;
 	private RevisionService revisionService;
 	private Integer namespace = null;
+	private boolean withRevisions = true;
 
 	public PageConverter(PageService pageService) {
 		super();
@@ -97,7 +98,7 @@ public class PageConverter implements Converter {
 			//downloadCategories(pagename, xStream, historyPath);
 
 
-			if ("revision".equals(reader.getNodeName())) {
+			if (("revision".equals(reader.getNodeName()))&&(withRevisions )) {
 				indexRevision++;
 				Revision revision = (Revision) context.convertAnother(page, Revision.class);
 				//Limitador de fecha retirar para version completa
@@ -116,7 +117,7 @@ public class PageConverter implements Converter {
 				}
 			}
 			reader.moveUp();
-			if ((indexRevision % 50 == 0)){
+			if ((indexRevision % 50 == 0)&&	(!revisions.isEmpty())){
 				for (Revision revision : revisions) {
 					revision.setPage(page);//---------yo tendria que alcanzar 
 					//-Xms8192m -Xmx16384m -XX:PermSize=512m -XX:MaxPermSize=1024m -XX:+UseG1GC -XX:G1HeapRegionSize=7 -XX:MaxGCPauseMillis=100m -XX:ParallelGCThreads=7 -XX:ConcGCThreads=7 -XX:-UseGCOverheadLimit
@@ -126,7 +127,7 @@ public class PageConverter implements Converter {
 				//temporizador
 				long stopTime = System.currentTimeMillis();
 				long elapsedTime = stopTime - startTime;
-				System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
+				System.out.println("1revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
 				startTime = System.currentTimeMillis();
 				
 				//--------------Comentame a ver que pasa
@@ -139,18 +140,22 @@ public class PageConverter implements Converter {
 				System.gc();
 			}
 		}
-		for (Revision revision : revisions) {
-			revision.setPage(page);//---------yo tendria que alcanzar
-//			revisionService.createRevision(revision);
+		if (!revisions.isEmpty() ) {
+			for (Revision revision : revisions) {
+				revision.setPage(page);//---------yo tendria que alcanzar
+				//System.out.println("entre");
+//				revisionService.createRevision(revision);
+			}
+			revisionService.createAllRevisions(revisions);
+			//revisions = new LinkedList<Revision>();
+			System.gc();
+			//temporizador
+			long stopTime = System.currentTimeMillis();
+			long elapsedTime = stopTime - startTime;
+			System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
+			
 		}
-		revisionService.createAllRevisions(revisions);
-		revisions = new LinkedList<Revision>();
-		System.gc();
-		//temporizador
-		long stopTime = System.currentTimeMillis();
-		long elapsedTime = stopTime - startTime;
-		System.out.println("revisiones index: "+indexRevision+"en lista:"+revisions.size() +" Tiempo: "+elapsedTime/1000+" segundos");
-		//--------------Comentame a ver que pasa
+//--------------Comentame a ver que pasa
 //		page=pageService.mergePage(page);
 //		page.getRevisions().addAll(revisions);
 //		page=pageService.mergePage(page);

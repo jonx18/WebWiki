@@ -11,6 +11,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.TreeMap;
@@ -145,7 +146,28 @@ public class PageController {
 		// }
 		return model;
 	}
-
+	@RequestMapping(value = "randomPageDel")
+	public String randomPageDel(Integer maxResults, Long seed) {
+		List<Page> pages = pageService.getAllPages();
+		if (seed==null) {
+			seed = new Long(777);
+		}
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=5000&seed=7777
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=5000&seed=5793
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=5000&seed=3535
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=1525
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=0525
+		System.out.println(seed);
+		Random random = new  Random(seed);
+		for (int i = 0; i < maxResults; i++) {
+			Page page = pages.get(random.nextInt(pages.size()));
+			pages.remove(page);
+			//System.out.println("Id: "+page.getId()+" Name: "+page.getRealTitle());
+		}
+		System.out.println("borrando");
+		pageService.deletePages(pages);
+		return"forward:/index";
+	}
 	@RequestMapping(value = { "statisticsPages" })
 	public ModelAndView statisticsReviews() {
 		ModelAndView model = new ModelAndView("statisticsPages");

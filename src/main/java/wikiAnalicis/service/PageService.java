@@ -31,4 +31,5 @@ public interface PageService {
 	public Map<String, Long> countColaboratorRevisionsInPage(Page page,Locale locale) ;
 	public List<Page> getAllPagesInNamespace(Integer ns);
 	public void createAllPages(List<Page> pages);
+	void deletePages(List<Page> pages);
 }

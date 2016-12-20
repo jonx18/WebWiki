@@ -85,16 +85,21 @@ public class MediaWikiConverter implements Converter {
 				if(namespace!=null){
 //					//System.out.println("required namespace:"+namespace+" page namespace:"+page.getNs() );
 					if (page.getNs().compareTo(namespace)==0) {
-					System.out.println("Page "+pageIndex);
+						if (pageIndex%1000 == 0) {
+							System.out.println("Page "+pageIndex);
+						}
+
 //						pages.add(page);
 					}
 				}else{
-					System.out.println("Page "+pageIndex);
+					if (pageIndex%1000 == 0) {
+						System.out.println("Page "+pageIndex);
+					}
 //					pages.add(page);
 				}
-				if (pageIndex.compareTo(2000)==0) {
-					break;
-				}
+//				if (pageIndex.compareTo(2000)==0) {
+//					break;
+//				}
 				
 			}
 			reader.moveUp();
