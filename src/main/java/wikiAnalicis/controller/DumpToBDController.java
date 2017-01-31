@@ -147,7 +147,8 @@ public class DumpToBDController {
 			String scategories = gson.toJson(categoriesNames, categoriesNames.getClass());
 			String name = gson.toJson(page.getTitle(), page.getTitle().getClass());
 			try{
-			    PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\exports\\page"+page.getId()+".txt", "UTF-8");
+			    //PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\exports\\page"+page.getId()+".txt", "UTF-8");
+				 PrintWriter writer = new PrintWriter("B:\\exports\\page"+page.getId()+".txt", "UTF-8");
 			    writer.println(sdates);
 			    writer.println(smapStyleChanges);
 			    writer.println(stotalRevisiones);

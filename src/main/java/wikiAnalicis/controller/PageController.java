@@ -157,6 +157,11 @@ public class PageController {
 		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=5000&seed=3535
 		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=1525
 		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=0525
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=3237
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=1234
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=19162	
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=10000&seed=201284	
+		//http://localhost:8080/WikiWebTest/randomPageDel?maxResults=50000&seed=25505			
 		System.out.println(seed);
 		Random random = new  Random(seed);
 		for (int i = 0; i < maxResults; i++) {

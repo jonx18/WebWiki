@@ -25,7 +25,7 @@ public class PageConverter implements Converter {
 	private PageService pageService;
 	private RevisionService revisionService;
 	private Integer namespace = null;
-	private boolean withRevisions = true;
+	private boolean withRevisions = false;
 
 	public PageConverter(PageService pageService) {
 		super();
