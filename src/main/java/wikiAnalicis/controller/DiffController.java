@@ -110,7 +110,7 @@ public class DiffController {
 		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
 		Map<Delimiter, Integer[]> mapStyleChanges=null;
 		Date[] dates=null;
-		if (pageStatistics==null||pageStatistics.getDates().isEmpty()||true) {
+		if (pageStatistics==null||pageStatistics.getDates().isEmpty()) {
 			List<Revision> revisions = page.getRevisions();
 			int size = revisions.size();
 			List<Delimiter> delimiters = this.getDelimiters(locale);

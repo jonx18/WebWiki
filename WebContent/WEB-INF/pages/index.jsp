@@ -59,8 +59,8 @@
 				<c:if test="${empty mediawiki }">
 					<h1><spring:message code="index.notWiki.title" /></h1>
 					<p>
-						<a class="btn btn-primary btn-lg" href="dumptobd" 
-						role="button"><spring:message code="index.notWiki.dumptobd" /></a>
+						<a class="btn btn-primary btn-lg" href="fromdump" 
+						role="button"><spring:message code="index.notWiki.fromdump" /></a>
 					</p>
 					<p>
 										<spring:url value="/urltobd" var="urltobd" />

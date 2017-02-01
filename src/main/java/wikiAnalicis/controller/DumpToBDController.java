@@ -119,6 +119,9 @@ public class DumpToBDController {
 	@Autowired
 	private StatisticsService statisticsService;
 	private Mediawiki mediawiki;
+	private PageConverter pageConverter;
+	private boolean dinamic=false;
+	private boolean statistics=true;
 	
 
 	@RequestMapping(value = "exportall", method = RequestMethod.GET)
@@ -303,11 +306,49 @@ public class DumpToBDController {
 
 		return "forward:/index";
 	}
+	@RequestMapping(value = "fromdump", method = RequestMethod.GET)
+	public ModelAndView fromdump(HttpServletRequest request) {
+		Mediawiki mediawiki = null;
+		List<Mediawiki> allMediawikis = mediawikiService.getAllMediawikis();
+		if (!allMediawikis.isEmpty()) {
+			mediawiki = allMediawikis.get(0);
+			return new ModelAndView("index", "mediawiki", mediawiki);
+//			System.out.println(UserContributor.anonimusID);
+//			if (UserContributor.anonimusID==-1) {
+//				
+//				UserContributor.anonimusID=userContributorService.getMinId();
+//				System.out.println(UserContributor.anonimusID);
+//			}
+			
+		} 
+	
+		ModelAndView model = new ModelAndView("fromdump");
+		return model;
 
+	}
 	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
 	public ModelAndView dumpToBD(HttpServletRequest request) {
 		Map<String, Long> times = new TreeMap<String, Long>();
-
+		statistics = request.getParameter("statistics")!=null;
+		dinamic = request.getParameter("dinamic")!=null;
+		String keyprop="";
+		Integer limit=0;
+		Long seed = new Long(7777);
+		if (request.getParameter("clave")!=null) {
+			keyprop= (String) request.getParameter("clave");
+		}
+		if (request.getParameter("limit")!=null) {
+			limit= new Integer(request.getParameter("limit"));
+			if (limit<0) {
+				limit =0;
+			}
+		}
+		if (request.getParameter("seed")!=null) {
+			seed= new Long( request.getParameter("seed"));
+			if (seed<0) {
+				seed = new Long(7777);
+			}
+		}
 		long startTime = System.currentTimeMillis();
 		//dropDB();
 		long stopTime = System.currentTimeMillis();
@@ -318,14 +359,33 @@ public class DumpToBDController {
 		System.out.println("Cargando:");
 		System.setProperty("jdk.xml.entityExpansionLimit", "0");
 		System.setProperty("jdk.xml.totalEntitySizeLimit", "0");
+		System.out.println(statistics);
+		System.out.println(dinamic);
 		XStream xStream = configXStream(true,0);
-		String historyPath = env.getProperty("history.path.shorlong");
+		Locale locale = localeResolver.resolveLocale(request);
+		if (!env.containsProperty(keyprop)||keyprop.trim().isEmpty()) {
+			ModelAndView model = new ModelAndView("error");
+			model.addObject("motivo", messageSource.getMessage("error.claveproperty", null, locale));
+			return model;
+		}
+		if (dinamic) {
+			pageConverter.setWithRevisions(!dinamic);
+		}
+		String historyPath = env.getProperty(keyprop);
 		System.out.println(historyPath);
 		try {
 			mediawiki = historyXMLToDB(xStream, new FileInputStream(historyPath));
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+		}
+		if (dinamic) {
+			pageConverter.setWithRevisions(!dinamic);
+			if (limit>0) {
+				return new ModelAndView("forward:/randomPageDel?maxResults="+limit+"&seed="+seed);
+			}else{
+				return new ModelAndView("forward:/updaterevisions");
+			}
 		}
 		// pagesWithoutRevisions();
 		System.out.println("Finalizo guardado");
@@ -342,7 +402,7 @@ public class DumpToBDController {
 		elapsedTime = stopTime - startTime;
 		times.put("3-asignacionCategorias", elapsedTime);
 		//Locale locale = new Locale(mediawiki.getLang());
-		Locale locale = localeResolver.resolveLocale(request);
+		
 		Map<String, Long> timesLabeled = new TreeMap<String, Long>();
 		int index=0;
 		for (String label : times.keySet()) {
@@ -445,8 +505,13 @@ public class DumpToBDController {
 				}
 			
 		}
-
-		return "forward:/statisticsPageOfWithRedirection";
+		if (statistics) {
+			return "forward:/statisticsPageOfWithRedirection";
+		}
+		else {
+			return "forward:/index";
+		}
+		
 	}
 	@RequestMapping(value = "urlToBDWithRedirection", method = RequestMethod.POST)
 	public String urlToBDWithRedirection(HttpServletRequest request ) {
@@ -1022,10 +1087,12 @@ public class DumpToBDController {
 			MediaWikiConverter mediaWikiConverter=null;
 			if (namespace!=null) {
 				mediaWikiConverter = new MediaWikiConverter( mediawikiService,pageService,namespace);
-				xStream.registerConverter(new PageConverter(pageService,revisionService,namespace));
+				pageConverter = new PageConverter(pageService,revisionService,namespace);
+				xStream.registerConverter(pageConverter);
 			} else {
 				mediaWikiConverter = new MediaWikiConverter( mediawikiService,pageService);
-				xStream.registerConverter(new PageConverter(pageService,revisionService));
+				pageConverter = new PageConverter(pageService,revisionService);
+				xStream.registerConverter(pageConverter);
 			}
 			xStream.registerConverter(mediaWikiConverter);
 			xStream.registerConverter(new NamespaceConverter());

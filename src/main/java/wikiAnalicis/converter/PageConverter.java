@@ -25,7 +25,7 @@ public class PageConverter implements Converter {
 	private PageService pageService;
 	private RevisionService revisionService;
 	private Integer namespace = null;
-	private boolean withRevisions = false;
+	private boolean withRevisions = true;
 
 	public PageConverter(PageService pageService) {
 		super();
@@ -180,4 +180,13 @@ public class PageConverter implements Converter {
 	        Normalizer.normalize(text, Form.NFD)
 	            .replaceAll("\\p{InCombiningDiacriticalMarks}+", "");
 	}
+
+	public boolean isWithRevisions() {
+		return withRevisions;
+	}
+
+	public void setWithRevisions(boolean withRevisions) {
+		this.withRevisions = withRevisions;
+	}
+	
 }

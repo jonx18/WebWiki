@@ -74,7 +74,7 @@ public class PageController {
 		List<InCategory> categories = null;
 		//---------------------------------------------------------------------------------------
 		PageStatistics pageStatistics = statisticsService.getPageStatistics(page);
-		if (pageStatistics==null||pageStatistics.getTotalRevisiones()==0||true) {
+		if (pageStatistics==null||pageStatistics.getTotalRevisiones()==0) {
 		//----------------------------------------------------------------------------------------
 		totalRevisiones = revisionService.count(page);
 		// ---------------------------------------------------------------------------------------
@@ -165,13 +165,14 @@ public class PageController {
 		System.out.println(seed);
 		Random random = new  Random(seed);
 		for (int i = 0; i < maxResults; i++) {
+			System.out.println(pages.size());
 			Page page = pages.get(random.nextInt(pages.size()));
 			pages.remove(page);
 			//System.out.println("Id: "+page.getId()+" Name: "+page.getRealTitle());
 		}
 		System.out.println("borrando");
 		pageService.deletePages(pages);
-		return"forward:/index";
+		return"forward:/updaterevisions";
 	}
 	@RequestMapping(value = { "statisticsPages" })
 	public ModelAndView statisticsReviews() {
