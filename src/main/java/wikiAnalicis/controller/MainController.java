@@ -35,4 +35,10 @@ public class MainController {
 		} 
 	return new ModelAndView("index", "mediawiki", mediawiki);
 	}
+	@RequestMapping(value = "errorview")
+	public ModelAndView errorview(String motivo)  {
+		ModelAndView model = new ModelAndView("error");
+		model.addObject("motivo", motivo);
+		return model;
+	}
 }

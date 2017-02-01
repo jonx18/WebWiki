@@ -29,7 +29,7 @@ public class EmailServiceImpl implements EmailService {
 		mail.setTo(destino);
 		mail.setSubject(asunto);
 		mail.setText(mensaje);
-		sender.send(mail);
+		//sender.send(mail);
 	}
 
 }

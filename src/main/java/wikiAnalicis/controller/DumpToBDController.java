@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -126,6 +127,22 @@ public class DumpToBDController {
 
 	@RequestMapping(value = "exportall", method = RequestMethod.GET)
 	public String exportAll(Long id,HttpServletRequest request) {
+		Locale locale = localeResolver.resolveLocale(request);
+		if (!env.containsProperty("export.path")) {
+			return "forward:/errorview?motivo="+messageSource.getMessage("error.pathexport", null, locale);
+			 
+		}
+		String exportPath = env.getProperty("export.path");
+		File f = new File(exportPath);
+		if (!f.exists()) {
+			return "forward:/errorview?motivo="+messageSource.getMessage("error.exportfoldernotexist", null, locale);
+		  
+		}
+		else{
+			if (!f.isDirectory()) {
+				return "forward:/errorview?motivo="+messageSource.getMessage("error.exportisnotfolder", null, locale);
+			 }
+		}
 		List<Page> pages = pageService.getAllPages();
 		for (Page page : pages) {
 			page = pageService.mergePage(page);
@@ -151,7 +168,7 @@ public class DumpToBDController {
 			String name = gson.toJson(page.getTitle(), page.getTitle().getClass());
 			try{
 			    //PrintWriter writer = new PrintWriter("C:\\Users\\Jonx\\Downloads\\WikiAnalisis\\exports\\page"+page.getId()+".txt", "UTF-8");
-				 PrintWriter writer = new PrintWriter("B:\\exports\\page"+page.getId()+".txt", "UTF-8");
+				 PrintWriter writer = new PrintWriter(exportPath+"page"+page.getId()+".txt", "UTF-8");
 			    writer.println(sdates);
 			    writer.println(smapStyleChanges);
 			    writer.println(stotalRevisiones);
@@ -326,6 +343,12 @@ public class DumpToBDController {
 		return model;
 
 	}
+	@RequestMapping(value = "fromuri", method = RequestMethod.GET)
+	public ModelAndView fromuri(HttpServletRequest request) {
+		ModelAndView model = new ModelAndView("fromuri");
+		return model;
+
+	}
 	@RequestMapping(value = "dumptobd", method = RequestMethod.GET)
 	public ModelAndView dumpToBD(HttpServletRequest request) {
 		Map<String, Long> times = new TreeMap<String, Long>();
@@ -364,8 +387,7 @@ public class DumpToBDController {
 		XStream xStream = configXStream(true,0);
 		Locale locale = localeResolver.resolveLocale(request);
 		if (!env.containsProperty(keyprop)||keyprop.trim().isEmpty()) {
-			ModelAndView model = new ModelAndView("error");
-			model.addObject("motivo", messageSource.getMessage("error.claveproperty", null, locale));
+			ModelAndView model = new ModelAndView("forward:/errorview?motivo="+messageSource.getMessage("error.claveproperty", null, locale));
 			return model;
 		}
 		if (dinamic) {
@@ -515,6 +537,8 @@ public class DumpToBDController {
 	}
 	@RequestMapping(value = "urlToBDWithRedirection", method = RequestMethod.POST)
 	public String urlToBDWithRedirection(HttpServletRequest request ) {
+		statistics = request.getParameter("statistics")!=null;
+		Locale locale = localeResolver.resolveLocale(request);
 		String userpc = System.getProperty("user.name");
 		String hostname = "Unknown";
 		try
@@ -529,11 +553,15 @@ public class DumpToBDController {
 		}
 		long startTimeFull = System.currentTimeMillis();
 		Scanner scanner = new Scanner(request.getParameter("pagename"));
+		if (!scanner.hasNextLine()) {
+			return "forward:/errorview?motivo="+messageSource.getMessage("error.pagenameempty", null, locale);
+		}
 		while (scanner.hasNextLine()) {
 			String pagename= scanner.nextLine().replace("\n", "").replace("\r", "");
 			if (pagename.trim().isEmpty()) {
 				System.out.println("empty");
-				continue;
+				return "forward:/errorview?motivo="+messageSource.getMessage("error.pagenameempty", null, locale);
+				//continue;
 			}
 			
 			try{
@@ -574,12 +602,14 @@ public class DumpToBDController {
 					String mensaje = "El proceso Fallo a las: "+calendar.getTime()+"\n "
 							+ "Tardo:"+ elapsedTimeFull+" milisegundos\n "+"stack:\n "+sw.toString();
 					emailService.enviar(fuente, destino, asunto, mensaje);
-					
+					return "forward:/errorview?motivo="+messageSource.getMessage("error.pagenameerror", null, locale)+pagename;
 				}
 			
 		}
-
-		return "forward:/statisticsPageOfWithRedirection";
+		if (statistics) {
+			return "forward:/statisticsPageOfWithRedirection";
+		}
+		return "forward:/index";
 	}
 	
 	@RequestMapping(value = "urltobd", method = RequestMethod.POST)
